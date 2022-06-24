@@ -1,0 +1,39 @@
+<section class="banner contenedor">
+    <secrion class="banner_title">
+        <form action="/debt/saveEditDebt/{{deuda.id}}?_method=PUT" method="POST">
+            <p class="h1">Editar Deuda</p>
+            <input type="hidden" name="_method" value="PUT">
+            <!-- input nombre alumno -->
+            <div class="mb-4">
+                <label for="nombreAlumno" class="form-label text-color">Nombre del Alumno</label>
+                <input type="text" class="form-control imput" id="nombreAlumno" name="nombreAlumno"
+                    placeholder="ingresar nombre del alumno" value="{{deuda.nombreAlumno}}">
+            </div>
+
+            <!-- input apellido alumno -->
+            <div class="mb-4">
+                <label for="apellidoAlumno" class="form-label">Apellido del Alumno</label>
+                <input type="text" class="form-control imput" id="apellidoAlumno" name="apellidoAlumno"
+                    placeholder="ingresar nombre del alumno" value="{{deuda.apellidoAlumno}}">
+            </div>
+
+            <!-- input deuda de alumno -->
+            <label for="deuda" class="form-label">Deuda del Alumno</label>
+            <div class="input-group mb-4">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">$</span>
+                </div>
+                <input type="number" class="form-control imput" aria-label="Amount (to the nearest dollar)" id="deuda"
+                    name="deuda" placeholder="ingresar deuda de alumno" value="{{deuda.deuda}}">
+            </div>
+
+            <!-- boton de enviar datos -->
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Editar Datos</button>
+            </div>
+        </form>
+    </secrion>
+    <div class="banner_img">
+        <img src="/img/imganes/img.png" alt="">
+    </div>
+</section>

@@ -1,0 +1,15 @@
+{{#if success_msg }}
+<div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+  <img src="/img/icon/tick.png" alt="" height="40">
+    <strong>{{success_msg}}!</strong>
+  <img src="/img/icon/tick.png" alt="" height="40">
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}
+
+{{#if error_msg }}
+<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+  {{error_msg}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}

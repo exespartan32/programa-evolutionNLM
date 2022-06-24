@@ -1,0 +1,30 @@
+<div class="table-responsive-md text-center">
+  <br>
+  <table class="table table-dark table-hover">
+    <tr>
+      <th>Nombre</th>
+      <th>Apellido</th>
+      <th>Deuda de Alumno</th>
+      <th>Fecha Creacion</th>
+    </tr>
+    </thead>
+    <tbody id="tabla">
+      {{#each debts}}
+      <tr>
+        <td class="table-info">{{nombreAlumno}}</td>
+        <td class="table-info">{{apellidoAlumno}}</td>
+        <td class="table-danger">{{deuda}}</td>
+        <td class="table-info">{{fechaCreacion}}</td>
+      </tr>
+      {{else}}
+      <div class="card text-white bg-danger mb-3 mx-auto" style="max-width: 18rem;">
+        <div class="card-header">error!</div>
+        <div class="card-body">
+          <h5 class="card-title">No hay datos que mostrar</h5>
+          <a href="/debt/enterDebt" class="btn btn-success btn-block">ingresar datos</a>
+        </div>
+      </div>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
