@@ -81,7 +81,7 @@ debtControllers.renderListDelate = async (req, res) => {
 debtControllers.saveDelate = async (req, res) => {
     const id = req.params.id
     await Deudas.findByIdAndDelete(id)
-    
+
     req.flash('success_msg', 'deuda eliminada correctamente');
 
     res.redirect('/debt/deleteDebt')
@@ -103,154 +103,91 @@ debtControllers.renderSearchAlumn = async (req, res) => {
 }
 
 debtControllers.renderListAlumn = async (req, res) => {
+    var nombre;
+    var apellido;
     if (typeof window !== 'undefined') {
-        var parametros = window.location.search;
-        var urlParams = new URLSearchParams(parametros);
-        var nombre = urlParams.get('nombreAlumno');
-        var apellido = urlParams.get('apellidoAlumno');
+        const parametros = window.location.search;
+        const urlParams = new URLSearchParams(parametros);
+        nombre = urlParams.get('nombreAlumno');
+        apellido = urlParams.get('apellidoAlumno');
 
-        // ······························································· //
-        // ··············· si no existe nombre y apellido ················ //
-        // ······························································· //
-        if (!nombre && !apellido) {
-            res.send('error')
-        } else {
-            // ······························································· //
-            // ··············· si existe nombre y apellido ··················· //
-            // ······························································· //
-            if (nombre && apellido) {
-                const debts = await Deudas.find({
-                    nombreAlumno: { $eq: nombre },
-                    apellidoAlumno: { $eq: apellido }
-                })
-                // ---------------------------------------------------------------------- //
-                // ----------- si no encentra ningun nombre y apellido en DB------------- //
-                // ---------------------------------------------------------------------- //
-                if (debts.length == 0) {
-                    res.send('datos inexistentes')
-                    // ---------------------------------------------------------------------- //
-                    // ----------- si encentra un nombre y apellido en DB ------------------- //
-                    // ---------------------------------------------------------------------- //
-                } else {
-                    res.render('deudas/showDebt', { debts })
-                }
-                // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
-                // :::::::::::: si exixte nombre o apellido, pero no ambos a la vez :::::::::::: //
-                // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
-            } else {
-                // ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; //
-                // ;;;;;;;;;;;;; si existe nombre ;;;;;;;;;;;; //
-                // ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; //
-                if (nombre) {
-                    const debts = await Deudas.find({
-                        nombreAlumno: { $eq: nombre }
-                    })
-                    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    // <<<<<<<<<<<<<<< si encuentra nombre en DB <<<<<<<<< //
-                    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    if (debts.length == 0) {
-                        res.send('nombre inexistentes')
-                        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                        // <<<<<<<<<<<<< si no encuentra nombre en DB <<<<<<<< //
-                        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    } else {
-                        res.render('deudas/showDebt', { debts })
-                    }
-                }
-                // ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; //
-                // ;;;;;;;;;;;;; si existe apellido ;;;;;;;;;;;; //
-                // ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; //
-                if (apellido) {
-                    const debts = await Deudas.find({
-                        apellidoAlumno: { $eq: apellido }
-                    })
-                    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    // <<<<<<<<<<<<< si encuentra apellido en DB <<<<<<<<< //
-                    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    if (debts.length == 0) {
-                        res.send('apellido inexistentes')
-                        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                        // <<<<<<<<<<<<< si no encuentra apellido en DB <<<<<< //
-                        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    } else {
-                        res.render('deudas/showDebt', { debts })
-                    }
-                }
-            }
-        }
     } else {
         const q = url.parse(req.url, true);
         const qdata = q.query;
-        const nombre = qdata.nombreAlumno;
-        const apellido = qdata.apellidoAlumno;
+        nombre = qdata.nombreAlumno;
+        apellido = qdata.apellidoAlumno;
+    }
 
-
+    // ······························································· //
+    // ·················· no se envian datos para buscar ············· //
+    // ······························································· //
+    if (!nombre && !apellido) {
+        res.send('¡¡ error !! ------> no ha ingresado datos para buscar !!')
+    } else {
         // ······························································· //
-        // ··············· si no existe nombre y apellido ················ //
         // ······························································· //
-        if (!nombre && !apellido) {
-            res.send('error')
+        // ··················· buscar por nombre y apellido ·············· //
+        // ······························································· //
+        // ······························································· //
+        if (nombre && apellido) {
+            const debts = await Deudas.find({
+                nombreAlumno: { $eq: nombre },
+                apellidoAlumno: { $eq: apellido }
+            })
+            // ---------------------------------------------------------------------- //
+            // ----------- si no encuentra ningun nombre y apellido en DB ----------- //
+            // ---------------------------------------------------------------------- //
+            if (debts.length == 0) {
+                res.send('datos inexistentes')
+            // ---------------------------------------------------------------------- //
+            // -------------- si encuentra un nombre y apellido en DB --------------- //
+            // ---------------------------------------------------------------------- //
+            } else {
+                res.render('deudas/showDebt', { debts })
+            }
         } else {
-            // ······························································· //
-            // ··············· si existe nombre y apellido ··················· //
-            // ······························································· //
-            if (nombre && apellido) {
+
+        // ······························································ //
+        // ······························································ //
+        // ····················· buscar por nombre ······················ //
+        // ······························································ //
+        // ······························································ //
+            if (nombre) {
                 const debts = await Deudas.find({
-                    nombreAlumno: { $eq: nombre },
-                    apellidoAlumno: { $eq: apellido }
+                    nombreAlumno: { $eq: nombre }
                 })
-                // ---------------------------------------------------------------------- //
-                // ----------- si no encentra ningun nombre y apellido en DB------------- //
-                // ---------------------------------------------------------------------- //
+            // ----------------------------------------------------------- //
+            // ----------- si no encuentra ningun nombre en DB ----------- //
+            // ----------------------------------------------------------- //
                 if (debts.length == 0) {
-                    res.send('datos inexistentes')
-                    // ---------------------------------------------------------------------- //
-                    // ----------- si encentra un nombre y apellido en DB ------------------- //
-                    // ---------------------------------------------------------------------- //
+                    res.send('nombre inexistentes')
+            // ----------------------------------------------------------- //
+            // ----------- si encuentra algun nombre en DB --------------- //
+            // ----------------------------------------------------------- //
                 } else {
                     res.render('deudas/showDebt', { debts })
                 }
-                // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
-                // :::::::::::: si exixte nombre o apellido, pero no ambos a la vez :::::::::::: //
-                // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: //
-            } else {
-                // ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; //
-                // ;;;;;;;;;;;;; si existe nombre ;;;;;;;;;;;; //
-                // ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; //
-                if (nombre) {
-                    const debts = await Deudas.find({
-                        nombreAlumno: { $eq: nombre }
-                    })
-                    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    // <<<<<<<<<<<<<<< si encuentra nombre en DB <<<<<<<<< //
-                    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    if (debts.length == 0) {
-                        res.send('nombre inexistentes')
-                        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                        // <<<<<<<<<<<<< si no encuentra nombre en DB <<<<<<<< //
-                        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    } else {
-                        res.render('deudas/showDebt', { debts })
-                    }
-                }
-                // ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; //
-                // ;;;;;;;;;;;;; si existe apellido ;;;;;;;;;;;; //
-                // ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; //
-                if (apellido) {
-                    const debts = await Deudas.find({
-                        apellidoAlumno: { $eq: apellido }
-                    })
-                    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    // <<<<<<<<<<<<< si encuentra apellido en DB <<<<<<<<< //
-                    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    if (debts.length == 0) {
-                        res.send('apellido inexistentes')
-                        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                        // <<<<<<<<<<<<< si no encuentra apellido en DB <<<<<< //
-                        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< //
-                    } else {
-                        res.render('deudas/showDebt', { debts })
-                    }
+            }
+
+        // ······························································· //
+        // ······························································· //
+        // ····················· buscar por apellido ····················· //
+        // ······························································· //
+        // ······························································· //
+            if (apellido) {
+                const debts = await Deudas.find({
+                    apellidoAlumno: { $eq: apellido }
+                })
+            // ------------------------------------------------------------ //
+            // ---------- si no encuentra ningun apellido en DB ----------- //
+            // ------------------------------------------------------------ //
+                if (debts.length == 0) {
+                    res.send('apellido inexistentes')
+            // ------------------------------------------------------------ //
+            // ----------- si encuentra algun apellido en DB -------------- //
+            // ------------------------------------------------------------ //
+                } else {
+                    res.render('deudas/showDebt', { debts })
                 }
             }
         }
