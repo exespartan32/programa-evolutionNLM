@@ -1,0 +1,35 @@
+<div class="row border">
+  {{#each cursos}}
+  <div class="py-2 col-3 mx-auto ">
+    <div class="rounded-3 shadow bg-success">
+      <div class="modal-body p-4 text-center ">
+        <h5 class="mb-0 text-white">
+          <strong>{{nombreCurso}}</strong>
+        </h5>
+      </div>
+      <div class="modal-footer ">
+        <div class="flex-nowrap p-2 mx-auto text-center">
+          <form action="/course/saveUpCourse/{{_id}}?_method=put" method="POST">
+            <div class="p-2 mx-auto text-center d-grid gap-2">
+              <input type="hidden" name="_method" value="put">
+              <button type="submit" class="btn btn-secondary btn-lg">
+                <img src="/img/icon/data-recovery 2.png" alt="" height="40"> Restaurar
+                <img src="/img/icon/file.png" alt="" height="40">
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  {{else}}
+  <div class="card text-white bg-danger mb-3 mx-auto" style="max-width: 18rem;">
+    <div class="card-header">error!</div>
+    <div class="card-body">
+      <h5 class="card-title">No hay datos que mostrar</h5>
+      <a href="/course/addCourse" class="btn btn-success btn-block">ingresar datos</a>
+    </div>
+  </div>
+  {{/each}}
+</div>

@@ -1,0 +1,36 @@
+<div class="row ">
+{{#each errors}}
+<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+    <img src="/img/icon/warning.png" alt="" height="40">
+    {{text}}
+    <img src="/img/icon/warning.png" alt="" height="40">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/each}}
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo">
+    <div class="wrapper wrapper--w960">
+        <div class="card card-2">
+            <div class="card-heading"></div>
+            <div class="card-body">
+                <h2 class="title">Editar Curso</h2>
+                <form action="/course/saveEditCourse/{{dataCurso.id}}?_method=put" method="post">
+                    <input type="hidden" name="_method" value="put">
+                    <!-- impot nombre curso -->
+                    <div class="mb-4">
+                        <label for="nombreCurso" class="form-label text-color">Nombre del Curso</label>
+                        <input type="text" class="form-control" id="nombreCurso" name="nombreCurso"
+                            placeholder="ingresar nombre del alumno" value="{{dataCurso.nombreCurso}}">
+                    </div>
+
+                    <!-- boton de enviar datos -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary"><img src="/img/icon/save.png" alt="" height="27">
+                            Guardar Datos</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>

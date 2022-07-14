@@ -32,17 +32,10 @@ debtControllers.saveDebt = async (req, res) => {
             deuda
         })
     } else {
-        const newPay = new Deudas({ nombreAlumno, apellidoAlumno, deuda })
+        const newPay = new Deudas({ nombreAlumno, apellidoAlumno, deuda})
         await newPay.save()
-
-        /*const message = [];
-        if (nombreAlumno && apellidoAlumno && deuda) {
-            message.push({ text: 'datos correctos' })
-        }*/
-
         req.flash('success_msg', 'deuda agregada correctamente');
         res.redirect('/debt/enterDebt')
-        //res.render('deudas/addDebt', { message })
     }
 }
 
@@ -57,11 +50,13 @@ debtControllers.renderListEdit = async (req, res) => {
 debtControllers.reciveEdit = async (req, res) => {
     const id = req.params.id
     const deuda = await Deudas.findById(id)
+    console.log(deuda)
     res.render('deudas/editDebt', { deuda })
 }
 
 debtControllers.saveEdit = async (req, res) => {
-    //console.log(req.body)
+    console.log(req.body) 
+    res.send('ok')
     const { nombreAlumno, apellidoAlumno, deuda } = req.body
     await Deudas.findByIdAndUpdate(req.params.id, { nombreAlumno, apellidoAlumno, deuda })
 

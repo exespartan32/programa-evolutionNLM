@@ -1,0 +1,39 @@
+{{#each errors}}
+<br>
+<div class="text-white bg-danger mb-3 mx-auto text-center" style="max-width: 18rem;">
+    <div class="card-header">error!</div>
+    <div class="card-body">
+        <img src="/img/icon/warning.png" alt="" height="40">
+        {{text}}
+        <img src="/img/icon/warning.png" alt="" height="40">
+        <a href="/course/addCourse" class="btn btn-success btn-block ">ingresar datos</a>
+    </div>
+</div>
+{{/each}}
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo">
+    <div class="wrapper wrapper--w960">
+        <div class="card card-2">
+            <div class="card-heading"></div>
+            <div class="card-body">
+                <h2 class="title">seleccionar curso</h2>
+                {{#each cursos}}
+                <form action="/course/saveDeleteCourse/{{_id}}?_method=get" method="post">
+                    <input type="hidden" name="_method" value="get">
+                    <div class="list-group mx-0 w-auto">
+                        <label class="list-group-item d-flex gap-2">
+                            <input class="form-check-input flex-shrink-0" type="radio" name="nombreCurso"
+                                id="nombreCurso" value="{{nombreCurso}}">
+                            <span>{{nombreCurso}}</span>
+                        </label>
+                    </div>
+                    {{/each}}
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary"><img src="/img/icon/save.png" alt="" height="27">
+                            Guardar
+                            Datos</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

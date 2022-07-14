@@ -1,14 +1,8 @@
 {{#each errors}}
 <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+    <img src="/img/icon/warning.png" alt="" height="40">
     {{text}}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{{/each}}
-
-{{#each message}}
-<div class="alert alert-success alert-dismissible fade show text-center" role="alert">
-    <strong>{{text}}!</strong>
-    los datos se guardaron correctamente
+    <img src="/img/icon/warning.png" alt="" height="40">
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {{/each}}
@@ -44,7 +38,7 @@
 
             <!-- boton de enviar datos -->
             <div class="d-grid">
-                <button type="submit" class="btn btn-primary">Guardar Datos</button>
+                <button type="submit" class="btn btn-primary"><img src="/img/icon/save.png" alt="" height="27"> Guardar Datos</button>
             </div>
         </form>
     </secrion>
