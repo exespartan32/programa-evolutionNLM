@@ -6,6 +6,14 @@ const precioCursoSchema = new Schema({
         type: String,
         required: true
     },
+    precioMes: {
+        type: Number,
+        required: true
+    },
+    nombreCurso:{
+        type: String,
+        required: true
+    },
     fechaCreacion: {
         type: Date,
     },

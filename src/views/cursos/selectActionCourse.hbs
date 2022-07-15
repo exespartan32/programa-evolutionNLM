@@ -1,3 +1,15 @@
+{{#each errors}}
+<br>
+<div class="text-white bg-danger mb-3 mx-auto text-center" style="max-width: 18rem;">
+  <div class="card-header">error!</div>
+  <div class="card-body">
+    <img src="/img/icon/warning.png" alt="" height="40">
+    {{text}}
+    <img src="/img/icon/warning.png" alt="" height="40">
+    <a href="/course/addCourse" class="btn btn-success btn-block ">ingresar datos</a>
+  </div>
+</div>
+{{else}}
 <div class="row border">
   {{#each cursos}}
   <div class="py-2 col-3 mx-auto ">
@@ -5,7 +17,7 @@
       <div class="modal-body p-4 text-center ">
         <h5 class="mb-0 text-white">
           <strong>{{nombreCurso}}</strong>
-          </h5>
+        </h5>
       </div>
       <div class="modal-footer flex-nowrap p-2">
         <form action="/course/editCourse/{{_id}}?_method=GET" method="POST">
@@ -23,13 +35,6 @@
       </div>
     </div>
   </div>
-  {{else}}
-  <div class="card text-white bg-danger mb-3 mx-auto" style="max-width: 18rem;">
-    <div class="card-header">error!</div>
-    <div class="card-body">
-      <h5 class="card-title">No hay datos que mostrar</h5>
-      <a href="/course/addCourse" class="btn btn-success btn-block">ingresar datos</a>
-    </div>
-  </div>
   {{/each}}
 </div>
+{{/each}}
