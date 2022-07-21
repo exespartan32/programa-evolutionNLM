@@ -27,4 +27,4 @@ const precioCursoSchema = new Schema({
     }
 })
 
-module.exports = model('precioMes', precioCursoSchema)
+module.exports = model('precio_mes', precioCursoSchema)

@@ -1,0 +1,43 @@
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo">
+    <div class="wrapper wrapper--w960">
+        <div class="card card-2">
+            <div class="card-heading"></div>
+            <div class="card-body">
+                {{#if dataPrice}}
+                <h2 class="title">Editar Curso de {{dataPrice.nombreCurso}}</h2>
+                <form action="/course/saveEditPriceCourse/{{dataPrice._id}}?_method=put" method="post">
+                    <input type="hidden" name="_method" value="put">
+
+                    <input type="hidden" name="nombreCurso" id="nombreCurso" value="{{dataPrice.nombreCurso}}">
+                    <!-- imput de mes a pagar -->
+                    <div class="mx-5">
+                        <label for="mes" class="form-label mx-4">Mes</label>
+                        <br>
+                        <input type="month" name="mes" id="mes" step="1" min="2022-01" max="2023-12"
+                            value="{{dataPrice.mes}}" class="imput-month">
+                        <br><br>
+                    </div>
+
+                    <!-- impot pago de alumno -->
+                    <label for="precioMes" class="form-label">precio del mes</label>
+                    <div class="input-group mb-4">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control imput" aria-label="Amount (to the nearest dollar)"
+                            id="precioMes" name="precioMes" value="{{dataPrice.precioMes}}"
+                            placeholder="ingresar precio del mes">
+                    </div>
+
+                    <!-- boton de enviar datos -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Guardar Datos</button>
+                    </div>
+                </form>
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>

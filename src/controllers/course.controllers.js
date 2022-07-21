@@ -131,6 +131,7 @@ courseControllers.renderShowCourse = async (req, res) => {
     const cursos = await course.find({
         fechaEliminacion: { $eq: null }
     }).sort({ date: 'desc' });
+    const errors = [];
     if (cursos.length == 0) {
         errors.push({ text: 'no hay datos para mostrar' })
         res.render('cursos/showCourse', { errors })

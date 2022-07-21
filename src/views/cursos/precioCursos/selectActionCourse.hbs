@@ -10,28 +10,37 @@
   </div>
 </div>
 {{else}}
-<div class="row">
-  {{#each cursos}}
+<div class="row text-center">
+  <h1 class="title text-secundary">Precios del curso de {{nameCourse}}</h1>
+  {{#each priceCourse}}
   <div class="py-2 col-3 mx-auto ">
     <div class="rounded-3 shadow bg-success">
       <div class="modal-body p-4 text-center ">
         <h5 class="mb-0 text-white">
-          <strong>{{nombreCurso}}</strong>
+          <strong>Mes: {{mes}}</strong>
+          <br>
+          <strong>precio del Mes: {{precioMes}}</strong>
         </h5>
+        
       </div>
       <div class="modal-footer flex-nowrap p-2">
-        <form action="/course/editCourse/{{_id}}?_method=GET" method="POST">
+        <form action="/course/editPriceCourse/{{_id}}?_method=GET" method="POST">
           <input type="hidden" name="_method" value="GET">
+          <input type="hidden" name="curso" id="curso" value="{{nameCourse}}">
           <button type="submit" class="btn btn-outline-info">
             Editar<img src="/img/icon/edit.png" alt="" height="40">
           </button>
         </form>
+        <!--
+
         <form action="/course/saveDeleteCourse/{{_id}}?_method=put" method="post">
           <input type="hidden" name="_method" value="put">
+          <input type="hidden" name="curso" id="curso" value="{{nameCourse}}">
           <button class="btn  btn-outline-danger   " type="submit">
             Eliminar<img src="/img/icon/trash.png" alt="" height="40">
           </button>
         </form>
+        -->
       </div>
     </div>
   </div>
