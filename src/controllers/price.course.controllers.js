@@ -59,18 +59,14 @@ priceCourseControllers.savePriceMonth = async (req, res) => {
             const mesPC = saveCourse.mes
             const precioPC = saveCourse.precioMes
 
-
             const PrecioMes = {}
             PrecioMes._id = idPC;
             PrecioMes.mes = mesPC
             PrecioMes.precioMes = precioMes
-            //console.log(PrecioMes)
 
             const addMonthCourse = await course.update(
                 { nombreCurso: nombreCurso }, { $push: { valorMesCurso: PrecioMes } },
             )
-            //console.log(addMonthCourse)
-
             req.flash('success_msg', 'precio agregado correctamente');
             res.redirect('/course/selectCourse')
         }
@@ -89,7 +85,6 @@ priceCourseControllers.renderSelectCourseAction = async (req, res) => {
         errors.push({ text: 'no hay datos para mostrar' })
         res.render('cursos/precioCursos/selectCourse', { errors })
     }
-    //console.log(courseAction)
     res.render('cursos/precioCursos/SelectCourse', { courseAction })
 }
 
@@ -98,11 +93,8 @@ priceCourseControllers.renderSelectAction = async (req, res) => {
     const data = await course.findById(id);
     const dataPC = data.valorMesCurso
     res.render('cursos/precioCursos/selectActionCourse', {
-        //idPC,
-        //mesPC,
         dataPC,
     })
-    //res.send('ok')
 }
 
 // --------------------------------------------------------------- //
@@ -111,14 +103,12 @@ priceCourseControllers.renderSelectAction = async (req, res) => {
 priceCourseControllers.renderEditPrice = async (req, res) => {
     const id = req.params.id
     const dataPrice = await priceCourse.findById(id);
-    //console.log(dataPrice)
     res.render('cursos/precioCursos/editPriceCourse', { dataPrice })
 }
 
 priceCourseControllers.saveEditCourse = async (req, res) => {
     const id = req.params.id
     const { mes, precioMes, nombreCurso } = req.body
-
 
     const updatePC = await priceCourse.findByIdAndUpdate(id, {
         $set: {
@@ -137,8 +127,6 @@ priceCourseControllers.saveEditCourse = async (req, res) => {
     var mesDB = ''
     var precioDB = ''
     for (var i = 0; i < meses.length; i++) {
-        //console.log(meses[i])
-        //console.log("id del elemento "+ [i] +" es: "+meses[i]._id)
 
         const iditem = meses[i]._id
         const mesItem = meses[i].mes
@@ -150,18 +138,6 @@ priceCourseControllers.saveEditCourse = async (req, res) => {
             precioDB = precioitem
         }
     }
-
-    console.log(idMesDB)
-    console.log(mesDB)
-    console.log(precioDB)
-
-
-
-
-
-
-
-
 
     if (!idMesDB) {
         req.flash('error_msg', '!!error¡¡ hay una incongruencia de datos en la base de datos, por favor contacte con el administrador del sistema');
@@ -184,7 +160,7 @@ priceCourseControllers.saveEditCourse = async (req, res) => {
         };
     
         const result = await course.findOneAndUpdate(query, updateDocument, options);
-        console.log(result)
+        //console.log(result)
 
         if(!result){
             res.send('error no se pudo actualizar la tabla cursos')
