@@ -1,0 +1,80 @@
+{{#each errors}}
+<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+    <img src="/img/icon/warning.png" alt="" height="40">
+    {{text}}
+    <img src="/img/icon/warning.png" alt="" height="40">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/each}}
+
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
+    <div class="wrapper wrapper--w960">
+        <div class="card card-2">
+            <div class="card-heading"></div>
+            <div class="card-body">
+                <h2 class="title">Agregar nuevo Alumno</h2>
+
+                <form action="/alumn/saveAlumn" method="post">
+                    <div id="current_date"></div>
+
+                    <!-- impot nombre alumno -->
+                    <div class="mb-4">
+                        <label for="nombreAlumno" class="form-label text-color">Nombre del Alumno</label>
+                        <input type="text" class="form-control" id="nombreAlumno" name="nombreAlumno"
+                            placeholder="ingresar nombre del alumno">
+                    </div>
+
+                    <!-- impot apellido alumno -->
+                    <div class="mb-4">
+                        <label for="apellidoAlumno" class="form-label text-color">Apellido del Alumno</label>
+                        <input type="text" class="form-control" id="apellidoAlumno" name="apellidoAlumno"
+                            placeholder="ingresar nombre del alumno">
+                    </div>
+
+                    <!-- impot DNI alumno -->
+                    <div class="mb-4">
+                        <label for="dniAlumno" class="form-label text-color">DNI del Alumno</label>
+                        <input type="number" class="form-control" id="dniAlumno" name="dniAlumno"
+                            placeholder="ingresar nombre del alumno">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-color">seleccione el curso al cual se agregara el alumno</label>
+
+                        <table class="table table-dark table-hover">
+                            {{#each dataCourseAA}}
+                            <tbody>
+                                <td class="table-info">
+                                    <input type="checkbox" name="cursos" id="cursos" value={{nombreCurso}}>
+                                </td>
+                                <td class="table-info">{{nombreCurso}}</td>
+                            </tbody>
+                            {{/each}}
+                        </table>
+                        {{!--
+                        {{#if dataCourseAA}}
+                        <select id="nombreCurso" name="nombreCurso" class="form-select">
+                            {{#each dataCourseAA}}
+                            <option value={{nombreCurso}}>{{nombreCurso}}</option>
+                            {{/each}}
+                        </select>
+                        {{/if}}
+                        --}}
+
+                    </div>
+
+
+
+                    <br>
+                    <!-- boton de enviar datos -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary"><img src="/img/icon/save.png" alt="" height="27">
+                            Guardar
+                            Datos</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

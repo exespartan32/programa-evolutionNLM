@@ -40,6 +40,20 @@
                                 <td class="table-info">{{nombreCurso}}</td>
                             </tr>
                             {{/each}}
+
+                            {{#each selectCoursePCUp}}
+                            <tr>
+                                <td class="table-info">
+                                    <form action="/course/altPriceCourse/{{_id}}?_method=get" method="post">
+                                        <input type="hidden" name="_method" value="get">
+                                        <button class="btn btn-outline-info" type="submit">
+                                            <img src="/img/icon/tick.png" alt="" height="40">
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="table-info">{{nombreCurso}}</td>
+                            </tr>
+                            {{/each}}
                         </tbody>
                     </table>
                 </div>

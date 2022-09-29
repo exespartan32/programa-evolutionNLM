@@ -24,7 +24,7 @@ const precioCursoSchema = new Schema({
     fechaEliminacion: {
         type: Date,
         default: null
-    }
+    },
 })
 
 module.exports = model('precio_mes', precioCursoSchema)

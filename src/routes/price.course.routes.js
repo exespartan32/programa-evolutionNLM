@@ -8,7 +8,11 @@ const {
     renderSelectCourseAction,
     renderSelectAction,
     renderEditPrice,
-    saveEditCourse
+    saveEditCourse,
+    deleteCourse,
+    renderAltCourse,
+    saveUpPriceMonth,
+    selectPriceCourseUp
 } = require('../controllers/price.course.controllers');
 
 router.get('/course/selectCourse', renderShowCourse);
@@ -20,6 +24,12 @@ router.get('/course/selectAction/:id', renderSelectAction)
 
 router.get('/course/editPriceCourse/:id', renderEditPrice)
 router.put('/course/saveEditPriceCourse/:id', saveEditCourse)
+
+router.get('/course/deletePriceCourse/:id', deleteCourse)
+
+router.get('/course/selectPriceCourseUp', selectPriceCourseUp)
+router.get('/course/altPriceCourse/:id', renderAltCourse)
+router.put('/course/saveUpPriceCourse/:id', saveUpPriceMonth)
 
 
 module.exports = router;

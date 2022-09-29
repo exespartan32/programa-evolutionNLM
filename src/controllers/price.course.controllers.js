@@ -33,15 +33,13 @@ priceCourseControllers.savePriceMonth = async (req, res) => {
     // comprobamos si se reciben campos vacios
     if (!mes || !precioMes) {
         req.flash('error_msg', 'no deben de haber campos vacios');
-        errors.push("")
-    }
-    // si hay campos vacios se redirecciona a /course/selectCourse
-    if (errors.length > 0) {
         res.redirect('/course/selectCourse')
-
-        // si no hay campos vacios 
-    } else {
-        const costCourse = new priceCourse({ mes: mes, precioMes: precioMes, nombreCurso: nombreCurso, fechaCreacion: new Date() })
+    }else{
+        const costCourse = new priceCourse({
+            mes: mes, precioMes: precioMes,
+            nombreCurso: nombreCurso,
+            fechaCreacion: new Date()
+        })
 
         // comprobamos que no exista el valor de ese mes en la DB
         const courseAction = await priceCourse.find({
@@ -56,13 +54,8 @@ priceCourseControllers.savePriceMonth = async (req, res) => {
         } else {
             const saveCourse = await costCourse.save()
             const idPC = saveCourse._id
-            const mesPC = saveCourse.mes
-            const precioPC = saveCourse.precioMes
-
             const PrecioMes = {}
             PrecioMes._id = idPC;
-            PrecioMes.mes = mesPC
-            PrecioMes.precioMes = precioMes
 
             const addMonthCourse = await course.update(
                 { nombreCurso: nombreCurso }, { $push: { valorMesCurso: PrecioMes } },
@@ -90,8 +83,14 @@ priceCourseControllers.renderSelectCourseAction = async (req, res) => {
 
 priceCourseControllers.renderSelectAction = async (req, res) => {
     const id = req.params.id
-    const data = await course.findById(id);
-    const dataPC = data.valorMesCurso
+    const data = await course.findById(id)
+    const nameCourse = data.nombreCurso
+
+    const dataPC = await priceCourse.find({
+        nombreCurso: nameCourse,
+        fechaEliminacion: { $eq: null }
+    })
+
     res.render('cursos/precioCursos/selectActionCourse', {
         dataPC,
     })
@@ -103,6 +102,8 @@ priceCourseControllers.renderSelectAction = async (req, res) => {
 priceCourseControllers.renderEditPrice = async (req, res) => {
     const id = req.params.id
     const dataPrice = await priceCourse.findById(id);
+    console.log(dataPrice)
+    //res.send('respuesta de edit')
     res.render('cursos/precioCursos/editPriceCourse', { dataPrice })
 }
 
@@ -117,180 +118,78 @@ priceCourseControllers.saveEditCourse = async (req, res) => {
         }
     })
 
-    const busqueda = await course.find({
-        nombreCurso: nombreCurso
-    })
-
-    const meses = busqueda[0].valorMesCurso
-
-    var idMesDB = ''
-    var mesDB = ''
-    var precioDB = ''
-    for (var i = 0; i < meses.length; i++) {
-
-        const iditem = meses[i]._id
-        const mesItem = meses[i].mes
-        const precioitem = meses[i].precioMes
-
-        if (iditem == id) {
-            idMesDB = iditem
-            mesDB = mesItem
-            precioDB = precioitem
-        }
-    }
-
-    if (!idMesDB) {
-        req.flash('error_msg', '!!error¡¡ hay una incongruencia de datos en la base de datos, por favor contacte con el administrador del sistema');
+    if (!updatePC) {
+        req.flash('error_msg', 'error no se pudo actualizar la tabla cursos')
         res.redirect('/course/selectCoursePriceAction')
     } else {
-        
-        const query = { nombreCurso: nombreCurso };
-        const updateDocument = {
-          $set: { 
-            "valorMesCurso.$[item].mes": mes,
-            "valorMesCurso.$[item].precioMes": precioMes
-        } 
-        };
-        const options = {
-          arrayFilters: [
-            {
-                "item.mes": mesDB,
-            },
-          ]
-        };
-    
-        const result = await course.findOneAndUpdate(query, updateDocument, options);
-        //console.log(result)
-
-        if(!result){
-            res.send('error no se pudo actualizar la tabla cursos')
-        }else{
-            req.flash('success_msg', 'precio del curso de' + nombreCurso + 'editado correctamente');
-            res.redirect('/course/selectCoursePriceAction')
-        }
-
-/* 
-        const updateTableCurse = course.findOneAndUpdate(
-            { nombreCurso: nombreCurso },
-            {
-                "$set": {
-                    "valorMesCurso.$[elem].mes": mes,
-                    "valorMesCurso.$[elem].precioMes": precioMes,
-                }
-            },
-            {
-                arrayFilters: [{
-                    "elem.mes": mesDB,
-                }]
-            },
-            {new: true},
-        )
-
-        console.log(updateTableCurse)
-
- */
+        req.flash('success_msg', 'precio del curso de' + nombreCurso + 'editado correctamente')
+        res.redirect('/course/selectCoursePriceAction')
     }
-
-
-
-    /*
-        const query = { nombreCurso: "manicura" };
-        const updateDocument = {
-          $set: { 
-            "valorMesCurso.$[item1].mes.$": "mes",
-        } 
-        };
-        const options = {
-          arrayFilters: [
-            {
-                "item1._id": "6310f3d679cf3e0b8837620f",
-            },
-          ]
-        };
-    
-        const result = await course.updateOne(query, updateDocument, options);
-    
-        console.log(result)
-    
-    
-        db.cursos.updateMany(
-            { nombreCurso: "manicura" },
-            { $set: { 
-                "valorMesCurso.$[elem].mes" : "2022-03",
-                "valorMesCurso.$[elem].precioMes" : 2000,
-            } },
-            { arrayFilters: [ { "elem.mes":  "2022-04"  } ] }
-         )
-    
-        
-        const updatePCCur = await course.updateOne(
-            { nombreCurso: nombreCurso }, 
-            {$set:{ 'ValorMesCurso.$': mes }}
-        )
-        
-        
-        console.log(updatePCCur)
-        res.send('ok')
-    
-        req.flash('success_msg', 'precio del curso de' + nombreCurso + 'editado correctamente');
-        res.redirect('/course/selectCoursePriceAction')
-    
-     
-        ObjectId("62d91250f25a422504676a9a")
-     
-        const prueba = course.update(
-            { "nombreCurso": { $eq: nombreCurso } },
-            {
-                $set: {
-                    "valorMesCurso.$[value].precioMes": new Date(),
-                    //"valorMesCurso.$[value].mes": mes,
-                    //"valorMesCurso.$[value].precioMes": precioMes,
-                }
-            },
-            { arrayFilters: [{ "value._id": { $eq: id } }] }
-        )
-     
-     
-        req.flash('success_msg', 'precio del curso de' + nombreCurso + 'editado correctamente');
-        res.redirect('/course/selectCoursePriceAction')
-     
-         
-        await priceCourse.findByIdAndUpdate(id, {
-            mes,
-            precioMes,
-            fechaModificacion: new Date()
-        })
-        const dataPriceCourse = await priceCourse.findById(id);
-       
-     
-        const data = course.update({ 'valorMesCurso._id': id }, {
-            '$set': {
-                'valorMesCurso.$.fechaModificacion': new Date(),
-                'valorMesCurso.$.precioMes': precioMes,
-                'valorMesCurso.$.mes': mes
-            }
-        })
-        
-        
-        const data = await course.updateOne(
-            { "nombreCurso": nombreCurso, "valorMesCurso._id": id },
-            {
-                $set: {
-                    "valorMesCurso.$.fechaModificacion": new Date(),
-                    "valorMesCurso.$.mes": mes,
-                    "valorMesCurso.$.precioMes": precioMes,
-                }
-            }
-        )
-        */
-
-
-    //req.flash('success_msg', 'precio del curso de' + nombreCurso + 'editado correctamente');
-    //res.redirect('/course/selectCoursePriceAction')
 }
 
-priceCourseControllers.deleteCourse = async (req, res) => { }
+// --------------------------------------------------------------- //
+// ··················· dar de baja a precio ······················ //
+// --------------------------------------------------------------- //
+priceCourseControllers.deleteCourse = async (req, res) => {
+    const id = req.params.id
+    const deletePC = await priceCourse.findByIdAndUpdate(id, {
+        fechaEliminacion: new Date()
+    })
 
+    if (!deletePC) {
+        req.flash('error_msg', 'error no se pudo eliminar el curso')
+        res.redirect('/course/selectCoursePriceAction')
+    } else {
+        req.flash('success_msg', 'precio del curso ha sido eliminado correctamente');
+        res.redirect('/course/selectCoursePriceAction')
+    }
+}
+
+// --------------------------------------------------------------- //
+// ··················· dar de alta a precio ······················ //
+// --------------------------------------------------------------- //
+priceCourseControllers.selectPriceCourseUp = async (req, res) => {
+    const selectCoursePCUp = await course.find({
+        fechaEliminacion: { $eq: null }
+    }).sort({ date: 'desc' });
+    const errors = []
+    if (selectCoursePCUp.length == 0) {
+        errors.push({ text: 'no hay datos para mostrar' })
+        res.render('cursos/precioCursos/selectCourse', { errors })
+    }
+    console.log(selectCoursePCUp)
+    res.render('cursos/precioCursos/selectCourse', { selectCoursePCUp })
+}
+
+priceCourseControllers.renderAltCourse = async (req, res) => {
+    const id = req.params.id
+    const data = await course.findById(id)
+    const nameCourse = data.nombreCurso
+
+    const dataPC = await priceCourse.find({
+        nombreCurso: nameCourse,
+        fechaEliminacion: { $ne: null }
+    })
+    const errors = []
+    if (dataPC.length == 0) {
+        errors.push({ text: 'no hay cursos borrados que mostrar' })
+        res.render('cursos/precioCursos/SelectUpPriceCourse', { errors })
+    } else {
+        res.render('cursos/precioCursos/SelectUpPriceCourse', { dataPC })
+    }
+}
+
+priceCourseControllers.saveUpPriceMonth = async (req, res) => {
+    const id = req.params.id
+    //console.log(id)
+    //res.send('ok')
+    const dataUpPC = await priceCourse.findByIdAndUpdate(id, {
+        fechaEliminacion: null
+    })
+
+    req.flash('success_msg', 'precio del curso ha sido restaurado correctamente');
+    res.redirect('/course/selectPriceCourseUp')
+}
 
 
 module.exports = priceCourseControllers;

@@ -25,7 +25,7 @@ const alumnosSchema = new Schema({
         type: Date,
         default: null
     },
-    curso:[]
+    cursos:[]
 })
 
 module.exports = model('alumnos', alumnosSchema)

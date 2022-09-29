@@ -1,0 +1,48 @@
+{{#each errors}}
+<br>
+<div class="text-white bg-danger mb-3 mx-auto text-center" style="max-width: 18rem;">
+  <div class="card-header">error!</div>
+  <div class="card-body">
+    <img src="/img/icon/warning.png" alt="" height="40">
+    {{text}}
+    <img src="/img/icon/warning.png" alt="" height="40">
+    <a href="" class="btn btn-success btn-block ">ingresar datos</a>
+  </div>
+</div>
+{{else}}
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo">
+    <div class="wrapper wrapper--w960">
+        <div class="card card-2">
+            <div class="card-heading"></div>
+            <div class="card-body">
+                <h2 class="title">seleccionar el curso para Alumnos</h2>
+                <div class="table-responsive-md text-center">
+                    <br>
+                    <table class="table table-dark table-hover">
+                        <tr>
+                            <th>Seleccionar</th>
+                            <th>Nombre del curso</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tabla">
+                            {{#each dataCourseAA}}
+                            <tr>
+                                <td class="table-info">
+                                    <form action="/alumn/addAlumn/{{_id}}?_method=get" method="post">
+                                        <input type="hidden" name="_method" value="get">
+                                        <button class="btn btn-outline-info" type="submit">
+                                            <img src="/img/icon/tick.png" alt="" height="40">
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="table-info">{{nombreCurso}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{/each}}
