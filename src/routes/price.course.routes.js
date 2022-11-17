@@ -17,7 +17,7 @@ const {
 
 router.get('/course/selectCourse', renderShowCourse);
 router.get('/course/addPriceMonth/:id', renderPriceMonth);
-router.post('/course/savePriceMonth', savePriceMonth);
+router.post('/course/savePriceMonth/:id', savePriceMonth);
 
 router.get('/course/selectCoursePriceAction', renderSelectCourseAction);
 router.get('/course/selectAction/:id', renderSelectAction)

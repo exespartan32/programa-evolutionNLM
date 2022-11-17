@@ -17,7 +17,8 @@ const session = require('express-session')
 //······························· Initiliazations ······································//
 //--------------------------------------------------------------------------------------//
 const app = express();
-
+//process.env.TZ = "America/Argentina/Mendoza";
+//console.log(new Date().toString());
 
 //--------------------------------------------------------------------------------------//
 //··································· setting ··········································//
@@ -75,8 +76,8 @@ app.use((req, res, next) => {
 //home 
 app.use(require('./routes/index.routes'));
 app.use(require('./routes/course.routes'));
-app.use(require('./routes/debt.routes'));
-app.use(require('./routes/users.routes'));
+//app.use(require('./routes/debt.routes'));
+//app.use(require('./routes/users.routes'));
 app.use(require('./routes/price.course.routes'));
 app.use(require('./routes/alumn.routes'))
 

@@ -3,21 +3,25 @@
         <div class="card card-2">
             <div class="card-heading"></div>
             <div class="card-body">
-                <form action="/course/savePriceMonth" method="post">
-                    {{#if dataCurso}}
-                    <input type="hidden" name="nombreCurso" id="nombreCurso" value="{{dataCurso.nombreCurso}}">
-                    {{/if}}
-
-                    <!-- imput de mes a pagar -->
-                    <div class="mx-5">
-                        <label for="mes" class="form-label mx-4">Mes</label>
-                        <br>
-                        <input type="month" name="mes" id="mes" step="1" min="2022-01" max="2023-12" value=""
-                            class="imput-month">
-                        <br><br>
+                <form action="/course/savePriceMonth/{{dataCurso._id}}" method="post">
+                    <h1 class="title text-center">{{dataCurso.nombre}}</h1>
+                    <!-- imput de mes a agregar precio -->
+                    <div class="input-group mb-4">
+                        <label class="input-group-text" for="mes">Mes a agregar precio</label>
+                        <input type="month" id="mes" name="mes" 
+                        min="{{dateInit}}"
+                        max="{{dateEnd}}" class="form-control imput-month" name="trip-start">
                     </div>
 
-                    <!-- impot pago de alumno -->
+                        <h2>{{dateInit}}</h2>
+                        <h2>{{dateEnd}}</h2>
+{{!--                     <h1>data del curso: {{dataCurso}}</h1>
+                    <h1>duracion: {{dataCurso.duracion}}</h1>
+                    <h1>fecha de inicio: {{dataCurso.fechaInicioCurso}}</h1>
+                    <h1>fecha de fin: {{dataCurso.fechaFinCurso}}</h1>
+                    <h1>fecha de creacion: {{dataCurso.fechaCreacion}}</h1> --}}
+
+                    <!-- imput precio del mes seleccionado -->
                     <label for="precioMes" class="form-label">precio del mes</label>
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">
@@ -26,6 +30,8 @@
                         <input type="number" class="form-control imput" aria-label="Amount (to the nearest dollar)"
                             id="precioMes" name="precioMes" placeholder="ingresar pago de alumno">
                     </div>
+
+
 
                     <!-- boton de enviar datos -->
                     <div class="d-grid">

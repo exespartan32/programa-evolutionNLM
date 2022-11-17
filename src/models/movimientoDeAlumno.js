@@ -1,13 +1,18 @@
 const moongose = require('mongoose');
 const { Schema, model } = moongose
 
-const cursoSchema = new Schema({
-    nombreCurso: {
-        type: String,
+const alumnosSchema = new Schema({
+    idCurso: [{
+        type: Schema.Types.ObjectId, ref: 'curso',
         required: true
-    },
+    }],
+    idAlumno: [{
+        type: Schema.Types.ObjectId, ref: 'alumno',
+        required: true
+    }],
     fechaCreacion: {
         type: Date,
+        required: true
     },
     fechaModificacion: {
         type: Date,
@@ -17,8 +22,5 @@ const cursoSchema = new Schema({
         type: Date,
         default: null
     },
-    valorMesCurso:[],
-    alumnos:[]
 })
-
-module.exports = model('cursos', cursoSchema)
+module.exports = model('movimientoDeAlumno', alumnosSchema)

@@ -1,21 +1,26 @@
 const moongose = require('mongoose');
 const { Schema, model } = moongose
 
-const alumnosSchema = new Schema({
-    nombreAlumno: {
+const cursoSchema = new Schema({
+    nombre: {
         type: String,
         required: true
     },
-    apellidoAlumno: {
-        type: String,
+    duracion: {
+        type: Number,
         required: true
     },
-    DNI: {
-        type: String,
+    fechaInicioCurso:{
+        type: Date,
         required: true
-    },
+    }, 
+    fechaFinCurso:{
+        type: Date,
+        required: true
+    }, 
     fechaCreacion: {
         type: Date,
+        required: true
     },
     fechaModificacion: {
         type: Date,
@@ -25,7 +30,5 @@ const alumnosSchema = new Schema({
         type: Date,
         default: null
     },
-    cursos:[]
 })
-
-module.exports = model('alumnos', alumnosSchema)
+module.exports = model('curso', cursoSchema)

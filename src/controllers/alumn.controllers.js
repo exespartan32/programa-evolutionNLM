@@ -1,8 +1,8 @@
 const alumnControllers = {};
 const { json } = require('express');
 const { parse } = require('url');
-const alumn = require('../models/Alumnos')
-const course = require('../models/Cursos')
+const alumn = require('../models/alumno')
+const course = require('../models/curso')
 // --------------------------------------------------------------- //
 // ····················· ingresar alumno ························· //
 // --------------------------------------------------------------- //
@@ -16,12 +16,14 @@ alumnControllers.renderaddAlumn = async (req, res) => {
         res.render('/alumn/addAlumn', { errors })
     }
     res.render('alumnos/addAlumn', { dataCourseAA })
+    //res.send('ok')
 }
 
 alumnControllers.saveAlumn = async (req, res) => {
     const { nombreAlumno, apellidoAlumno, dniAlumno, cursos } = req.body
-    //console.log(req.body)
-    if (!nombreAlumno || !apellidoAlumno || !dniAlumno) {
+    console.log(req.body)
+    res.send('ok')
+     if (!nombreAlumno || !apellidoAlumno || !dniAlumno) {
         req.flash('error_msg', 'no deben de haber campos vacios');
         res.redirect('/alumn/addAlumn')
     } else {
@@ -46,12 +48,15 @@ alumnControllers.saveAlumn = async (req, res) => {
             req.flash('success_msg', 'el alumno fue agregado correctamente');
             res.redirect('/alumn/addAlumn')
         }
-    }
+    } /**/
 }
 
 // --------------------------------------------------------------- //
 // ················ render editar - eliminar ····················· //
 // --------------------------------------------------------------- //
+alumnControllers.renderSelect= async (req, res) => {
+    
+}
 
 // --------------------------------------------------------------- //
 // ······················· editar alumno ························· //

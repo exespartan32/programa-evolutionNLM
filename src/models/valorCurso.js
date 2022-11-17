@@ -1,8 +1,8 @@
 const moongose = require('mongoose');
 const { Schema, model } = moongose
 
-const precioCursoSchema = new Schema({
-    mes:{
+const valorCurso = new Schema({
+    mes: {
         type: String,
         required: true
     },
@@ -10,12 +10,13 @@ const precioCursoSchema = new Schema({
         type: Number,
         required: true
     },
-    nombreCurso:{
-        type: String,
+    idCurso: [{
+        type: Schema.Types.ObjectId, ref: 'curso',
         required: true
-    },
+    }],
     fechaCreacion: {
         type: Date,
+        required: true
     },
     fechaModificacion: {
         type: Date,
@@ -26,5 +27,4 @@ const precioCursoSchema = new Schema({
         default: null
     },
 })
-
-module.exports = model('precio_mes', precioCursoSchema)
+module.exports = model('valorMesCurso', valorCurso)

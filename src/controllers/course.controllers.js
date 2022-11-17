@@ -1,7 +1,8 @@
 const courseControllers = {};
 const { json } = require('express');
 const { parse } = require('url');
-const course = require('../models/Cursos')
+const course = require('../models/curso')
+const moment = require('moment-timezone');
 
 // --------------------------------------------------------------- //
 // ····················· ingresar curso ·························· //
@@ -11,33 +12,77 @@ courseControllers.renderaddCourse = (req, res) => {
 }
 
 courseControllers.saveCourse = async (req, res) => {
-    const data = (req.body)
-    var { nombreCurso } = data
-    const errors = [];
-    /**/
-    if (!nombreCurso) {
-        errors.push({ text: 'Por favor escriba el nombre del curso' })
-    }
-    if (errors.length > 0) {
+    //const data = (req.body)
+    var { nombre, duracion, fechaInicioCurso, fechaFinCurso } = req.body
 
-        res.render('cursos/addCourse', {
-            errors,
-            nombreCurso
-        })
+    const dateArginit = moment.tz(fechaInicioCurso, 'America/Argentina/Mendoza')
+    const dateArgEnd = moment.tz(fechaFinCurso, 'America/Argentina/Mendoza')
+    const dateArgCreation = moment.tz(Date(), "America/Argentina/Mendoza");
+
+    console.log(dateArgCreation)
+
+
+    if (!nombre || !duracion || !fechaInicioCurso || !fechaFinCurso) {
+        req.flash('error_msg', 'no debe haber campos vacios');
+        res.redirect('/course/addCourse')
     } else {
-        const data = await course.find({
-            nombreCurso: { $eq: nombreCurso }
+        const dataDB = await course.find({
+            nombre: { $eq: nombre }
         })
-        if(data.length > 0){
+        //console.log(dataDB)
+        if (dataDB.length > 0) {
             req.flash('error_msg', 'ya existe un curso con el mismo nombre');
             res.redirect('/course/addCourse')
-        }else{
-            const newCourse = new course({ nombreCurso, fechaCreacion: new Date() })
-            await newCourse.save()
-            req.flash('success_msg', 'nombre del curso agregado correctamente');
-            res.redirect('/course/addCourse')
+        } else {
+            const newCourse = new course({
+                nombre,
+                duracion: duracion,
+                fechaInicioCurso: dateArginit,
+                fechaFinCurso: dateArgEnd,
+                fechaCreacion: new Date(),
+            })
+            console.log(newCourse)
+            const resDB = await newCourse.save()
+
+            if (resDB.length > 0) {
+                req.flash('success_msg', 'nombre del curso agregado correctamente');
+                res.redirect('/course/addCourse')
+            }else{
+                req.flash('error_msg', 'ha ocurrido un error al guardar en base de datos');
+                res.redirect('/course/addCourse')
+            }
         }
     }
+
+
+    /* 
+        if (!nombre) {
+            errors.push({ text: 'Por favor escriba el nombre del curso' })
+        }
+        if (errors.length > 0) {
+            res.render('cursos/addCourse', {
+                errors,
+                nombre
+            })
+        } else {
+            const data = await course.find({
+                nombre: { $eq: nombre }
+            })
+            console.log(data)
+            if (data.length > 0) {
+                req.flash('error_msg', 'ya existe un curso con el mismo nombre');
+                res.redirect('/course/addCourse')
+            } else {
+                const newCourse = new course({ 
+                    nombre, 
+                    fechaCreacion: new Date(),
+                    duracion: duracion
+                })
+                await newCourse.save()
+                req.flash('success_msg', 'nombre del curso agregado correctamente');
+                res.redirect('/course/addCourse')
+            }
+        } */
 }
 
 // --------------------------------------------------------------- //
@@ -52,8 +97,8 @@ courseControllers.renderSelectAction = async (req, res) => {
         errors.push({ text: 'no hay datos para mostrar' })
         res.render('cursos/selectActionCourse', { errors })
     }
+    console.log(cursos)
     res.render('cursos/selectActionCourse', { cursos })
-
 }
 
 // --------------------------------------------------------------- //
@@ -67,17 +112,30 @@ courseControllers.renderEditCourse = async (req, res) => {
 
 courseControllers.saveEdirCourse = async (req, res) => {
     const id = req.params.id
-    const { nombreCurso } = req.body
+    const { nombre } = req.body
     /*
     console.log(req.body)
     res.send('ok')
     */
-    await course.findByIdAndUpdate(id, {
-        nombreCurso,
-        fechaModificacion: new Date()
+
+    const dataDB = await course.find({
+        nombre: { $eq: nombre }
     })
-    req.flash('success_msg', 'deuda editada correctamente');
-    res.redirect('/course/selectAction')
+
+    /*     console.log(dataDB)
+        res.send('respuesta de edit') */
+
+    if (dataDB.length > 0) {
+        req.flash('error_msg', 'ya existe un curso con el mismo nombre');
+        res.redirect('/course/selectAction')
+    } else {
+        await course.findByIdAndUpdate(id, {
+            nombre,
+            fechaModificacion: new Date()
+        })
+        req.flash('success_msg', 'deuda editada correctamente');
+        res.redirect('/course/selectAction')
+    }
 }
 
 // --------------------------------------------------------------- //
@@ -89,6 +147,7 @@ courseControllers.saveDelete = async (req, res) => {
     console.log(req.body);
     console.log(id)
     */
+
     await course.findByIdAndUpdate(id, {
         fechaEliminacion: new Date()
     })
@@ -112,15 +171,10 @@ courseControllers.renderSelectUp = async (req, res) => {
 }
 courseControllers.saveUpCourse = async (req, res) => {
     const id = req.params.id
-    /*
-    console.log(req.body);
-    console.log(id)
-    res.send('ok')
-    */
     await course.findByIdAndUpdate(id, {
         fechaEliminacion: null
     })
-    req.flash('success_msg', 'deuda eliminada correctamente');
+    req.flash('success_msg', 'deuda restaurada correctamente');
     res.redirect('/course/selectUp')
 }
 
