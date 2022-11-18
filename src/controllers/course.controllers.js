@@ -2,7 +2,6 @@ const courseControllers = {};
 const { json } = require('express');
 const { parse } = require('url');
 const course = require('../models/curso')
-const moment = require('moment-timezone');
 
 // --------------------------------------------------------------- //
 // ····················· ingresar curso ·························· //
@@ -12,7 +11,6 @@ courseControllers.renderaddCourse = (req, res) => {
 }
 
 courseControllers.saveCourse = async (req, res) => {
-    //const data = (req.body)
     var { nombre, duracion, fechaInicioCurso, fechaFinCurso } = req.body
 
     if (!nombre || !duracion || !fechaInicioCurso || !fechaFinCurso) {

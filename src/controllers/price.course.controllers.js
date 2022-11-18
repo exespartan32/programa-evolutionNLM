@@ -1,7 +1,6 @@
 priceCourseControllers = {};
 const course = require('../models/curso');
 const priceCourse = require('../models/valorCurso');
-const moment = require('moment-timezone');
 
 // --------------------------------------------------------------- //
 // ················ ingresar precio del curso ···················· //
@@ -23,17 +22,14 @@ priceCourseControllers.renderShowCourse = async (req, res) => {
 priceCourseControllers.renderPriceMonth = async (req, res) => {
     const id = req.params.id
     const dataCurso = await course.findById(id)
-
     res.render('cursos/precioCursos/addPriceCourse', { dataCurso, })
 }
 
 // guardar valor del mes del curso y actualizar data del curso
 priceCourseControllers.savePriceMonth = async (req, res) => {
     const idCourse = req.params.id
-    //console.log("id del curso "+idCurso)
     const { mes, precioMes } = req.body
     const errors = [];
-
     // comprobamos si se reciben campos vacios
     if (!mes || !precioMes) {
         req.flash('error_msg', 'no deben de haber campos vacios');
@@ -80,12 +76,10 @@ priceCourseControllers.renderSelectCourseAction = async (req, res) => {
 priceCourseControllers.renderSelectAction = async (req, res) => {
     const idCourse = req.params.id
     const dataCourse = await course.findById(idCourse)
-
     const dataPC = await priceCourse.find({
         idCurso: { $eq: idCourse },
         fechaEliminacion: { $eq: null }
     })
-
     res.render('cursos/precioCursos/selectActionCourse', { dataPC, dataCourse })
 }
 
@@ -96,21 +90,17 @@ priceCourseControllers.renderEditPrice = async (req, res) => {
     const id = req.params.id
     const dataPrice = await priceCourse.findById(id);
     const idCourse = dataPrice.idCurso
-
     const dataCourse = await course.findById(idCourse)
     console.log(dataPrice)
-
     res.render('cursos/precioCursos/editPriceCourse', { dataPrice, dataCourse })
 }
 
 priceCourseControllers.saveEditCourse = async (req, res) => {
     const id = req.params.id
     const { mes, precioMes } = req.body
-
     const validateMonth = await priceCourse.find({
         mes: {$eq: mes}
     })
-
     if(validateMonth.length > 0){
         req.flash('error_msg', 'el mes ingresado ya tiene precio')
         res.redirect('/course/selectCoursePriceAction')
@@ -122,7 +112,6 @@ priceCourseControllers.saveEditCourse = async (req, res) => {
                 fechaModificacion: new Date()
             }
         })
-    
         if (!updatePC) {
             req.flash('error_msg', 'error no se pudo actualizar la tabla cursos')
             res.redirect('/course/selectCoursePriceAction')
@@ -186,12 +175,9 @@ priceCourseControllers.renderAltCourse = async (req, res) => {
 
 priceCourseControllers.saveUpPriceMonth = async (req, res) => {
     const id = req.params.id
-    //console.log(id)
-    //res.send('ok')
     const dataUpPC = await priceCourse.findByIdAndUpdate(id, {
         fechaEliminacion: null
     })
-
     req.flash('success_msg', 'precio del curso ha sido restaurado correctamente');
     res.redirect('/course/selectPriceCourseUp')
 }
