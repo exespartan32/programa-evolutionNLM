@@ -69,15 +69,15 @@
     var intYear = parseInt(data[0])
     var intMonth = parseInt(data[1])
     var intDur = parseInt(duration.value)
-    var resultMonth = intMonth + intDur
+    var resultMonth = intMonth + intDur -1
     var valMonth
     var valYear
 
     if (resultMonth < 10) {
-      var StrRes = String(intMonth + intDur)
+      var StrRes = String(resultMonth)
       var valMonth = "0" + StrRes
     } else {
-      var valMonth = String(intMonth + intDur)
+      var valMonth = String(resultMonth)
     }
 
     if (valMonth > 12) {

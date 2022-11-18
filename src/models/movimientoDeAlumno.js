@@ -23,4 +23,4 @@ const alumnosSchema = new Schema({
         default: null
     },
 })
-module.exports = model('movimientoDeAlumno', alumnosSchema)
+module.exports = model('movimiento_De_Alumno', alumnosSchema)

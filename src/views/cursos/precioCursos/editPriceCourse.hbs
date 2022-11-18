@@ -9,16 +9,14 @@
                     <input type="hidden" name="_method" value="put">
 
                     <input type="hidden" name="nombreCurso" id="nombreCurso" value="{{dataPrice.nombreCurso}}">
-                    <!-- imput de mes a pagar -->
-                    <div class="mx-5">
-                        <label for="mes" class="form-label mx-4">Mes</label>
-                        <br>
-                        <input type="month" name="mes" id="mes" step="1" min="2022-01" max="2023-12"
-                            value="{{dataPrice.mes}}" class="imput-month">
-                        <br><br>
+                    <!-- imput de mes a agregar precio -->
+                    <div class="input-group mb-4">
+                        <label class="input-group-text" for="mes">Mes</label>
+                        <input type="month" id="mes" name="mes" min="{{dataCourse.fechaInicioCurso}}"
+                            max="{{dataCourse.fechaFinCurso}}" value="{{dataPrice.mes}}" class="form-control imput-month" name="trip-start">
                     </div>
 
-                    <!-- impot pago de alumno -->
+                    <!-- imput precio del mes seleccionado -->
                     <label for="precioMes" class="form-label">precio del mes</label>
                     <div class="input-group mb-4">
                         <div class="input-group-prepend">

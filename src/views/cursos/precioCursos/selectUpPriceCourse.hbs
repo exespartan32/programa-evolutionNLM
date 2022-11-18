@@ -1,6 +1,6 @@
 {{#each errors}}
 <br>
-<div class="text-white bg-danger mb-3 mx-auto text-center" style="max-width: 18rem;">
+<div class="text-white bg-danger mb-3 mx-auto text-center" style="max-width: 20rem;">
     <div class="card-header">error!</div>
     <div class="card-body">
         <img src="/img/icon/warning.png" alt="" height="40">
@@ -13,8 +13,8 @@
 {{else}}
 
 <div class="row text-center">
-    {{#if dataPC}}
-    <h1 class="title text-secundary">Precios del curso de {{dataPC.[0].nombreCurso}}</h1>
+    {{#if dataCourse}}
+    <h1 class="title text-secundary">Precios del curso de {{dataCourse.nombre}}</h1>
     {{/if}}
     {{#each dataPC}}
     <div class="py-2 col-3 mx-auto ">

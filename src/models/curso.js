@@ -11,11 +11,11 @@ const cursoSchema = new Schema({
         required: true
     },
     fechaInicioCurso:{
-        type: Date,
+        type: String,
         required: true
     }, 
     fechaFinCurso:{
-        type: Date,
+        type: String,
         required: true
     }, 
     fechaCreacion: {

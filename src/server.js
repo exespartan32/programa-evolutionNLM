@@ -17,8 +17,8 @@ const session = require('express-session')
 //······························· Initiliazations ······································//
 //--------------------------------------------------------------------------------------//
 const app = express();
-//process.env.TZ = "America/Argentina/Mendoza";
-//console.log(new Date().toString());
+process.env.TZ = "America/Argentina/Buenos_Aires";
+console.log(new Date().toString());
 
 //--------------------------------------------------------------------------------------//
 //··································· setting ··········································//

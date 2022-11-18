@@ -27,4 +27,4 @@ const valorCurso = new Schema({
         default: null
     },
 })
-module.exports = model('valorMesCurso', valorCurso)
+module.exports = model('valor_Mes_Curso', valorCurso)

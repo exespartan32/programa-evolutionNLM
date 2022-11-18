@@ -27,6 +27,20 @@
                             </tr>
                             {{/each}}
 
+                            {{#each viewPC}}
+                            <tr>
+                                <td class="table-info">
+                                    <form action="/course/showPriceCourse/{{_id}}?_method=get" method="post">
+                                        <input type="hidden" name="_method" value="get">
+                                        <button class="btn btn-outline-info" type="submit">
+                                            <img src="/img/icon/tick.png" alt="" height="40">
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="table-info">{{nombre}}</td>
+                            </tr>
+                            {{/each}}
+
                             {{#each cursos}}
                             <tr>
                                 <td class="table-info">

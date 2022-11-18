@@ -7,7 +7,7 @@ const saldoSchema = new Schema({
         required: true
     }],
     idValorCurso: [{
-        type: Schema.Types.ObjectId, ref: 'valorMesCurso',
+        type: Schema.Types.ObjectId, ref: 'valor_Mes_Curso',
         required: true
     }],
     Debe:{
@@ -32,4 +32,4 @@ const saldoSchema = new Schema({
         default: null
     }
 })
-module.exports = model('movimientoDeCuenta', saldoSchema)
+module.exports = model('movimiento_De_Cuenta', saldoSchema)

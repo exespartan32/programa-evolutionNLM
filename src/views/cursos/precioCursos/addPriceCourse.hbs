@@ -9,17 +9,9 @@
                     <div class="input-group mb-4">
                         <label class="input-group-text" for="mes">Mes a agregar precio</label>
                         <input type="month" id="mes" name="mes" 
-                        min="{{dateInit}}"
-                        max="{{dateEnd}}" class="form-control imput-month" name="trip-start">
+                        min="{{dataCurso.fechaInicioCurso}}"
+                        max="{{dataCurso.fechaFinCurso}}" class="form-control imput-month" name="trip-start">
                     </div>
-
-                        <h2>{{dateInit}}</h2>
-                        <h2>{{dateEnd}}</h2>
-{{!--                     <h1>data del curso: {{dataCurso}}</h1>
-                    <h1>duracion: {{dataCurso.duracion}}</h1>
-                    <h1>fecha de inicio: {{dataCurso.fechaInicioCurso}}</h1>
-                    <h1>fecha de fin: {{dataCurso.fechaFinCurso}}</h1>
-                    <h1>fecha de creacion: {{dataCurso.fechaCreacion}}</h1> --}}
 
                     <!-- imput precio del mes seleccionado -->
                     <label for="precioMes" class="form-label">precio del mes</label>
