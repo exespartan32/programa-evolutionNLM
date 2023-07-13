@@ -21,7 +21,7 @@
                     <div class="input-group mb-4">
                         <label for="nombreAlumno" class="input-group-text">Nombre del Alumno</label>
                         <input type="text" class="form-control" id="nombreAlumno" name="nombreAlumno"
-                            placeholder="ingresar nombre del alumno">
+                            placeholder="ingresar nombre del alumno" value={{variables.dataAlumn.nombre}}>
                     </div>
 
 
@@ -29,27 +29,29 @@
                     <div class="input-group mb-4">
                         <label for="apellidoAlumno" class="input-group-text">Apellido del Alumno</label>
                         <input type="text" class="form-control" id="apellidoAlumno" name="apellidoAlumno"
-                            placeholder="ingresar apellido del alumno">
+                            placeholder="ingresar apellido del alumno" value={{variables.dataAlumn.apellido}}>
                     </div>
 
                     {{!-- impot DNI alumno --}}
                     <div class="input-group mb-4">
                         <label for="dniAlumno" class="input-group-text">DNI del Alumno</label>
-                        <input type="text" class="form-control" id="dniAlumno" name="dniAlumno"
-                            placeholder="ingresar DNI del alumno">
+                        <input type="number" class="form-control" id="dniAlumno" name="dniAlumno"
+                            placeholder="ingresar DNI del alumno" value={{variables.dataAlumn.DNI}}>
                     </div>
 
                     {{!-- seleccion de curso --}}
                     <div class="input-group mb-3">
                         <label class="input-group-text" for="cursos">Curso</label>
-
                         <select class="form-select" id="cursos" name="cursos">
-                            {{!-- <option selected> - </option> --}}
-                            {{#each dataCourseAA}}
-                            <option value={{{nombre}}}>{{{nombre}}}</option>
+                            {{#if variables.dataCourse}}
+                            <option value={{{variables.dataCourse.nombre}}} selected disabled>El curso activo es:
+                                {{{variables.dataCourse.nombre}}}</option>
+                            {{/if}}
+
+                            {{#each variables.courses}}
+                            <option>{{nombre}}</option>
                             {{/each}}
                         </select>
-
                     </div>
 
                     <br>

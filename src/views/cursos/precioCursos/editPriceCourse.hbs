@@ -4,17 +4,18 @@
             <div class="card-heading"></div>
             <div class="card-body">
                 {{#if dataPrice}}
-                <h2 class="title">Editar Curso de {{dataPrice.nombreCurso}}</h2>
+                <h2 class="title">Editar precio de {{dataPrice.mes}} del curso de {{dataCourse.nombre}}</h2>
                 <form action="/course/saveEditPriceCourse/{{dataPrice._id}}?_method=put" method="post">
                     <input type="hidden" name="_method" value="put">
 
-                    <input type="hidden" name="nombreCurso" id="nombreCurso" value="{{dataPrice.nombreCurso}}">
+                    {{!-- 
                     <!-- imput de mes a agregar precio -->
                     <div class="input-group mb-4">
                         <label class="input-group-text" for="mes">Mes</label>
                         <input type="month" id="mes" name="mes" min="{{dataCourse.fechaInicioCurso}}"
                             max="{{dataCourse.fechaFinCurso}}" value="{{dataPrice.mes}}" class="form-control imput-month" name="trip-start">
                     </div>
+                    --}}
 
                     <!-- imput precio del mes seleccionado -->
                     <label for="precioMes" class="form-label">precio del mes</label>

@@ -1,0 +1,51 @@
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo">
+    <div class="wrapper wrapper--w960">
+        <div class="card card-2">
+            <div class="card-heading"></div>
+            <div class="card-body">
+                <form action="/payment/savePayment/{{dataCourse._id}}" method="post">
+                    <h1 class="title text-center">{{dataCourse.nombre}}</h1>
+                    <!-- imput de mes a agregar precio -->
+                    <div class="input-group mb-4">
+                        <label class="input-group-text" for="mes">Mes a agregar precio</label>
+                        <input type="month" id="mes" name="mes" min="{{dataCourse.fechaInicioCurso}}"
+                            max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month" name="trip-start">
+                    </div>
+
+                    <!-- imput pago realizazado por el alumno -->
+                    <div class="input-group mb-4">
+                        <label for="pagoAlumno" class="input-group-text">ingresar pago</label>
+                        <input type="number" class="form-control imput" aria-label="Amount (to the nearest dollar)"
+                            id="pagoAlumno" name="pagoAlumno" placeholder="ingresar precio del mes">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                    </div>
+
+                    <!-- seleccionar alumno que paga -->
+                    <div>
+                        <select class="form-select imput" id="idAlumno" name="idAlumno">
+                            <option selected disabled class="text-center">seleccionar al alumno que pagara</option>
+                            {{#each alumnList}}
+                            <option value="{{_id}}">{{nombre}} {{apellido}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+                    <!-- impot nombre curso -->
+                    <div class="input-group mb-4 pt-4">
+                        <label for="comentario" class="input-group-text">Comentarios</label>
+                        <input type="text" class="form-control" id="comentario" name="comentario"
+                            placeholder="ingresar el comentario">
+                    </div>
+
+                    <!-- boton de enviar datos -->
+                    <div class="d-grid pt-4">
+                        <button type="submit" class="btn btn-primary">Guardar Datos</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

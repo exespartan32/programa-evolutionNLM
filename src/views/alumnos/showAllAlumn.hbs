@@ -1,0 +1,42 @@
+<div class="container text-center" style="padding-top: 30px;">
+  {{#if dataAlumn}}
+  <div class="row">
+    <div class="table-responsive-md text-center">
+      <br><br>
+      <table class="table table-dark table-hover">
+        <tr>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>DNI</th>
+          <th>Curso</th>
+        </tr>
+        </thead>
+        <tbody id="tabla">
+          {{#each dataAlumn}}
+          <tr>
+            <td class="table-info">{{nombreAlumno}}</td>
+            <td class="table-info">{{apellidoAlumno}}</td>
+            <td class="table-info">{{dniAlumno}}</td>
+            <td class="table-info">{{nombreCurso}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {{else}}
+  <div class="py-2 col-3 mx-auto">
+    <div class="rounded-3 shadow bg-danger">
+      <div class="modal-body p-4 text-center ">
+        <h5 class="mb-0 text-white card-title">
+          <strong>ERROR</strong>
+          <hr>
+          <strong>No hay datos que mostrar</strong>
+          <br><br>
+          <a href="" class="btn btn-success btn-block">ingresar datos</a>
+        </h5>
+      </div>
+    </div>
+  </div>
+  {{/if}}
+</div>

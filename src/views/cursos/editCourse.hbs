@@ -12,16 +12,9 @@
             <div class="card card-2">
                 <div class="card-heading"></div>
                 <div class="card-body">
-                    <h2 class="title">Editar Curso</h2>
+                    <h2 class="title">Editar curso de {{dataCurso.nombre}}</h2>
                     <form action="/course/saveEditCourse/{{dataCurso._id}}?_method=put" method="post">
                         <input type="hidden" name="_method" value="put">
-
-                        <!-- impot nombre curso -->
-                        <div class="input-group mb-4">
-                            <label for="nombre" class="input-group-text">Nombre del Curso</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre"
-                                placeholder="ingresar nombre del alumno" value="{{dataCurso.nombre}}">
-                        </div>
 
                         <!-- impot duracion en meses -->
                         <div class="input-group mb-4">

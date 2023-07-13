@@ -46,19 +46,17 @@ courseControllers.saveCourse = async (req, res) => {
 }
 
 // --------------------------------------------------------------- //
-// ················ render editar - eliminar ····················· //
+// ·················· ver todos los cursos ······················· //
 // --------------------------------------------------------------- //
-courseControllers.renderSelectAction = async (req, res) => {
-    const cursos = await course.find({
-        fechaEliminacion: { $eq: null }
-    }).sort({ date: 'desc' });
+courseControllers.renderShowCourse = async (req, res) => {
+    const cursos = await course.find().sort({ fechaInicioCurso: 'asc' });
     const errors = [];
     if (cursos.length == 0) {
         errors.push({ text: 'no hay datos para mostrar' })
-        res.render('cursos/selectActionCourse', { errors })
+        res.render('cursos/showCourse', { errors })
     }
-    console.log(cursos)
-    res.render('cursos/selectActionCourse', { cursos })
+
+    res.render('cursos/showCourse', { cursos })
 }
 
 // --------------------------------------------------------------- //
@@ -73,10 +71,9 @@ courseControllers.renderEditCourse = async (req, res) => {
 
 courseControllers.saveEdirCourse = async (req, res) => {
     const id = req.params.id
-    const { nombre, duracion, fechaInicioCurso, fechaFinCurso } = req.body
+    const { duracion, fechaInicioCurso, fechaFinCurso } = req.body
 
     await course.findByIdAndUpdate(id, {
-        nombre,
         duracion,
         fechaInicioCurso,
         fechaFinCurso,
@@ -84,71 +81,6 @@ courseControllers.saveEdirCourse = async (req, res) => {
     })
     req.flash('success_msg', 'deuda editada correctamente');
     res.redirect('/course/selectAction')
-    /*     const dataDB = await course.find({
-            nombre: { $eq: nombre }
-        })
-        if (dataDB.length > 0) {
-            req.flash('error_msg', 'ya existe un curso con el mismo nombre');
-            res.redirect('/course/selectAction')
-        } else {
-            await course.findByIdAndUpdate(id, {
-                nombre,
-                fechaModificacion: new Date()
-            })
-            req.flash('success_msg', 'deuda editada correctamente');
-            res.redirect('/course/selectAction')
-        } */
-}
-
-// --------------------------------------------------------------- //
-// ··················· dar de baja a curso ······················· //
-// --------------------------------------------------------------- //
-courseControllers.saveDelete = async (req, res) => {
-    const id = req.params.id
-    await course.findByIdAndUpdate(id, {
-        fechaEliminacion: new Date()
-    })
-    req.flash('success_msg', 'deuda eliminada correctamente');
-    res.redirect('/course/selectAction')
-}
-
-// --------------------------------------------------------------- //
-// ·················· dar de alta a curso ························ //
-// --------------------------------------------------------------- //
-courseControllers.renderSelectUp = async (req, res) => {
-    const cursos = await course.find({
-        fechaEliminacion: { $ne: null }
-    }).sort({ date: 'desc' });
-    const errors = [];
-    if (cursos.length == 0) {
-        errors.push({ text: 'no hay datos para mostrar' })
-        res.render('cursos/selectUpCourse', { errors })
-    }
-    res.render('cursos/selectUpCourse', { cursos })
-}
-courseControllers.saveUpCourse = async (req, res) => {
-    const id = req.params.id
-    await course.findByIdAndUpdate(id, {
-        fechaEliminacion: null
-    })
-    req.flash('success_msg', 'deuda restaurada correctamente');
-    res.redirect('/course/selectUp')
-}
-
-// --------------------------------------------------------------- //
-// ·················· ver todos los cursos ······················· //
-// --------------------------------------------------------------- //
-courseControllers.renderShowCourse = async (req, res) => {
-    const cursos = await course.find({
-        fechaEliminacion: { $eq: null }
-    }).sort({ date: 'desc' });
-    const errors = [];
-    if (cursos.length == 0) {
-        errors.push({ text: 'no hay datos para mostrar' })
-        res.render('cursos/showCourse', { errors })
-    }
-
-    res.render('cursos/showCourse', { cursos })
 }
 
 module.exports = courseControllers

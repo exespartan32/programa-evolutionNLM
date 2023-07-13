@@ -3,7 +3,7 @@
     <div class="card card-2">
       <div class="card-heading"></div>
       <div class="card-body">
-        <h2 class="title">seleccionar el curso</h2>
+        <h2 class="title">seleccionar el curso que pagara</h2>
         <div class="table-responsive-md text-center">
           <br>
           <table class="table table-dark table-hover">
@@ -13,24 +13,10 @@
             </tr>
             </thead>
             <tbody id="tabla">
-              {{#each viewPC}}
+              {{#each courses}}
               <tr>
                 <td class="table-info">
-                  <form action="/course/showPriceCourse/{{_id}}?_method=get" method="post">
-                    <input type="hidden" name="_method" value="get">
-                    <button class="btn btn-outline-info" type="submit">
-                      <img src="/img/icon/tick.png" alt="" height="40">
-                    </button>
-                  </form>
-                </td>
-                <td class="table-info">{{nombre}}</td>
-              </tr>
-              {{/each}}
-
-              {{#each cursos}}
-              <tr>
-                <td class="table-info">
-                  <form action="/course/addPriceMonth/{{_id}}?_method=get" method="post">
+                  <form action="/payment/addPayment/{{_id}}?_method=get" method="post">
                     <input type="hidden" name="_method" value="get">
                     <button class="btn btn-outline-info" type="submit">
                       <img src="/img/icon/tick.png" alt="" height="40">

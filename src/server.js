@@ -39,6 +39,8 @@ app.engine(
     extname: ".hbs",
   })
 );
+
+
 app.set("view engine", ".hbs");
 
 //--------------------------------------------------------------------------------------//
@@ -79,7 +81,8 @@ app.use(require('./routes/course.routes'));
 //app.use(require('./routes/debt.routes'));
 //app.use(require('./routes/users.routes'));
 app.use(require('./routes/price.course.routes'));
-app.use(require('./routes/alumn.routes'))
+app.use(require('./routes/alumn.routes'));
+app.use(require('./routes/payment.routes'));
 
 
 

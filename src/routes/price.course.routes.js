@@ -5,23 +5,33 @@ const {
     renderShowCourse,
     renderPriceMonth,
     savePriceMonth,
-    renderSelectCourseAction,
-    renderSelectAction,
+    renderSelectCourseViewPrice,
+    ViewPriceCourse,
     renderEditPrice,
     saveEditCourse,
-    deleteCourse,
-    renderAltCourse,
-    saveUpPriceMonth,
-    selectPriceCourseUp,
-    renderSelectCourseViewPrice,
-    ViewPriceCourse
 } = require('../controllers/price.course.controllers');
 
+// --------------------------------------------------------------- //
+// ···················· ingresar precio ·························· //
+// --------------------------------------------------------------- //
 router.get('/course/selectCourse', renderShowCourse);
 router.get('/course/addPriceMonth/:id', renderPriceMonth);
 router.post('/course/savePriceMonth/:id', savePriceMonth);
 
-router.get('/course/selectCoursePriceAction', renderSelectCourseAction);
+// --------------------------------------------------------------- //
+// ·················· ver todos los precios ······················ // 
+// ······················ editar precios ························· // 
+// --------------------------------------------------------------- //
+router.get('/course/selectViewPC/', renderSelectCourseViewPrice)
+router.get('/course/showPriceCourse/:id', ViewPriceCourse)
+
+// --------------------------------------------------------------- //
+// ····················· editar precio ··························· //
+// --------------------------------------------------------------- //
+router.get('/course/editPriceCourse/:id', renderEditPrice)
+router.put('/course/saveEditPriceCourse/:id', saveEditCourse)
+
+/* router.get('/course/selectCoursePriceAction', renderSelectCourseAction);
 router.get('/course/selectAction/:id', renderSelectAction)
 
 router.get('/course/editPriceCourse/:id', renderEditPrice)
@@ -35,7 +45,7 @@ router.put('/course/selectViewPC/:id', saveUpPriceMonth)
 
 
 router.get('/course/selectViewPC/', renderSelectCourseViewPrice)
-router.get('/course/showPriceCourse/:id', ViewPriceCourse)
+router.get('/course/showPriceCourse/:id', ViewPriceCourse) */
 
 
 

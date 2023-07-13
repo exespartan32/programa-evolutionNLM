@@ -1,27 +1,27 @@
 <div class="container text-center" style="padding-top: 30px;">
-  {{#if cursos}}
+  {{#if courseMembers}}
   <div class="row">
     <div class="table-responsive-md text-center">
-      <br>
+      <div class="badge bg-primary text-wrap">
+        <h2><strong>Alumnos de {{dataCourse.nombre}}</strong></h2>
+      </div>
+      <br><br>
       <table class="table table-dark table-hover">
         <tr>
-          <th>Nombre del curso</th>
-          <th>duracion</th>
-          <th>fecha incio</th>
-          <th>fecha fin</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>DNI</th>
           <th>Editar</th>
         </tr>
         </thead>
         <tbody id="tabla">
-
-          {{#each cursos}}
+          {{#each courseMembers}}
           <tr>
-            <td class="table-dark">{{nombre}}</td>
-            <td class="table-info">{{duracion}} meses</td>
-            <td class="table-info">{{fechaInicioCurso}}</td>
-            <td class="table-info">{{fechaFinCurso}}</td>
+            <td class="table-info">{{dataAlumnCourse.nombre}}</td>
+            <td class="table-info">{{dataAlumnCourse.apellido}}</td>
+            <td class="table-info">{{dataAlumnCourse.DNI}}</td>
             <td class="table-info">
-              <form action="/course/editCourse/{{_id}}?_method=GET" method="POST">
+              <form action="/alumn/editAlumn/{{IdMovAlumn}}?_method=GET" method="POST">
                 <input type="hidden" name="_method" value="GET">
                 <button type="submit" class="btn btn-outline-success">
                   <img src="/img/icon/edit.png" alt="" height="40">
