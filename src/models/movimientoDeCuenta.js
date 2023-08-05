@@ -22,12 +22,21 @@ const saldoSchema = new Schema({
         type: Number,
         required: true
     },
-    Deudor: {
+    SaldoDeudor: {
         type: Number,
         required: true
     },
-    Acreedor: {
+    SaldoAcreedor: {
         type: Number,
+        required: true
+    },
+/*     SaldoTotalAlumno: {
+        type: Number,
+        required: true
+    }, */
+    Estado: {
+        type: String,
+        enum : ['pago_total','pago_parcial', 'saldo_a_favor', 'vencida'],
         required: true
     },
     Comentario: {

@@ -5,6 +5,7 @@ const {
     addPayment,
     renderShowPay,
     savePayment,
+    renderPreviusMonth,
 } = require('../controllers/payment.controllers')
 
 // --------------------------------------------------------------- //
@@ -12,6 +13,11 @@ const {
 // --------------------------------------------------------------- //
 router.get('/payment/selectCourseAddPay', renderSelectCourse)
 router.get('/payment/addPayment/:id', addPayment)
+
+// --------------------------------------------------------------- //
+// ····················· pagar mes deudor ························ //
+// --------------------------------------------------------------- //
+router.get('/payment/paymentPreviusMonth', renderPreviusMonth)
 
 // --------------------------------------------------------------- //
 // ························ ver pagos ···························· //

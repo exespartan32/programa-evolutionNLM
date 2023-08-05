@@ -1,20 +1,20 @@
-<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo">
+<div class="page-wrapper bg-red p-t-50 p-b-100 font-robo">
     <div class="wrapper wrapper--w960">
         <div class="card card-2">
             <div class="card-heading"></div>
             <div class="card-body">
                 <form action="/payment/savePayment/{{dataCourse._id}}" method="post">
-                    <h1 class="title text-center">{{dataCourse.nombre}}</h1>
+                    <h1 class="title text-center">pagar el curso de {{dataCourse.nombre}}</h1>
                     <!-- imput de mes a agregar precio -->
                     <div class="input-group mb-4">
-                        <label class="input-group-text" for="mes">Mes a agregar precio</label>
+                        <label class="input-group-text" for="mes">Mes a pagar</label>
                         <input type="month" id="mes" name="mes" min="{{dataCourse.fechaInicioCurso}}"
                             max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month" name="trip-start">
                     </div>
 
                     <!-- imput pago realizazado por el alumno -->
                     <div class="input-group mb-4">
-                        <label for="pagoAlumno" class="input-group-text">ingresar pago</label>
+                        <label for="pagoAlumno" class="input-group-text">ingresar pago del alumno</label>
                         <input type="number" class="form-control imput" aria-label="Amount (to the nearest dollar)"
                             id="pagoAlumno" name="pagoAlumno" placeholder="ingresar precio del mes">
                         <div class="input-group-prepend">
