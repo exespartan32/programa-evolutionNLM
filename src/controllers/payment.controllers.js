@@ -5,6 +5,7 @@ const priceCourse = require('../models/valorCurso');
 const movAlumn = require('../models/movimientoDeAlumno')
 const movAcc = require('../models/movimientoDeCuenta')
 const movDebit = require('../models/movimientoDeSaldo')
+const functionspayment = require('./functionsPaymentControllers')
 
 
 // --------------------------------------------------------------- //
@@ -28,6 +29,10 @@ paymentControllers.addPayment = async (req, res) => {
     const idCourse = req.params.id
     const dataCourse = await course.findById(idCourse)
     const listMovAlumn = await movAlumn.find({ idCurso: { $eq: idCourse } })
+    const valCourse = await priceCourse.find({}).sort({ mes: 1 })
+
+    var listMonth = functionspayment.listMonth(valCourse)
+    var numerMonth = listMonth.numerMonth
 
     //* recorremos la lista de MovAlumn
     //* buscamos los alumnos que tiene el curso
@@ -38,8 +43,11 @@ paymentControllers.addPayment = async (req, res) => {
         const alumnData = await alumn.findById(idAlumn)
         alumnList.push(alumnData)
     }
-    res.render('pagos/addPayment', { dataCourse, alumnList })
+
+    res.render('pagos/addPayment', { dataCourse, alumnList, numerMonth })
 }
+
+
 
 // ------------------------- 2) guardamos el pago --------------------- //
 paymentControllers.savePayment = async (req, res) => {
@@ -51,6 +59,7 @@ paymentControllers.savePayment = async (req, res) => {
         idCurso: { $eq: idCurso },
         mes: mes,
     })
+
     var idValorCurso = null
     var debe = null
     var haber = pagoAlumno
@@ -59,75 +68,91 @@ paymentControllers.savePayment = async (req, res) => {
     var fechaDB = setDate()
     var estado
 
-    //% 1) cuando el es ingresado tiene precio asignado
-    if (valCourse.length > 0) {
-        idValorCurso = valCourse[0].id
-        debe = valCourse[0].precioMes
-        saldo = haber - debe
+    res.send(req.body)
 
-        const seachPaymentMonth = await movAcc.find({
-            idAlumno: idAlumno,
-            idCurso: idCurso,
-            idValorCurso: idValorCurso
-        })
+    
 
-        if (seachPaymentMonth == 0) {
-            if (saldo < 0) {
-                console.log("debe dinero")
-                deudor = Math.abs(saldo)
-                estado = 'pago_parcial'
-            } else {
-                if (saldo == 0) {
-                    console.log("paga justo")
-                    acreedor = Math.abs(saldo)
-                    estado = 'pago_total'
-                } else {
-                    console.log("paga demas")
-                    acreedor = Math.abs(saldo)
-                    estado = 'saldo_a_favor'
-                }
-            }
-            const MovAccount = new movAcc({
-                idCurso: idCurso,
+
+
+
+
+
+
+
+
+
+
+
+    /* 
+        //% 1) cuando el es ingresado tiene precio asignado
+        if (valCourse.length > 0) {
+            idValorCurso = valCourse[0].id
+            debe = valCourse[0].precioMes
+            saldo = haber - debe
+    
+            const seachPaymentMonth = await movAcc.find({
                 idAlumno: idAlumno,
-                idValorCurso: idValorCurso,
-                Debe: debe,
-                Haber: haber,
-                SaldoDeudor: deudor,
-                SaldoAcreedor: acreedor,
-                Estado: estado,
-                Comentario: comentario,
-                fechaCreacion: fechaDB
+                idCurso: idCurso,
+                idValorCurso: idValorCurso
             })
-
-            const resDB = await MovAccount.save()
-            if (resDB) {
-                req.flash('success_msg', 'pago agreado correctamente');
-                res.redirect('/payment/selectCourseAddPay')
-            } else {
-                req.flash('error_msg', 'ha ocurrido un error al guardar en base de datos');
-                res.redirect('/payment/selectCourseAddPay')
+    
+            if (seachPaymentMonth == 0) {
+                if (saldo < 0) {
+                    console.log("debe dinero")
+                    deudor = Math.abs(saldo)
+                    estado = 'pago_parcial'
+                } else {
+                    if (saldo == 0) {
+                        console.log("paga justo")
+                        acreedor = Math.abs(saldo)
+                        estado = 'pago_total'
+                    } else {
+                        console.log("paga demas")
+                        acreedor = Math.abs(saldo)
+                        estado = 'saldo_a_favor'
+                    }
+                }
+                const MovAccount = new movAcc({
+                    idCurso: idCurso,
+                    idAlumno: idAlumno,
+                    idValorCurso: idValorCurso,
+                    Debe: debe,
+                    Haber: haber,
+                    SaldoDeudor: deudor,
+                    SaldoAcreedor: acreedor,
+                    Estado: estado,
+                    Comentario: comentario,
+                    fechaCreacion: fechaDB
+                })
+    
+                const resDB = await MovAccount.save()
+                if (resDB) {
+                    req.flash('success_msg', 'pago agreado correctamente');
+                    res.redirect('/payment/selectCourseAddPay')
+                } else {
+                    req.flash('error_msg', 'ha ocurrido un error al guardar en base de datos');
+                    res.redirect('/payment/selectCourseAddPay')
+                }
+    
+                //res.send(MovAccount)
             }
-
-            //res.send(MovAccount)
+            else {
+                if (seachPaymentMonth.Estado == "pago_parcial") {
+                    req.flash('error_msg', 'el mes seleccionado ya ha sido pagado pero tiene deuda');
+                    //res.redirect('/payment/selectCourseAddPay')
+                } else {
+                    req.flash('error_msg', 'el mes seleccionado ya ha sido pagado');
+                    res.redirect('/payment/selectCourseAddPay')
+                }
+    
+            }
+    
         }
+        //! 2) si el mes seleccionado a pagar no tiene precio nos devuelve un mensaje de error
         else {
-            if (seachPaymentMonth.Estado == "pago_parcial") {
-                req.flash('error_msg', 'el mes seleccionado ya ha sido pagado pero tiene deuda');
-                //res.redirect('/payment/selectCourseAddPay')
-            } else {
-                req.flash('error_msg', 'el mes seleccionado ya ha sido pagado');
-                res.redirect('/payment/selectCourseAddPay')
-            }
-
-        }
-
-    }
-    //! 2) si el mes seleccionado a pagar no tiene precio nos devuelve un mensaje de error
-    else {
-        req.flash('error_msg', 'el mes seleccionado no tiene un precio guardado')
-        res.redirect('/payment/selectCourseAddPay')
-    }
+            req.flash('error_msg', 'el mes seleccionado no tiene un precio guardado')
+            res.redirect('/payment/selectCourseAddPay')
+        } */
 }
 
 
@@ -162,11 +187,32 @@ function setDate() {
 
 
 paymentControllers.renderPreviusMonth = async (req, res) => {
-    
+
 }
 
 paymentControllers.renderShowPay = async (req, res) => {
 
+}
+
+paymentControllers.priceMonthData = async (req, res) => {
+    const valCourse = await priceCourse.find({}).sort({ mes: 1 })
+    res.json(valCourse)
+}
+
+paymentControllers.loadDebitMonth = async (req, res) => {
+    console.log("req.params de /payment/loadDebitMonth/ : ")
+    //console.log(req.params)
+
+    const mes = req.params.mes
+    const precioMes = await priceCourse.find({ mes: mes })
+    const idPrecioMes = precioMes[0].id
+    const debitMonths = await movAcc.find({ 
+        idValorCurso: idPrecioMes,
+        Estado: 'pago_parcial'
+    })
+    //console.log("los pagos de ese mes son: ")
+    //console.log(debitMonths)
+    res.json(debitMonths[0])
 }
 
 
