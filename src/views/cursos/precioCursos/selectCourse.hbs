@@ -1,48 +1,52 @@
-<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo">
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
   <div class="wrapper wrapper--w960">
-    <div class="card card-2">
-      <div class="card-heading"></div>
-      <div class="card-body">
-        <h2 class="title">seleccionar el curso</h2>
-        <div class="table-responsive-md text-center">
-          <br>
-          <table class="table table-dark table-hover">
-            <tr>
-              <th>Seleccionar</th>
-              <th>Nombre del curso</th>
-            </tr>
-            </thead>
-            <tbody id="tabla">
-              {{#each viewPC}}
-              <tr>
-                <td class="table-info">
-                  <form action="/course/showPriceCourse/{{_id}}?_method=get" method="post">
-                    <input type="hidden" name="_method" value="get">
-                    <button class="btn btn-outline-info" type="submit">
-                      <img src="/img/icon/tick.png" alt="" height="40">
-                    </button>
-                  </form>
-                </td>
-                <td class="table-info">{{nombre}}</td>
-              </tr>
-              {{/each}}
-
-              {{#each cursos}}
-              <tr>
-                <td class="table-info">
-                  <form action="/course/addPriceMonth/{{_id}}?_method=get" method="post">
-                    <input type="hidden" name="_method" value="get">
-                    <button class="btn btn-outline-info" type="submit">
-                      <img src="/img/icon/tick.png" alt="" height="40">
-                    </button>
-                  </form>
-                </td>
-                <td class="table-info">{{nombre}}</td>
-              </tr>
-              {{/each}}
-
-            </tbody>
-          </table>
+    <div class="card mb-3 card-2">
+      <div class="row g-0">
+        <div class="col-md-4" id="fondo">
+          {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h2 class="title">seleccionar el curso</h2>
+            <div class="table-responsive-md text-center">
+              <br>
+              <table class="table table-dark table-hover">
+                <tr>
+                  <th>Seleccionar</th>
+                  <th>Nombre del curso</th>
+                </tr>
+                </thead>
+                <tbody id="tabla">
+                  {{#each viewPC}}
+                  <tr>
+                    <td class="table-info">
+                      <form action="/course/showPriceCourse/{{_id}}?_method=get" method="post">
+                        <input type="hidden" name="_method" value="get">
+                        <button class="btn btn-outline-info" type="submit">
+                          <img src="/img/icon/tick.png" alt="" height="40">
+                        </button>
+                      </form>
+                    </td>
+                    <td class="table-info">{{nombre}}</td>
+                  </tr>
+                  {{/each}}
+                  {{#each cursos}}
+                  <tr>
+                    <td class="table-info">
+                      <form action="/course/addPriceMonth/{{_id}}?_method=get" method="post">
+                        <input type="hidden" name="_method" value="get">
+                        <button class="btn btn-outline-info" type="submit">
+                          <img src="/img/icon/tick.png" alt="" height="40">
+                        </button>
+                      </form>
+                    </td>
+                    <td class="table-info">{{nombre}}</td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>

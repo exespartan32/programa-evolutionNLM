@@ -58,9 +58,6 @@ function listMonth(valCourse) {
 }
 
 function convertMonth(mes){
-    const nombreMes = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-    const numeroMes = ['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06', '2023-07', '2023-08', '2023-09', '2023-10', '2023-11', '2023-12']
-
     var index = nombreMes.findIndex(x => x === mes)
     //console.log("index del mes es: "+ index)
     var mesConv = numeroMes[index]

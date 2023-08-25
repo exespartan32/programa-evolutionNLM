@@ -1,65 +1,111 @@
-<div class="row page-wrapper bg-red p-t-50 p-b-100 font-robo">
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
     <div class="wrapper wrapper--w960">
-        <div class="card card-2">
-            <div class="card-heading"></div>
-            <div class="card-body">
-                <form action="/payment/savePayment/{{dataCourse._id}}" method="post">
-                    <h1 class="title text-center">pagar el curso de {{dataCourse.nombre}}</h1>
+        <div class="card mb-3 card-2">
+            <div class="row g-0">
+                <div class="col-md-3" id="fondo">
+                    {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
+                </div>
+                <div class="col-md-9">
+                    <div class="card-body border">
+                        <form action="/payment/savePayment/{{dataCourse._id}}" method="post">
+                            <h1 class="title text-center">pagar el curso de {{dataCourse.nombre}}</h1>
 
-                    <!-- imput de mes a agregar precio -->
-                    <div class="input-group mb-4">
-                        <label class="input-group-text" for="mes">Mes a pagar</label>
-                        <input type="month" id="mes" name="mes" min="{{dataCourse.fechaInicioCurso}}"
-                            max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month" name="trip-start">
+{{!--                             <div class="row">
+                                <div class="col-6" id="containerMeses">
+                                    <div class="input-group ">
+                                        <label class="input-group-text" for="mes1">Mes de test</label>
+                                        <input type="month" min="{{dataCourse.fechaInicioCurso}}"
+                                            max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month"
+                                            name="trip-start"
+                                            onchange="funValidMonth('{{dataCourse._id}}', '#mes1', '#priceMonth1' )">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group" id="containerPagosMesese">
+                                        <label for="pagoAlumno1" class="input-group-text">pago de Abril</label>
+                                        <input type="number" class="form-control imput"
+                                            aria-label="Amount (to the nearest dollar)">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br><br><br><br> --}}
+
+                            <div id="containerMonthGeneral">
+                                <div class="input-group mb-2" id="containerMes1">
+                                    <label class="input-group-text" for="mes1">Mes Nº 1 a pagar</label>
+                                    <input type="month" id="mes1" name="mes1" min="{{dataCourse.fechaInicioCurso}}"
+                                        max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month"
+                                        name="trip-start"
+                                        onchange="funValidMonth('{{dataCourse._id}}', '#mes1', '#priceMonth1' )">
+                                </div>
+                            </div>
+                            <!-- botones de agregar y eliminar mes y pago -->
+                            <div class="mb-2">
+                                <button type="button"
+                                    onclick="addMonth('{{dataCourse._id}}', '{{dataCourse.duracion}}')"><img
+                                        src="/img/icon/plus.png" height="35px"></button>
+                                <button type="button" id="deleteMonth"><img src="/img/icon/trash.png"
+                                        height="35px"></button>
+
+                            </div>
+
+                            <!-- numero del mes como informacion oculta -->
+                            <input type="hidden" name="numerMonth" id="numerMonth" value="{{numerMonth}}">
+                            <!-- id del curso como informacion oculta -->
+                            <input type="hidden" name="idCourse" id="idCourse" value="{{dataCourse._id}}">
+
+                            <!-- muestra el precio del mes seleccionado -->
+                            <div id="priceMonthContainer"></div>
+                            <!-- muestra el si el mes tiene deuda -->
+                            <div class="pb-2 mx-auto justify-content-center input-group" id="debtMonthContainer"></div>
+
+                            <!-- imput pago realizazado por el alumno -->
+                            <div id="containerPagos">
+                                <div class="input-group mb-2" id="containerPagoNº1">
+                                    <label for="pagoAlumno1" class="input-group-text">ingresar el pago Nº 1 del
+                                        alumno</label>
+                                    <input type="number" class="form-control imput"
+                                        aria-label="Amount (to the nearest dollar)" id="pagoAlumno1" name="pagoAlumno1"
+                                        placeholder="ingresar precio del mes">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- seleccionar alumno que paga -->
+                            <div class="pt-4">
+                                <select class="form-select imput" id="idAlumno" name="idAlumno">
+                                    <option selected disabled class="text-center">seleccionar al alumno que pagara
+                                    </option>
+                                    {{#each alumnList}}
+                                    <option value="{{_id}}">{{nombre}} {{apellido}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+
+                            <!-- impot nombre curso -->
+                            <div class="input-group mb-4 pt-4">
+                                <label for="comentario" class="input-group-text">Comentarios</label>
+                                <input type="text" class="form-control" id="comentario" name="comentario"
+                                    placeholder="ingresar el comentario">
+                            </div>
+
+
+
+                            <!-- boton de enviar datos -->
+                            <div class="d-grid pt-4">
+                                <button name="sendData" type="submit" class="btn btn-primary">
+                                    Guardar Datos
+                                </button>
+                            </div>
+                        </form>
                     </div>
-
-                    <input type="hidden" name="numerMonth" id="numerMonth" value="{{numerMonth}}">
-
-                    <!-- muestra el precio del mes seleccionado -->
-                    <div class="text-primary-emphasis mx-auto justify-content-center input-group" id="priceMonthContainer"></div>
-                    <!-- muestra el si el mes tiene deuda -->
-                    <div class="mx-auto justify-content-center input-group" id="debtMonthContainer"></div>
-
-                    <!-- imput pago realizazado por el alumno -->
-                    <div class="input-group mb-4">
-                        <label for="pagoAlumno" class="input-group-text">ingresar pago del alumno</label>
-                        <input type="number" class="form-control imput" aria-label="Amount (to the nearest dollar)"
-                            id="pagoAlumno" name="pagoAlumno" placeholder="ingresar precio del mes">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">$</span>
-                        </div>
-                    </div>
-
-                    <!-- seleccionar alumno que paga -->
-                    <div>
-                        <select class="form-select imput" id="idAlumno" name="idAlumno">
-                            <option selected disabled class="text-center">seleccionar al alumno que pagara</option>
-                            {{#each alumnList}}
-                            <option value="{{_id}}">{{nombre}} {{apellido}}</option>
-                            {{/each}}
-                        </select>
-                    </div>
-
-                    <!-- impot nombre curso -->
-                    <div class="input-group mb-4 pt-4">
-                        <label for="comentario" class="input-group-text">Comentarios</label>
-                        <input type="text" class="form-control" id="comentario" name="comentario"
-                            placeholder="ingresar el comentario">
-                    </div>
-
-
-
-                    <!-- boton de enviar datos -->
-                    <div class="d-grid pt-4">
-                        <button name="sendData" id="sendData" type="submit" class="btn btn-primary">Guardar
-                            Datos</button>
-                    </div>
-                </form>
-
-
-
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>

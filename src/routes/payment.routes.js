@@ -8,7 +8,7 @@ const {
     renderPreviusMonth,
     priceMonthData,
     loadDebitMonth,
-    testData,
+    loadMonthData,
 
 } = require('../controllers/payment.controllers')
 
@@ -18,10 +18,12 @@ const {
 router.get('/payment/selectCourseAddPay', renderSelectCourse)
 router.get('/payment/addPayment/:id', addPayment)
 
-
-router.get('/payment/loadPriceMonth', priceMonthData)
+// ------------------------------------------------------------------------ //
+// ·············· rutas para retornar informacion de DB ··················· //
+// ------------------------------------------------------------------------ //
+router.get('/payment/loadPriceMonth/:mes', priceMonthData)
 router.get('/payment/loadDebitMonth/:mes', loadDebitMonth)
-
+router.get('/payment/loadMonths/:id', loadMonthData)
 
 
 // --------------------------------------------------------------- //

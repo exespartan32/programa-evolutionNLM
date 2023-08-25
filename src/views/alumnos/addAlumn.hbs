@@ -9,59 +9,64 @@
 
 <div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
     <div class="wrapper wrapper--w960">
-        <div class="card card-2">
-            <div class="card-heading"></div>
-            <div class="card-body">
-                <h2 class="title">Agregar nuevo Alumno</h2>
+        <div class="card mb-3 card-2">
+            <div class="row g-0">
+                <div class="col-md-4" id="fondo">
+                    {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h2 class="title">Agregar nuevo Alumno</h2>
+                        <form action="/alumn/saveAlumn" method="post">
+                            <div id="current_date"></div>
 
-                <form action="/alumn/saveAlumn" method="post">
-                    <div id="current_date"></div>
+                            <!-- impot nombre curso -->
+                            <div class="input-group mb-4">
+                                <label for="nombreAlumno" class="input-group-text">Nombre del Alumno</label>
+                                <input type="text" class="form-control" id="nombreAlumno" name="nombreAlumno"
+                                    placeholder="ingresar nombre del alumno">
+                            </div>
 
-                    <!-- impot nombre curso -->
-                    <div class="input-group mb-4">
-                        <label for="nombreAlumno" class="input-group-text">Nombre del Alumno</label>
-                        <input type="text" class="form-control" id="nombreAlumno" name="nombreAlumno"
-                            placeholder="ingresar nombre del alumno">
+                            {{!-- impot apellido alumno --}}
+                            <div class="input-group mb-4">
+                                <label for="apellidoAlumno" class="input-group-text">Apellido del Alumno</label>
+                                <input type="text" class="form-control" id="apellidoAlumno" name="apellidoAlumno"
+                                    placeholder="ingresar apellido del alumno">
+                            </div>
+
+                            {{!-- impot DNI alumno --}}
+                            <div class="input-group mb-4">
+                                <label for="dniAlumno" class="input-group-text">DNI del Alumno</label>
+                                <input type="text" class="form-control" id="dniAlumno" name="dniAlumno"
+                                    placeholder="ingresar DNI del alumno">
+                            </div>
+
+                            {{!-- seleccion de curso --}}
+                            <div class="input-group mb-3">
+                                <label class="input-group-text" for="cursos">Curso</label>
+
+                                <select class="form-select" id="cursos" name="cursos">
+                                    {{!-- <option selected> - </option> --}}
+                                    {{#each dataCourseAA}}
+                                    <option value={{{nombre}}}>{{{nombre}}}</option>
+                                    {{/each}}
+                                </select>
+
+                            </div>
+
+                            <br>
+                            {{!-- boton de enviar datos --}}
+                            <div class="d-grid pt-4">
+                                <button type="submit" class="btn btn-primary"><img src="/img/icon/save.png" alt=""
+                                        height="27">
+                                    Guardar Datos
+                                </button>
+                            </div>
+                        </form>
                     </div>
-
-
-                    {{!-- impot apellido alumno --}}
-                    <div class="input-group mb-4">
-                        <label for="apellidoAlumno" class="input-group-text">Apellido del Alumno</label>
-                        <input type="text" class="form-control" id="apellidoAlumno" name="apellidoAlumno"
-                            placeholder="ingresar apellido del alumno">
-                    </div>
-
-                    {{!-- impot DNI alumno --}}
-                    <div class="input-group mb-4">
-                        <label for="dniAlumno" class="input-group-text">DNI del Alumno</label>
-                        <input type="text" class="form-control" id="dniAlumno" name="dniAlumno"
-                            placeholder="ingresar DNI del alumno">
-                    </div>
-
-                    {{!-- seleccion de curso --}}
-                    <div class="input-group mb-3">
-                        <label class="input-group-text" for="cursos">Curso</label>
-
-                        <select class="form-select" id="cursos" name="cursos">
-                            {{!-- <option selected> - </option> --}}
-                            {{#each dataCourseAA}}
-                            <option value={{{nombre}}}>{{{nombre}}}</option>
-                            {{/each}}
-                        </select>
-
-                    </div>
-
-                    <br>
-                    {{!-- boton de enviar datos --}}
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary"><img src="/img/icon/save.png" alt="" height="27">
-                            Guardar
-                            Datos</button>
-                    </div>
-                </form>
-
+                </div>
             </div>
         </div>
     </div>
+
 </div>

@@ -7,98 +7,57 @@
 </div>
 {{/each}}
 
-<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo">
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
   <div class="wrapper wrapper--w960">
-    <div class="card card-2">
-      <div class="card-heading"></div>
-      <div class="card-body">
-        <h2 class="title">Agregar nuevo Curso</h2>
-        <form action="/course/saveCourse" method="post">
-          <div id="current_date"></div>
+    <div class="card mb-3 card-2">
+      <div class="row g-0">
+        <div class="col-md-4" id="fondo">
+          {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h2 class="title">Agregar nuevo Curso</h2>
+            <form action="/course/saveCourse" method="post">
+              <div id="current_date"></div>
 
-          <!-- impot nombre curso -->
-          <div class="input-group mb-4">
-            <label for="nombre" class="input-group-text">Nombre del Curso</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="ingresar nombre del curso">
+              <!-- impot nombre curso -->
+              <div class="input-group mb-4">
+                <label for="nombre" class="input-group-text">Nombre del Curso</label>
+                <input type="text" class="form-control" id="nombre" name="nombre"
+                  placeholder="ingresar nombre del curso">
+              </div>
+
+              <!-- impot duracion en meses -->
+              <div class="input-group mb-4">
+                <label for="duracion" class="input-group-text">Duracion en meses</label>
+                <input type="number" class="form-control" id="duracion" name="duracion" min="1" max="12"
+                  placeholder="ingrese la duracion en meses del curso">
+              </div>
+
+              <!-- impot mes de inicio -->
+              <div class="input-group mb-4">
+                <label class="input-group-text" for="fechaInicioCurso">Mes de inicio del curso</label>
+                <input type="month" id="fechaInicioCurso" name="fechaInicioCurso" class="form-control" name="trip-start"
+                  min="2022-01">
+              </div>
+
+              <!-- impot mes de finalizacion -->
+              <div class="input-group mb-4">
+                <label class="input-group-text" for="fechaFinCurso">Mes de finalizacion del curso</label>
+                <input type="month" id="fechaFinCurso" name="fechaFinCurso" class="form-control" name="trip-start"
+                  min="2022-01">
+              </div>
+
+              <!-- boton de enviar datos -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary"><img src="/img/icon/save.png" alt="" height="27">
+                  Guardar Datos
+                </button>
+              </div>
+            </form>
           </div>
-
-          <!-- impot duracion en meses -->
-          <div class="input-group mb-4">
-            <label for="duracion" class="input-group-text">Duracion en meses</label>
-            <input type="number" class="form-control" id="duracion" name="duracion" min="1" max="12"
-              placeholder="ingrese la duracion en meses del curso">
-          </div>
-
-          <!-- impot mes de inicio -->
-          <div class="input-group mb-4">
-            <label class="input-group-text" for="fechaInicioCurso">Mes de inicio del curso</label>
-            <input type="month" id="fechaInicioCurso" name="fechaInicioCurso" class="form-control" name="trip-start"
-              min="2022-01">
-          </div>
-
-          <!-- impot mes de finalizacion -->
-          <div class="input-group mb-4">
-            <label class="input-group-text" for="fechaFinCurso">Mes de finalizacion del curso</label>
-            <input type="month" id="fechaFinCurso" name="fechaFinCurso" class="form-control" name="trip-start"
-              min="2022-01">
-          </div>
-
-          <!-- boton de enviar datos -->
-          <div class="d-grid">
-            <button type="submit" class="btn btn-primary"><img src="/img/icon/save.png" alt="" height="27">
-              Guardar Datos
-            </button>
-          </div>
-        </form>
-
+        </div>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-  var duration = document.getElementById("duracion")
-  var startDate = document.getElementById("fechaInicioCurso")
-  var endDate = document.getElementById("fechaFinCurso")
-  startDate.addEventListener("change", res)
-  duration.addEventListener("change", res)
-
-  function res() {
-    var startDateStr = String(startDate.value)
-    var data = startDateStr.split("-")
-    var intYear = parseInt(data[0])
-    var intMonth = parseInt(data[1])
-    var intDur = parseInt(duration.value)
-    var resultMonth = intMonth + intDur -1
-    var valMonth
-    var valYear
-
-    if (resultMonth < 10) {
-      var StrRes = String(resultMonth)
-      var valMonth = "0" + StrRes
-    } else {
-      var valMonth = String(resultMonth)
-    }
-
-    if (valMonth > 12) {
-      console.log("año siguiente")
-      var resMonthInt = valMonth - 12
-      var resYearInt = intYear + 1
-      if (resMonthInt < 10) {
-        var resMonthStr = String(resMonthInt)
-        var resYearStr = String(resYearInt)
-        valMonth = "0" + resMonthStr
-        valYear = resYearStr
-      } else {
-        var resYearStr = String(resYearInt)
-        valYear = resYearStr
-      }
-    }else{
-      valYear = intYear
-    }
-    var resultEndDate = valYear + "-" + valMonth
-    endDate.value = resultEndDate
-	//document.getElementById("response").innerHTML = resultEndDate
-  }
-
-</script>
