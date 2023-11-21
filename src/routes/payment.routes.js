@@ -9,7 +9,8 @@ const {
     priceMonthData,
     loadDebitMonth,
     loadMonthData,
-
+    seachTicket,
+    
 } = require('../controllers/payment.controllers')
 
 // --------------------------------------------------------------- //
@@ -17,25 +18,20 @@ const {
 // --------------------------------------------------------------- //
 router.get('/payment/selectCourseAddPay', renderSelectCourse)
 router.get('/payment/addPayment/:id', addPayment)
+router.post('/payment/savePayment/:id', savePayment)
 
 // ------------------------------------------------------------------------ //
 // ·············· rutas para retornar informacion de DB ··················· //
 // ------------------------------------------------------------------------ //
 router.get('/payment/loadPriceMonth/:mes', priceMonthData)
-router.get('/payment/loadDebitMonth/:mes', loadDebitMonth)
+router.get('/payment/loadDebitMonth/:mes/:idAlumno', loadDebitMonth)
 router.get('/payment/loadMonths/:id', loadMonthData)
-
-
-// --------------------------------------------------------------- //
-// ····················· pagar mes deudor ························ //
-// --------------------------------------------------------------- //
-router.get('/payment/paymentPreviusMonth', renderPreviusMonth)
 
 // --------------------------------------------------------------- //
 // ························ ver pagos ···························· //
 // --------------------------------------------------------------- //
 router.get('/payment/showPay', renderShowPay)
-router.post('/payment/savePayment/:id', savePayment)
+router.get('/payment/searchTiket', seachTicket)
 
 
 

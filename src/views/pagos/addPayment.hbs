@@ -6,33 +6,36 @@
                     {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
                 </div>
                 <div class="col-md-9">
-                    <div class="card-body border">
+                    <div class="card-body">
                         <form action="/payment/savePayment/{{dataCourse._id}}" method="post">
                             <h1 class="title text-center">pagar el curso de {{dataCourse.nombre}}</h1>
 
-{{!--                             <div class="row">
+                            <div class="row">
                                 <div class="col-6" id="containerMeses">
-                                    <div class="input-group ">
-                                        <label class="input-group-text" for="mes1">Mes de test</label>
-                                        <input type="month" min="{{dataCourse.fechaInicioCurso}}"
+                                    <div class="input-group mb-1" id="containerMes1">
+                                        <label class="input-group-text" for="mes1">Mes Nº1</label>
+                                        <input type="month" min="{{dataCourse.fechaInicioCurso}}" id="mes1" name="mes1"
                                             max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month"
                                             name="trip-start"
                                             onchange="funValidMonth('{{dataCourse._id}}', '#mes1', '#priceMonth1' )">
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="input-group" id="containerPagosMesese">
-                                        <label for="pagoAlumno1" class="input-group-text">pago de Abril</label>
-                                        <input type="number" class="form-control imput"
-                                            aria-label="Amount (to the nearest dollar)">
+                                <div class="col-6" id="containerPagosMeses">
+                                    <div class="input-group mb-1" id="containerPagoNº1" title="">
+                                        <label for="pagoAlumno1" class="input-group-text" id="textoMesNº1">
+                                            pago Nº1
+                                        </label>
+                                        <input type="number" class="form-control imput" id="pagoAlumno1"
+                                            name="pagoAlumno1">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">$</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <br><br><br><br> --}}
-
+                            <!-- muestra el si el mes tiene deuda -->
+                            <div class="pb-2 mx-auto justify-content-center input-group" id="debtMonthContainer"></div>
+                            {{!--
                             <div id="containerMonthGeneral">
                                 <div class="input-group mb-2" id="containerMes1">
                                     <label class="input-group-text" for="mes1">Mes Nº 1 a pagar</label>
@@ -41,7 +44,7 @@
                                         name="trip-start"
                                         onchange="funValidMonth('{{dataCourse._id}}', '#mes1', '#priceMonth1' )">
                                 </div>
-                            </div>
+                            </div> --}}
                             <!-- botones de agregar y eliminar mes y pago -->
                             <div class="mb-2">
                                 <button type="button"
@@ -57,27 +60,10 @@
                             <!-- id del curso como informacion oculta -->
                             <input type="hidden" name="idCourse" id="idCourse" value="{{dataCourse._id}}">
 
-                            <!-- muestra el precio del mes seleccionado -->
-                            <div id="priceMonthContainer"></div>
-                            <!-- muestra el si el mes tiene deuda -->
-                            <div class="pb-2 mx-auto justify-content-center input-group" id="debtMonthContainer"></div>
 
-                            <!-- imput pago realizazado por el alumno -->
-                            <div id="containerPagos">
-                                <div class="input-group mb-2" id="containerPagoNº1">
-                                    <label for="pagoAlumno1" class="input-group-text">ingresar el pago Nº 1 del
-                                        alumno</label>
-                                    <input type="number" class="form-control imput"
-                                        aria-label="Amount (to the nearest dollar)" id="pagoAlumno1" name="pagoAlumno1"
-                                        placeholder="ingresar precio del mes">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">$</span>
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- seleccionar alumno que paga -->
-                            <div class="pt-4">
+                            <div class="">
                                 <select class="form-select imput" id="idAlumno" name="idAlumno">
                                     <option selected disabled class="text-center">seleccionar al alumno que pagara
                                     </option>
@@ -94,11 +80,9 @@
                                     placeholder="ingresar el comentario">
                             </div>
 
-
-
                             <!-- boton de enviar datos -->
                             <div class="d-grid pt-4">
-                                <button name="sendData" type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary">
                                     Guardar Datos
                                 </button>
                             </div>

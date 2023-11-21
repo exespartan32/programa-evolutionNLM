@@ -39,6 +39,9 @@ const saldoSchema = new Schema({
         enum : ['pago_total','pago_parcial', 'saldo_a_favor', 'vencida'],
         required: true
     },
+    IdPagoConjunto: {
+        type: Schema.Types.ObjectId
+    },
     Comentario: {
         type: String,
         required: true
