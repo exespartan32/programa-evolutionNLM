@@ -17,7 +17,7 @@
                                         <input type="month" min="{{dataCourse.fechaInicioCurso}}" id="mes1" name="mes1"
                                             max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month"
                                             name="trip-start"
-                                            onchange="funValidMonth('{{dataCourse._id}}', '#mes1', '#priceMonth1' )">
+                                            onchange="funValidMonth('{{dataCourse._id}}', '#mes1', '#priceMonth1' )" required>
                                     </div>
                                 </div>
                                 <div class="col-6" id="containerPagosMeses">
@@ -26,7 +26,7 @@
                                             pago Nº1
                                         </label>
                                         <input type="number" class="form-control imput" id="pagoAlumno1"
-                                            name="pagoAlumno1">
+                                            name="pagoAlumno1" required>
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">$</span>
                                         </div>
@@ -64,7 +64,7 @@
 
                             <!-- seleccionar alumno que paga -->
                             <div class="">
-                                <select class="form-select imput" id="idAlumno" name="idAlumno">
+                                <select class="form-select imput" id="idAlumno" name="idAlumno" required>
                                     <option selected disabled class="text-center">seleccionar al alumno que pagara
                                     </option>
                                     {{#each alumnList}}
@@ -77,7 +77,7 @@
                             <div class="input-group mb-4 pt-4">
                                 <label for="comentario" class="input-group-text">Comentarios</label>
                                 <input type="text" class="form-control" id="comentario" name="comentario"
-                                    placeholder="ingresar el comentario">
+                                    placeholder="ingresar el comentario" required>
                             </div>
 
                             <!-- boton de enviar datos -->

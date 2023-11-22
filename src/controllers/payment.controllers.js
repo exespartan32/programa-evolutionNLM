@@ -54,24 +54,38 @@ paymentControllers.savePayment = async (req, res) => {
     const arraySuccesses = []
     const arrayErrors = []
 
-    var IdPagoConjunto = new mongoose.Types.ObjectId();
-    var arrayNew = []
+
+    var nuevoArrayMeses = []
+    var nuevoArraypagos = []
 
     for (let i = 0; i < arrayMeses.length; i++) {
         var mesI = arrayMeses[i]
         var pagoI = arrayPagos[i]
-        if (mesI && pagoI) arrayNew.push(mesI)
-    }
-    for (let i = 0; i < arrayMeses.length; i++) {
-        var mesI = arrayMeses[i]
-        var pagoI = arrayPagos[i]
-
         if (mesI && pagoI) {
-            const valCourse = await valorCurso.find({ mes: mesI, idCurso: idCurso })
+            nuevoArrayMeses.push(mesI)
+            nuevoArraypagos.push(pagoI)
+        }
+    }
 
+    console.log(nuevoArrayMeses)
+    console.log(nuevoArraypagos)
+
+    if (nuevoArrayMeses.length == nuevoArraypagos.length) {
+        var itemsNum = nuevoArrayMeses.length
+        var IdPagoConjunto = new mongoose.Types.ObjectId();
+        var contador = 0
+        for (let i = 0; i < itemsNum; i++) {
+            // variables globales
+            var mesI = arrayMeses[i]
+            var pagoI = arrayPagos[i]
             var nombreMes = loadNombreMes(mesI)
+            contador++
 
+            // valiables del curso
+            const valCourse = await valorCurso.find({ mes: mesI, idCurso: idCurso })
             var idValorCurso = valCourse[0].id
+
+            // variables de balance
             var debe = valCourse[0].precioMes
             var haber = pagoI
             var saldo = haber - debe
@@ -79,80 +93,94 @@ paymentControllers.savePayment = async (req, res) => {
             var acreedor = 0
             var estado = null
 
-            const debtMonth = await movAcc.find({ idAlumno: idAlumno, idValorCurso: idValorCurso, Estado: 'pago_parcial' })
+            // variables de busqueda
+            const findDebtMonth_MovAcc = await movAcc.find({ idAlumno: idAlumno, idValorCurso: idValorCurso, Estado: 'pago_parcial' })
+            const findAll_MovAcc = await movAcc.find()
+            const numeroRegistros = findAll_MovAcc.length
+            const numeroBoleta = contador + numeroRegistros
 
-            //#: cuando el mes seleccionado tiene una deuda anterior
-            if (debtMonth.length > 0) {
-                debe = debtMonth[0].SaldoDeudor
-                saldo = haber - debe
-                //?: cuando el pago del alumno cancela la deuda
-                if (saldo == 0) {
-                    estado = 'pago_total'
-                } else {
-                    //?: cuando el pago del alumno es mayor a la deuda queda con saldo a favor
-                    if (saldo > 0) {
-                        acreedor = saldo
-                        estado = 'saldo_a_favor'
-                    }
-                    //?: cuando el pago del alumno no cancela el total de la deuda sigue qudando con el saldo en negativo
-                    else {
-                        deudor = Math.abs(saldo)
-                        estado = 'pago_parcial'
-                    }
-                }
+            console.log("contador Nº : " + contador)
 
-                var objectpayment
-                if (arrayNew.length > 1) {
-                    objectpayment = createObjectPayment(idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate(), IdPagoConjunto)
-                } else {
-                    objectpayment = createObjectPayment(idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate())
-                }
-                //console.log(objectpayment)
-                const resDB = await objectpayment.save()
-                if (resDB) {
-                    arraySuccesses.push(`el pago ${debe}$ del mes de ${nombreMes} se guardo correctamente`)
-                } else {
-                    arrayErrors.push(`ocurrio un error al tratar de guardar el pago ${debe}$ del mes de ${nombreMes}`)
-                } /**/
-            }
-            //#: cuando el mes seleccionado no posee deuda anterior
-            else {
-                //?: cuando el pago del alumno cancela la deuda
-                if (saldo == 0) {
-                    estado = 'pago_total'
-                } else {
-                    //?: cuando el pago del alumno es mayor a la deuda queda con saldo a favor
-                    if (saldo > 0) {
-                        acreedor = saldo
-                        estado = 'saldo_a_favor'
-                    }
-                    //?: cuando el pago del alumno no cancela el total de la deuda sigue qudando con el saldo en negativo
-                    else {
-                        deudor = Math.abs(saldo)
-                        estado = 'pago_parcial'
-                    }
-                }
+            if (findAll_MovAcc.length > 0) {
+                if (findDebtMonth_MovAcc.length > 0) {
+                    if (findAll_MovAcc.length > 1) {
+                        const ultimoRegistro = findDebtMonth_MovAcc.at(-1)
+                        const deudaUltimo = ultimoRegistro.SaldoDeudor
+                        saldo = haber - deudaUltimo
+                        const object = createObject(numeroBoleta, idCurso, idAlumno, idValorCurso, deudaUltimo, haber, saldo, comentario, itemsNum, IdPagoConjunto)
+                        console.log(object)
 
-                var objectpayment
-                if (arrayNew.length > 1) {
-                    objectpayment = createObjectPayment(idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate(), IdPagoConjunto)
+                        const resDB = await object.save()
+                        if (resDB) {
+                            arraySuccesses.push(`el pago de ${haber}$ correspondientes al mes de ${nombreMes} se guardo correctamente`)
+                        } else {
+                            arrayErrors.push(`ocurrio un error al tratar de guardar el pago ${haber}$ correspondientes al mes de ${nombreMes}`)
+                        }
+                    } else {
+                        const deudaUltimo = findDebtMonth_MovAcc[0].SaldoDeudor
+                        saldo = haber - deudaUltimo
+                        const object = createObject(numeroBoleta, idCurso, idAlumno, idValorCurso, deudaUltimo, haber, saldo, comentario, itemsNum, IdPagoConjunto)
+                        console.log(object)
+
+                        const resDB = await object.save()
+                        if (resDB) {
+                            arraySuccesses.push(`el pago de ${haber}$ correspondientes al mes de ${nombreMes} se guardo correctamente`)
+                        } else {
+                            arrayErrors.push(`ocurrio un error al tratar de guardar el pago ${haber}$ correspondientes al mes de ${nombreMes}`)
+                        }
+                    }
                 } else {
-                    objectpayment = createObjectPayment(idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate())
-                }
-                const resDB = await objectpayment.save()
-                if (resDB) {
-                    arraySuccesses.push(`el pago ${debe}$ del mes de ${nombreMes} se guardo correctamente`)
-                } else {
-                    arrayErrors.push(`ocurrio un error al tratar de guardar el pago ${debe}$ del mes de ${nombreMes}`)
-                } /* */
+                    const object = createObject(numeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, saldo, comentario, itemsNum, IdPagoConjunto)
+                    console.log(object)
+                    const resDB = await object.save()
+                    if (resDB) {
+                        arraySuccesses.push(`el pago de ${haber}$ correspondientes al mes de ${nombreMes} se guardo correctamente`)
+                    } else {
+                        arrayErrors.push(`ocurrio un error al tratar de guardar el pago ${haber}$ correspondientes al mes de ${nombreMes}`)
+                    }
+                }   
+            } else {
+                console.log("no existen registros en DB")
             }
         }
+        const courses = await course.find().sort({ fechaInicioCurso: 'asc' });
+        //res.render('pagos/selectCourseAddPayment', { courses, arraySuccesses, arrayErrors })
+    } else {
+        errors.push({ text: 'ha ocurrido un error al enviar los datos' })
+        res.render('pagos/selectCourseAddPayment', { errors })
     }
-    const courses = await course.find().sort({ fechaInicioCurso: 'asc' });
-    res.render('pagos/selectCourseAddPayment', { courses, arraySuccesses, arrayErrors })
+
+
+
+
+
 }
 
-function loadNombreMes(mes){
+function createObject(numeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, saldo, comentario, itemsNum, IdPagoConjunto) {
+    //const saldo = haber - deudaUltimo
+    var deudor = 0
+    var acreedor = 0
+    estado = null
+    //?: cuando el pago del alumno es menor a la deuda queda con saldo negativo
+    if (saldo < 0) {
+        deudor = Math.abs(saldo)
+        estado = 'pago_parcial'
+    }
+    //?: cuando el pago del alumno es mayor a la deuda queda con saldo a favor
+    else {
+        acreedor = saldo
+        estado = 'saldo_a_favor'
+    }
+    var objectpayment
+    if (itemsNum > 1) {
+        objectpayment = createObjectPayment(numeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate(), IdPagoConjunto)
+    } else {
+        objectpayment = createObjectPayment(numeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate())
+    }
+    return objectpayment
+}
+
+function loadNombreMes(mes) {
     var dataMes = {
         nombreMes: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
         numeroMes: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
@@ -162,11 +190,12 @@ function loadNombreMes(mes){
     return nombreMes
 }
 
-function createObjectPayment(idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, fechaDB, IdPagoConjunto) {
+function createObjectPayment(NumeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, fechaDB, IdPagoConjunto) {
     //* guardamos en DB 
     var MovAccount
     if (IdPagoConjunto) {
         MovAccount = new movAcc({
+            NumeroBoleta: NumeroBoleta,
             idCurso: idCurso,
             idAlumno: idAlumno,
             idValorCurso: idValorCurso,
@@ -181,6 +210,7 @@ function createObjectPayment(idCurso, idAlumno, idValorCurso, debe, haber, deudo
         })
     } else {
         MovAccount = new movAcc({
+            NumeroBoleta: NumeroBoleta,
             idCurso: idCurso,
             idAlumno: idAlumno,
             idValorCurso: idValorCurso,
@@ -211,7 +241,7 @@ function setDate() {
 paymentControllers.renderShowPay = async (req, res) => {
     const dataDB = await movAcc.find()
     const arrayData = []
-    for (let i = 0; i < dataDB.length ; i++) {
+    for (let i = 0; i < dataDB.length; i++) {
         //console.log(dataDB[i]);
         var dataCurso = await course.findById(dataDB[i].idCurso)
         var dataAlumno = await alumn.findById(dataDB[i].idAlumno)

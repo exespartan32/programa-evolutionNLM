@@ -120,14 +120,14 @@ function addMonth(idCourse, duracion) {
                                     <label class="input-group-text" for="mes${ultimoLista}">Mes Nº${ultimoLista}</label>
                                     <input type="month" id="mes${ultimoLista}" name="mes${ultimoLista}" min="${incioCurso}" 
                                     max="${finCurso}" class="form-control imput-month" name="trip-start" 
-                                    onchange="funValidMonth('${idCourse}', '${ultimoListaIdMes}', '#priceMonth${ultimoLista}')">
+                                    onchange="funValidMonth('${idCourse}', '${ultimoListaIdMes}', '#priceMonth${ultimoLista}')" required>
                                 </div>
                             `)
 
                 $('#containerPagosMeses').append(`
                                 <div class="input-group mb-1" id="containerPagoNº${ultimoLista}" title="">
                                     <label for="pagoAlumno${ultimoLista}" class="input-group-text">Pago Nº${ultimoLista}</label>
-                                    <input type="number" class="form-control imput" id="pagoAlumno${ultimoLista}" name="pagoAlumno${ultimoLista}">
+                                    <input type="number" class="form-control imput" id="pagoAlumno${ultimoLista}" name="pagoAlumno${ultimoLista}" required>
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">$</span>
                                     </div>

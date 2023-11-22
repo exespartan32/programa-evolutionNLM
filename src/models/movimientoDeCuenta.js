@@ -2,6 +2,10 @@ const moongose = require('mongoose');
 const { Schema, model } = moongose
 
 const saldoSchema = new Schema({
+    NumeroBoleta: {
+        type: Number,
+        required: true
+    },
     idCurso: [{
         type: Schema.Types.ObjectId, ref: 'curso',
         required: true
@@ -30,10 +34,6 @@ const saldoSchema = new Schema({
         type: Number,
         required: true
     },
-/*     SaldoTotalAlumno: {
-        type: Number,
-        required: true
-    }, */
     Estado: {
         type: String,
         enum : ['pago_total','pago_parcial', 'saldo_a_favor', 'vencida'],
@@ -66,4 +66,6 @@ const saldoSchema = new Schema({
         default: null
     }
 })
+
+
 module.exports = model('movimiento_De_Cuenta', saldoSchema)
