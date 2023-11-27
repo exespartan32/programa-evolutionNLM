@@ -1,0 +1,88 @@
+<div class="container text-center" style="padding-top: 30px;">
+    {{#if arrayData}}
+    <div class="row">
+        <div class="table-responsive-md text-center">
+            <br>
+            <table class="table table-dark table-hover">
+                <tr>
+                    <th>Curso</th>
+                    <th>Alumno </th>
+                    <th>Pago del alumno</th>
+                    <th>Mes Pagado</th>
+                    <th>Fecha de emicion</th>
+                    <th>boleta PDF</th>
+                </tr>
+                </thead>
+                <tbody id="tabla">
+                    {{#each arrayData}}
+                    <tr>
+                        <td class="table-info">{{nombreCurso}}</td>
+                        <td class="table-info">{{nombreAlumno}}</td>
+                        <td class="table-info">{{pagoAlumno}}$</td>
+                        <td class="table-info">{{nombreMes}}</td>
+                        <td class="table-info">{{fechaCreacion}}</td>
+                        <td class="table-info">
+                            <form action="/payment/generatedPDF" method="POST">
+                                {{!-- input hidden con el valor del nombre del curso --}}
+                                <input type="hidden" name="nombreCurso" value={{nombreCurso}}>
+
+                                {{!-- input hidden con el valor del nombre del alumno --}}
+                                <input type="hidden" name="nombreAlumno" value={{nombreAlumno}}>
+
+                                {{!-- input hidden con el valor del apellido del alumno --}}
+                                <input type="hidden" name="apellidoAlumno" value={{apellidoAlumno}}>
+
+                                {{!-- input hidden con el valor del pago del alumno --}}
+                                <input type="hidden" name="pagoAlumno" value={{pagoAlumno}}>
+
+                                {{!-- input hidden con el valor del nombre del mes --}}
+                                <input type="hidden" name="nombreMes" value={{nombreMes}}>
+
+                                {{!-- input hidden con el valor del precio del mes--}}
+                                <input type="hidden" name="precioMes" value={{precioMes}}>
+
+                                {{!-- input hidden si tiene deuda anterior --}}
+                                <input type="hidden" name="SaldoDeudor" value={{SaldoDeudor}}>
+
+                                {{!-- input hidden si tiene saldo a favor --}}
+                                <input type="hidden" name="SaldoAcreedor" value={{SaldoAcreedor}}>
+
+                                {{!-- input hidden con el valor de la fecha de creacion --}}
+                                <input type="hidden" name="fechaCreacion" value={{fechaCreacion}}>
+
+                                {{!-- input hidden con el valor del id del objeto en si --}}
+                                <input type="hidden" name="idObjeto" value={{idObjeto}}>
+
+                                {{!-- input hidden con el valor del id del pago conjunto (si asi fuera) --}}
+                                <input type="hidden" name="IdPagoConjunto" value={{IdPagoConjunto}}>
+                                
+                                {{!-- input hidden con el valor del numero de boleta --}}
+                                <input type="hidden" name="numeroBoleta" value={{numeroBoleta}}>
+
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="fa fa-file-pdf"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {{else}}
+    <div class="py-2 col-3 mx-auto">
+        <div class="rounded-3 shadow bg-danger">
+            <div class="modal-body p-4 text-center ">
+                <h5 class="mb-0 text-white card-title">
+                    <strong>ERROR</strong>
+                    <hr>
+                    <strong>No hay datos de pagos que mostrar</strong>
+                    <br><br>
+                    <a href="/payment/selectCourseAddPay" class="btn btn-success btn-block">ingresar pagos</a>
+                </h5>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+</div>

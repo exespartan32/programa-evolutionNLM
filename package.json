@@ -27,6 +27,8 @@
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "pdfkit": "^0.14.0",
+    "pdfkit-construct": "^1.2.3",
     "url": "^0.11.0"
   },
   "devDependencies": {

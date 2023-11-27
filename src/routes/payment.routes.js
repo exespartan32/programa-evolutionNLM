@@ -10,7 +10,9 @@ const {
     loadDebitMonth,
     loadMonthData,
     seachTicket,
-    
+    readyToGeneratePDF,
+    generatedPDF,
+
 } = require('../controllers/payment.controllers')
 
 // --------------------------------------------------------------- //
@@ -26,6 +28,7 @@ router.post('/payment/savePayment/:id', savePayment)
 router.get('/payment/loadPriceMonth/:mes', priceMonthData)
 router.get('/payment/loadDebitMonth/:mes/:idAlumno', loadDebitMonth)
 router.get('/payment/loadMonths/:id', loadMonthData)
+
 
 // --------------------------------------------------------------- //
 // ························ ver pagos ···························· //
