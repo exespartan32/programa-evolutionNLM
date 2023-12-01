@@ -55,19 +55,107 @@ paymentControllers.savePayment = async (req, res) => {
     const idCurso = req.params.id
     const { idAlumno, comentario, dataTotal } = req.body
 
-    res.send(req.body)
-
     const transformData = dataTotal.replace(/['"]+/g, '"');
+    const jsonData = JSON.parse(transformData)
 
-    const numeroMeses = dataTotal.numeroMes
-    const nombreMes = dataTotal.nombreMes
-    const precioMes = dataTotal.precioMes
-    const saldoMes = dataTotal.saldoMes
+    res.send(jsonData)
 
-    
+    //TODO: variables
+    const ArrayNumeroMeses = jsonData.numeroMes
+    const ArrayNombreMeses = jsonData.nombreMes
+    const ArrayPrecioMes = jsonData.precioMes
+    const ArraySaldoMes = jsonData.saldoMes
+    const ArrayDeudaMes = jsonData.deuda
+    const ArrayPagoAlumno = jsonData.pagoAlumno
+    const arraySuccesses = []
+    const arrayErrors = []
+    var IdPagoConjunto = new mongoose.Types.ObjectId();
 
+    //console.log("IdPagoConjunto: " + IdPagoConjunto)
+    //console.log("ArrayNumeroMeses")
+    //console.log(ArrayNumeroMeses)
+    //console.log(ArrayNumeroMeses.length)
 
+    for (let i = 0; i < ArrayNumeroMeses.length; i++) {
+        //#: datos de cada item
+        var NombreMesI = ArrayNombreMeses[i]
+        var NumeroMesI = ArrayNumeroMeses[i]
+        var precioMesI = ArrayPrecioMes[i]
+        var saldoMesI = ArraySaldoMes[i]
+        var deudaMesI = ArrayDeudaMes[i]
+        var pagoAlumnoI = ArrayPagoAlumno[i]
 
+        //#: buscamos el id del valor curso
+        const valCourse = await valorCurso.find({ mes: NumeroMesI, idCurso: idCurso })
+        var idValorCurso = valCourse[0].id
+
+        //#: variables globales para guardar en DB
+        var deudor = 0
+        var acreedor = 0
+        var estado = null
+        var debe = 0
+        var haber = pagoAlumnoI
+
+        //?: cuando el pago del alumno cancela la deuda
+        if (saldoMesI == 0) {
+            estado = 'pago_total'
+        } else {
+            //?: cuando el pago del alumno es mayor a la deuda queda con saldo a favor
+            if (saldoMesI > 0) {
+                acreedor = saldoMesI
+                estado = 'saldo_a_favor'
+            }
+            //?: cuando el pago del alumno no cancela el total de la deuda sigue qudando con el saldo en negativo
+            else {
+                deudor = Math.abs(saldoMesI)
+                estado = 'pago_parcial'
+            }
+        }
+        var objectpayment
+        if(deudaMesI > 0){
+            debe = deudaMesI
+        }else{
+            debe = precioMesI
+        }
+        
+        console.log("")
+        console.log("-----------------------------")
+        console.log(`la deuda de ${NombreMesI} es de ${deudaMesI}`)
+         console.log("-----------------------------")
+        console.log(`debe: ${debe}`)
+        console.log(`haber: ${haber}`)
+        console.log(`saldo acreedor: ${acreedor}`)
+        console.log(`saldo deudor: ${deudor}`)
+        console.log(`estado: ${estado}`)
+        console.log(`precio del mes: ${precioMesI}`)
+        console.log(`pago Alumno: ${pagoAlumnoI}`)
+        console.log("-----------------------------")
+        console.log("-----------------------------") 
+       
+
+        var ultimaBoleta = await movAcc.find({})
+        var numeroBoleta = ultimaBoleta.at(-1).NumeroBoleta
+        var numeroBoletaActual = parseInt(numeroBoleta) + 1
+
+        //console.log(`ultimo numero de boleta ${numeroBoleta}`)
+        //console.log(`numero de boleta actual ${numeroBoletaActual}`)
+
+        if (ArrayNumeroMeses.length > 1) {
+            objectpayment = createObjectPayment(numeroBoletaActual, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate(), IdPagoConjunto)
+        } else {
+            objectpayment = createObjectPayment(numeroBoletaActual, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate())
+        }
+        console.log(objectpayment)
+
+/*         const resDB = await objectpayment.save()
+        if (resDB) {
+            arraySuccesses.push(`el pago ${debe}$ corresponiente al mes de ${NombreMesI} se guardo correctamente`)
+        } else {
+            arrayErrors.push(`ocurrio un error al tratar de guardar el pago ${debe}$ corresponiente al mes de ${NombreMesI}`)
+        } */
+    }
+    //const courses = await course.find().sort({ fechaInicioCurso: 'asc' });
+    //res.render('pagos/selectCourseAddPayment', { courses, arraySuccesses, arrayErrors })
 }
 
 
@@ -115,7 +203,7 @@ paymentControllers.seachTicket = async (req, res) => {
 // ····················· URLs para mostrar datos ·························· //
 // ------------------------------------------------------------------------ //
 paymentControllers.returnPriceMonth = async (req, res) => {
-    
+
 }
 
 
@@ -131,11 +219,13 @@ paymentControllers.loadDebitMonth = async (req, res) => {
     const idAlumno = req.params.idAlumno
     const precioMes = await priceCourse.find({ mes: mes, })
     const idPrecioMes = precioMes[0].id
+
     const debitMonths = await movAcc.find({
         idValorCurso: idPrecioMes,
         //Estado: 'pago_parcial',
         idAlumno: idAlumno
     })
+
     const resposeJson = [precioMes[0], debitMonths]
     res.json(resposeJson)
 }
@@ -149,6 +239,20 @@ paymentControllers.loadMonthData = async (req, res) => {
         dataValueCourse: valCourse
     }
     res.json(response)
+}
+
+paymentControllers.loadTotaldata = async (req, res) => {
+    const mes = req.params.mes
+    const idAlumno = req.params.idAlumno
+    //const precioMes = await priceCourse.find({ mes: mes, })
+    //const idPrecioMes = precioMes[0].id
+    console.log("--------------------------------------------------------")
+    console.log("--------------------------------------------------------")
+    console.log("respuesta de /payment/loadTotalData/")
+    console.log(`mes: ${mes}`)
+    console.log(`idAlumno: ${idAlumno}`)
+    console.log("--------------------------------------------------------")
+    console.log("--------------------------------------------------------")
 }
 
 // ------------------------------------------------------------------------ //

@@ -12,7 +12,8 @@ const {
     seachTicket,
     readyToGeneratePDF,
     generatedPDF,
-
+    loadTotaldata,
+    
 } = require('../controllers/payment.controllers')
 
 // --------------------------------------------------------------- //
@@ -26,8 +27,9 @@ router.post('/payment/savePayment/:id', savePayment)
 // ·············· rutas para retornar informacion de DB ··················· //
 // ------------------------------------------------------------------------ //
 router.get('/payment/loadPriceMonth/:mes', priceMonthData)
-router.get('/payment/loadDebitMonth/:mes/:idAlumno', loadDebitMonth)
+router.get('/payment/loadDataMonth/:mes/:idAlumno', loadDebitMonth)
 router.get('/payment/loadMonths/:id', loadMonthData)
+router.get('/payment/loadTotalData/:mes/:idAlumno', loadTotaldata)
 
 
 // --------------------------------------------------------------- //
