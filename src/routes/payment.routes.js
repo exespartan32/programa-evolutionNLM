@@ -13,7 +13,8 @@ const {
     readyToGeneratePDF,
     generatedPDF,
     loadTotaldata,
-    
+    loadAlumndata,
+
 } = require('../controllers/payment.controllers')
 
 // --------------------------------------------------------------- //
@@ -29,7 +30,8 @@ router.post('/payment/savePayment/:id', savePayment)
 router.get('/payment/loadPriceMonth/:mes', priceMonthData)
 router.get('/payment/loadDataMonth/:mes/:idAlumno', loadDebitMonth)
 router.get('/payment/loadMonths/:id', loadMonthData)
-router.get('/payment/loadTotalData/:mes/:idAlumno', loadTotaldata)
+router.get('/payment/loadSaldoFavorData/:mes/:nombreMes/:idAlumno', loadTotaldata)
+router.get('/payment/loadDataAlumn/:idAlumno', loadAlumndata)
 
 
 // --------------------------------------------------------------- //

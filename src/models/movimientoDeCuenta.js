@@ -34,6 +34,9 @@ const saldoSchema = new Schema({
         type: Number,
         required: true
     },
+    UsarSaldoFavor:{
+        type: Boolean
+    },
     Estado: {
         type: String,
         enum : ['pago_total','pago_parcial', 'saldo_a_favor', 'vencida'],

@@ -58,7 +58,7 @@ paymentControllers.savePayment = async (req, res) => {
     const transformData = dataTotal.replace(/['"]+/g, '"');
     const jsonData = JSON.parse(transformData)
 
-    res.send(jsonData)
+    //res.send(jsonData)
 
     //TODO: variables
     const ArrayNumeroMeses = jsonData.numeroMes
@@ -67,6 +67,7 @@ paymentControllers.savePayment = async (req, res) => {
     const ArraySaldoMes = jsonData.saldoMes
     const ArrayDeudaMes = jsonData.deuda
     const ArrayPagoAlumno = jsonData.pagoAlumno
+    const ArrayUsoSaldoFavor = jsonData.usoSaldoFavor
     const arraySuccesses = []
     const arrayErrors = []
     var IdPagoConjunto = new mongoose.Types.ObjectId();
@@ -84,6 +85,7 @@ paymentControllers.savePayment = async (req, res) => {
         var saldoMesI = ArraySaldoMes[i]
         var deudaMesI = ArrayDeudaMes[i]
         var pagoAlumnoI = ArrayPagoAlumno[i]
+        var usaSaldoFavorI = ArrayUsoSaldoFavor[i]
 
         //#: buscamos el id del valor curso
         const valCourse = await valorCurso.find({ mes: NumeroMesI, idCurso: idCurso })
@@ -112,16 +114,16 @@ paymentControllers.savePayment = async (req, res) => {
             }
         }
         var objectpayment
-        if(deudaMesI > 0){
+        if (deudaMesI > 0) {
             debe = deudaMesI
-        }else{
+        } else {
             debe = precioMesI
         }
-        
+
         console.log("")
         console.log("-----------------------------")
         console.log(`la deuda de ${NombreMesI} es de ${deudaMesI}`)
-         console.log("-----------------------------")
+        console.log("-----------------------------")
         console.log(`debe: ${debe}`)
         console.log(`haber: ${haber}`)
         console.log(`saldo acreedor: ${acreedor}`)
@@ -129,9 +131,10 @@ paymentControllers.savePayment = async (req, res) => {
         console.log(`estado: ${estado}`)
         console.log(`precio del mes: ${precioMesI}`)
         console.log(`pago Alumno: ${pagoAlumnoI}`)
+        console.log(`usa saldo a favor para pagar?: ${usaSaldoFavorI}`)
         console.log("-----------------------------")
-        console.log("-----------------------------") 
-       
+        console.log("-----------------------------")
+
 
         var ultimaBoleta = await movAcc.find({})
         var numeroBoleta = ultimaBoleta.at(-1).NumeroBoleta
@@ -146,16 +149,16 @@ paymentControllers.savePayment = async (req, res) => {
             objectpayment = createObjectPayment(numeroBoletaActual, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate())
         }
         console.log(objectpayment)
-
-/*         const resDB = await objectpayment.save()
+        /*
+        const resDB = await objectpayment.save()
         if (resDB) {
             arraySuccesses.push(`el pago ${debe}$ corresponiente al mes de ${NombreMesI} se guardo correctamente`)
         } else {
             arrayErrors.push(`ocurrio un error al tratar de guardar el pago ${debe}$ corresponiente al mes de ${NombreMesI}`)
         } */
     }
-    //const courses = await course.find().sort({ fechaInicioCurso: 'asc' });
-    //res.render('pagos/selectCourseAddPayment', { courses, arraySuccesses, arrayErrors })
+    const courses = await course.find().sort({ fechaInicioCurso: 'asc' });
+    res.render('pagos/selectCourseAddPayment', { courses, arraySuccesses, arrayErrors })
 }
 
 
@@ -242,17 +245,52 @@ paymentControllers.loadMonthData = async (req, res) => {
 }
 
 paymentControllers.loadTotaldata = async (req, res) => {
-    const mes = req.params.mes
-    const idAlumno = req.params.idAlumno
-    //const precioMes = await priceCourse.find({ mes: mes, })
-    //const idPrecioMes = precioMes[0].id
-    console.log("--------------------------------------------------------")
-    console.log("--------------------------------------------------------")
-    console.log("respuesta de /payment/loadTotalData/")
-    console.log(`mes: ${mes}`)
-    console.log(`idAlumno: ${idAlumno}`)
-    console.log("--------------------------------------------------------")
-    console.log("--------------------------------------------------------")
+    var mes = req.params.mes
+    var nombreMes = req.params.nombreMes
+    var idAlumno = req.params.idAlumno
+    var precioMes = await priceCourse.find({ mes: mes, })
+
+    var response = {
+        numeroMes: "",
+        nombreMes: "",
+        saldoFavor: 0,
+        idAlumno: ""
+    }
+
+    if (precioMes.length != 0) {
+        var idPrecioMes = precioMes[0].id
+
+        var requestData = await movAcc.find({
+            idValorCurso: idPrecioMes,
+            Estado: 'saldo_a_favor',
+            idAlumno: idAlumno
+        })
+        console.log(requestData)
+
+        if (requestData.length > 0) {
+            var saldoFavor = requestData.at(-1).SaldoAcreedor
+            //res.json({nombreMes: nombreMes, numeroMes: numeroMes, saldoFavor: saldoFavor})
+            console.log("------------------------------------------------------")
+            console.log("------------------------------------------------------")
+            console.log(`numeroMes: ${mes}`)
+            console.log(`saldoFavor: ${saldoFavor}`)
+            console.log("------------------------------------------------------")
+            console.log("------------------------------------------------------")
+
+            response.nombreMes = nombreMes
+            response.numeroMes = mes
+            response.saldoFavor = saldoFavor
+            response.idAlumno = idAlumno
+        }
+    }
+
+    res.json(response)
+}
+
+paymentControllers.loadAlumndata = async (req, res) => {
+    var idAlumno = req.params.idAlumno
+    var datosAlumno = await alumn.findById(idAlumno)
+    res.json(datosAlumno)
 }
 
 // ------------------------------------------------------------------------ //
