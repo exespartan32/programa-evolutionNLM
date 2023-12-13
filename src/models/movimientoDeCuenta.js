@@ -34,8 +34,14 @@ const saldoSchema = new Schema({
         type: Number,
         required: true
     },
-    UsarSaldoFavor:{
-        type: Boolean
+    saldoFavorUsado:{
+        type: Number,
+        //default: 0,
+        required: true
+    },
+    ultimFechUsoSaldoFavor: {
+        type: Date,
+        required: true,
     },
     Estado: {
         type: String,
