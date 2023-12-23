@@ -272,8 +272,10 @@ paymentControllers.loadTotaldata = async (req, res) => {
     var response = {
         numeroMes: "",
         nombreMes: "",
-        saldoFavor: 0,
-        idAlumno: ""
+        saldoFavor: "",
+        idAlumno: "",
+        usaSaldoFavor: "",
+        valorUsoSaldoFavor: "",
     }
 
     if (precioMes.length != 0) {
@@ -300,6 +302,8 @@ paymentControllers.loadTotaldata = async (req, res) => {
             response.numeroMes = mes
             response.saldoFavor = saldoFavor
             response.idAlumno = idAlumno
+            response.usaSaldoFavor = false
+            response.valorUsoSaldoFavor = 0
         }
     }
 

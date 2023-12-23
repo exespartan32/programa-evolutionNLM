@@ -21,54 +21,34 @@ var dataMesesHTML = {
     deuda: [],
     usoSaldoFavor: [],
     comentario: [],
-}
-var mesesDeudores = []
-
-var saldoAcreedor = []
-var nuevoArraySaldofavor = []
-
-var dataSaldoFavor = {
-    numeroMes: [],
-    nombreMes: [],
+    nombreMesSaldoFavor: [],
     saldoFavorOriginal: [],
     saldoFavorUsado: [],
 }
+var dataArray = []
+var saldoAcreedor = []
+var ArrayMesesUsoSaldoFavor = []
+
+var ArrayInputs = []
+
 
 // % ----------------------------------------------------------------------------------------- %
 // % ----------------------- cuando el usuario selecciona un alumno -------------------------- %
 // % ----------------------------------------------------------------------------------------- %
 $('#idAlumno').on('change', function () {
-    $('#saldoFavorTotal').html("")
+    saldoAcreedor = []
+    $('#listaSaldoFavor').html('')
+    $('#saldoFavorSelectMensaje').html('')
     $('#saldoFavor').remove()
-
-    for (let i = 0; i < dataMesesHTML.numeroMes.length; i++) {
-        console.log($(`#data${dataMesesHTML.nombreMes[i]}`))
-    }
 
     $('#divSaldofavor').html(`
         <button id="botonSaldoFavor" class="btn btn-outline-dark" type="button" onclick="calcular_saldo_a_favor()">Calcular Saldo A Favor del alumno</button>
     `)
 
-    var saldoFavorHTML = $('#hiddenSaldoFavor')
-    var mes = $("#mesInput").val()
-
-    const tabla = $('#tabla');
-    const elementostabla = parseInt(tabla.find('tr').length);
-
-    var idAlumno = $("#idAlumno").val()
-    var nombreAlumno = $("#idAlumno").html()
-
-    var numeroMes = mes.split('-')[1]
-    var nombreMes = dataMes.nombreMes[dataMes.numeroMes.indexOf(numeroMes)]
-
-    var acreedorN = []
-    var Arraydata = []
-    var saldoFavorHTL = $("#hiddenSaldoFavor")
-
-    var existenciaSaldofavor = 0
 
     //% primero que nada buscamos si tiene saldo a favor
     var idAlumno = $("#idAlumno").val()
+
     if (idAlumno != "") {
         for (let i = 0; i < dataMes.nombreMes.length; i++) {
             var numeroMesI = dataMes.numeroMes[i]
@@ -94,162 +74,28 @@ $('#idAlumno').on('change', function () {
                 })
             }
         }
-    } /**/
-
-    //?: variables de los datos que contiene el json
-    const ArrayNumeroMeses = dataMesesHTML.numeroMes
-    const ArrayNombreMeses = dataMesesHTML.nombreMes
-    const ArrayPrecioMes = dataMesesHTML.precioMes
-    const ArraySaldoMes = dataMesesHTML.saldoMes
-    const ArrayDeudaMes = dataMesesHTML.deuda
-    const ArrayPagoAlumno = dataMesesHTML.pagoAlumno
-    const ArraySaldoFavor = dataMesesHTML.pagoAlumno
-
-    if (elementostabla > 0) {
-        ArrayNombreMeses.forEach(function (itemI, i) {
-            var numeroMesN = ArrayNumeroMeses[i]
-            $.ajax({
-                url: '/payment/loadDataMonth/' + numeroMesN + "/" + idAlumno,
-                success: function (data) {
-                    const dataCourse = data[0]
-                    const DataMovAcc = data[1]
-                    var precioMes = dataCourse.precioMes
-
-                    //#: datos del HTML 
-                    var tablaBodyHTML = $(`#data${itemI}`)
-                    var BodyDeudaTablaHTML = $(`#BodyDeuda${itemI}`)
-                    BodyDeudaTablaHTML.remove()
-                    var precioMesHTML = $(`#precio${itemI}`)
-
-                    //#: variables globales para guardar datos
-                    var deuda = 0
-                    var favor = 0
-
-                    DataMovAcc.forEach((element, Index) => {
-                        deuda = element.SaldoDeudor
-                        favor = element.SaldoAcreedor
-                    });
-
-                    if (DataMovAcc.length == 0) {
-                        //#: seteamos los valores de las deudas por los que tiene el nuevo alumno
-                        ArrayDeudaMes[i] = deuda
-                        ArraySaldoFavor[i] = favor
-                        const itemPagoAlumno = $(`#pagoAlumno${itemI}`)
-                        const pagoAlumno = itemPagoAlumno.val()
-                        const Index = dataMesesHTML.nombreMes.indexOf(itemI)
-
-                        if (pagoAlumno != "") {
-                            itemPagoAlumno.val("")
-                            $(`#saldo${itemI}`).val("")
-                            $(`#saldo${itemI}`).html("")
-                            dataMesesHTML.saldoMes[Index] = 0
-                        }
-
-                        if (deuda > 0) {
-                            const deudaHTML = $(`#deuda${itemI}`)
-                            if (deuda.length == 0) {
-                                tablaBodyHTML.append(`
-                                    <td id=BodyDeuda${itemI} class="table-danger"><strong class="text-danger">${deuda} $</strong></td>
-                                    <input type="hidden" name="deuda${itemI}" id="deuda${itemI}" value=${deuda}>
-                                `)
-                            } else {
-                                tablaBodyHTML.append(`
-                                    <td id=BodyDeuda${itemI} class="table-danger"><strong class="text-danger">${deuda} $</strong></td>
-                                `)
-                            }
-
-                            if (precioMesHTML.length > 0) {
-                                precioMesHTML.html("")
-                            }
-
-                        } else {
-                            tablaBodyHTML.append(`
-                                <td id=BodyDeuda${itemI} class="table-info"><strong class="text-primary">sin deuda</strong></td>
-                            `)
-                            if (precioMesHTML.html() == "") {
-                                precioMesHTML.append(`${precioMes}`)
-                            }
-                        }
-                    } else {
-
-                        var ultimoRegistro = DataMovAcc.at(-1)
-                        var estadoPagoUltimo = ultimoRegistro.Estado
-
-                        if (estadoPagoUltimo == "pago_parcial") {
-                            //#: seteamos los valores de las deudas por los que tiene el nuevo alumno
-                            ArrayDeudaMes[i] = deuda
-                            const itemPagoAlumno = $(`#pagoAlumno${itemI}`)
-                            const pagoAlumno = itemPagoAlumno.val()
-                            const Index = dataMesesHTML.nombreMes.indexOf(itemI)
-
-                            if (pagoAlumno != "") {
-                                itemPagoAlumno.val("")
-                                $(`#saldo${itemI}`).val("")
-                                $(`#saldo${itemI}`).html("")
-                                dataMesesHTML.saldoMes[Index] = 0
-                            }
-
-                            if (deuda > 0) {
-                                const deudaHTML = $(`#deuda${itemI}`)
-
-                                if (deuda.length == 0) {
-                                    tablaBodyHTML.append(`
-                                        <td id=BodyDeuda${itemI} class="table-danger"><strong class="text-danger">${deuda} $</strong></td>
-                                        <input type="hidden" name="deuda${itemI}" id="deuda${itemI}" value=${deuda}>
-                                    `)
-                                } else {
-                                    tablaBodyHTML.append(`
-                                        <td id=BodyDeuda${itemI} class="table-danger"><strong class="text-danger">${deuda} $</strong></td>
-                                    `)
-                                }
-
-                                if (precioMesHTML.length > 0) {
-                                    precioMesHTML.html("")
-                                }
-
-                            } else {
-                                tablaBodyHTML.append(`
-                                    <td id=BodyDeuda${itemI} class="table-info"><strong class="text-primary">sin deuda</strong></td>
-                                `)
-
-                                if (precioMesHTML.html() == "") {
-                                    precioMesHTML.append(`${precioMes}`)
-                                }
-                            }
-                        }
-
-                        else {
-                            const Index = dataMesesHTML.nombreMes.indexOf(itemI)
-                            //alert(`el mes de ${nombreMes} ya ha sido pagado en su totalidad`)
-                            if (estadoPagoUltimo == "saldo_a_favor") {
-                                //console.log(`el mes de ${itemI} ya ha sido pagado en su totalidad y tiene ${favor}$ de saldo a favor`)
-                                tablaBodyHTML.remove()
-                                ArrayNumeroMeses.splice(Index, 1)
-                                ArrayNombreMeses.splice(Index, 1)
-                                ArrayPrecioMes.splice(Index, 1)
-                                ArraySaldoMes.splice(Index, 1)
-                                ArrayDeudaMes.splice(Index, 1)
-                                ArrayPagoAlumno.splice(Index, 1)
-                                ArraySaldoFavor.splice(Index, 1)
-                                //console.log(ArrayNombreMeses)
-                            }
-                            if (estadoPagoUltimo == "pago_total") {
-                                //console.log(`el mes de ${itemI} ya ha sido pagado en su totalidad`)
-                                tablaBodyHTML.remove()
-                                ArrayNumeroMeses.splice(Index, 1)
-                                ArrayNombreMeses.splice(Index, 1)
-                                ArrayPrecioMes.splice(Index, 1)
-                                ArraySaldoMes.splice(Index, 1)
-                                ArrayDeudaMes.splice(Index, 1)
-                                ArrayPagoAlumno.splice(Index, 1)
-                                ArraySaldoFavor.splice(Index, 1)
-                            }
-                        }
-                    }
-                }
-            })
-        })
     }
+
+    for (let i = 0; i < dataMesesHTML.nombreMes.length; i++) {
+        $(`#data${dataMesesHTML.nombreMes[i]}`).remove()
+        //dataMesesHTML.numeroMes.splice(i, 1)
+        //dataMesesHTML.nombreMes.splice(i, 1)
+        //dataMesesHTML.precioMes.splice(i, 1)
+        //dataMesesHTML.pagoAlumno.splice(i, 1)
+        //dataMesesHTML.saldoMes.splice(i, 1)
+        //dataMesesHTML.comentario.splice(i, 1)
+        //dataMesesHTML.deuda.splice(i, 1)
+        //dataMesesHTML.usoSaldoFavor.splice(i, 1)
+    }
+
+    dataMesesHTML.numeroMes = []
+    dataMesesHTML.nombreMes = []
+    dataMesesHTML.precioMes = []
+    dataMesesHTML.pagoAlumno = []
+    dataMesesHTML.saldoMes = []
+    dataMesesHTML.comentario = []
+    dataMesesHTML.deuda = []
+    dataMesesHTML.usoSaldoFavor = []
 })
 
 // % ----------------------------------------------------------------------------------------- %
@@ -281,15 +127,6 @@ $('#agregar_lista').on('click', function () {
                     favor = element.SaldoAcreedor
                 });
 
-                var saldoFavor = 0
-                var saldofavorHTML = $(`#saldoFavor`)
-                var saldofavorTablaHTML = $(`#Saldofavor_${idAlumno}`).val()
-
-                if (saldofavorTablaHTML != undefined) {
-                    saldoFavor = saldofavorTablaHTML
-                }
-
-
                 if (data[1].length > 0) {
                     //console.log("mes ya pagado con anteridad")
                     var ultimoRegistro = data[1].at(-1)
@@ -297,7 +134,7 @@ $('#agregar_lista').on('click', function () {
 
                     if (estadoPago == "pago_parcial") {
                         //console.log("agregar a la lista con la deuda que aun tiene")
-                        agregarTabla(deuda, favor, mes, nombreMes, precioMes, saldoFavor)
+                        agregarTabla(deuda, favor, mes, nombreMes, precioMes)
                     }
                     else {
                         //alert(`el mes de ${nombreMes} ya ha sido pagado en su totalidad`)
@@ -306,7 +143,7 @@ $('#agregar_lista').on('click', function () {
                     }
 
                 } else {
-                    agregarTabla(deuda, favor, mes, nombreMes, precioMes, saldoFavor)
+                    agregarTabla(deuda, favor, mes, nombreMes, precioMes)
                 }
             }
         })
@@ -315,13 +152,14 @@ $('#agregar_lista').on('click', function () {
 // % ----------------------------------------------------------------------------------------- %
 // % ---------------------- agregamos el mes seleccionado a la lista ------------------------- %
 // % ----------------------------------------------------------------------------------------- %
-function agregarTabla(deuda, favor, mes, nombreMes, precioMes, saldoFavor) {
+function agregarTabla(deuda, favor, mes, nombreMes, precioMes) {
     //#: variables HTML
     const tabla = $('#tabla');
     const HeadTabla = $('#trTable');
     const elementostabla = parseInt(tabla.find('tr').length);
     var HeadDeudaTabla = $(`#HeadDeuda`)
     var BodyDeudaTabla = $(`#BodyDeuda${nombreMes}`)
+    var SaldoFavorHTML = $(`#saldoFavor`)
 
     //#: si no ha sido guardado antes agregamos el mes seleccionado a la lista
     const busqueda = dataMesesHTML.nombreMes.includes(nombreMes)
@@ -334,104 +172,120 @@ function agregarTabla(deuda, favor, mes, nombreMes, precioMes, saldoFavor) {
         dataMesesHTML.saldoMes.push("-")
         dataMesesHTML.pagoAlumno.push(0)
         dataMesesHTML.comentario.push("-")
+
+        //?: llenamos los datos por defecto para el saldo a favor
+        dataMesesHTML.nombreMesSaldoFavor.push("-")
+        dataMesesHTML.saldoFavorOriginal.push(0)
+        dataMesesHTML.saldoFavorUsado.push(0)
+
         if (deuda > 0) {
             dataMesesHTML.deuda.push(deuda)
         } else {
             dataMesesHTML.deuda.push(0)
         }
-
+        //console.log(`SaldoFavorHTML.length : ${SaldoFavorHTML.length}`)
         //?: agregamos el mes selecciodo a la lista
-        if (saldoFavor > 0) {
-
-            var idAlumno = $("#idAlumno").val()
-            const saldoFavorActual = $(`#SaldofavorActual_${idAlumno}`).val()
-
-            //console.log(`saldo a favor actual: ${saldoFavorActual}`)
-
-            if (saldoFavorActual == 0) {
-                tabla.append(`
+        if (SaldoFavorHTML.length > 0) {
+            tabla.append(`
                     <tr id="data${nombreMes}">
-                        <td class="table-info">${nombreMes}</td>
+                        <td class="table-info" id="contenedorNombreMes${nombreMes}">${nombreMes}</td>
+
                         <input type="hidden" id="numeroMes${nombreMes}" value="${mes}">
-                        <td class="table-info" id="precio${nombreMes}">${precioMes}$</td>
-                        <td class="table-info">
+
+                        <td id="precio${nombreMes}" class="table-info" >${precioMes}$</td>
+
+                        <td class="table-info" id="contenedorPago${nombreMes}">
                             <div class="input-group">
                                 <input class="form-control" type="number" id="pagoAlumno${nombreMes}" 
                                 style="width: 50px;" onchange="agregar_saldo_a_la_lista('${nombreMes}')" required>
                             </div>
                         </td>
+
                         <td class="table-info" id="saldo${nombreMes}" value=0></td>
-                        <td class="table-info">
+
+                        <td class="table-info" id="contenedorEliminar${nombreMes}">
                             <button class="btn btn-outline-danger" type="button" onclick="eliminarPago('${nombreMes}')">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </td>
-                        <td id=BodyDeuda${nombreMes} class="table-danger"><strong class="text-danger">${deuda} $</strong></td>
-                        <input type="hidden" name="deuda${nombreMes}" id="deuda${nombreMes}" value=${deuda}>
-                        <td class="table-info">
+
+                        <td class="table-danger" id=BodyDeuda${nombreMes}>
+                            <strong class="text-danger">${deuda} $</strong>
+                            <input type="hidden" name="deuda${nombreMes}" id="deuda${nombreMes}" value=${deuda}>
+                        </td>
+
+                        <td class="table-info" id="contenedorComentario${nombreMes}">
                             <textarea class="form-control" id="comentario${nombreMes}" rows="1" required onchange="agregar_comentario_al_json('${nombreMes}')"></textarea>
                         </td>
+
                         <td class="table-info" id="dataSaldoFavor${nombreMes}">
-                            <div class="input-group">
-                                <input type="number" min="0" max="${saldoFavor}" class="form-control" id="valorUsoSaldoFavor${nombreMes}" onchange="usarSaldoFavor('${nombreMes}')" disabled>
-                            </div>
+
+                            <select class="form-select imput" id="listaMesesSaldofavor${nombreMes}" onchange="habilitar_input_saldo_favor('${nombreMes}')" required>
+                                <option class="text-center" selected disabled>Mes</option>
+                            </select>
+                            
+                            <input type="number" id="inputUsoSaldoFavor${nombreMes}" class="form-control" onchange="calcular_uso_saldo_favor('${nombreMes}')" disabled required>
+                            <input type="hidden" id="saldoFavorActual${nombreMes}" value="">
+                        
                         </td>
                     </tr>
                 `)
-            }else{
-                tabla.append(`
-                    <tr id="data${nombreMes}">
-                        <td class="table-info">${nombreMes}</td>
-                        <input type="hidden" id="numeroMes${nombreMes}" value="${mes}">
-                        <td class="table-info" id="precio${nombreMes}">${precioMes}$</td>
-                        <td class="table-info">
-                            <div class="input-group">
-                                <input class="form-control" type="number" id="pagoAlumno${nombreMes}" 
-                                style="width: 50px;" onchange="agregar_saldo_a_la_lista('${nombreMes}')" required>
-                            </div>
-                        </td>
-                        <td class="table-info" id="saldo${nombreMes}" value=0></td>
-                        <td class="table-info">
-                            <button class="btn btn-outline-danger" type="button" onclick="eliminarPago('${nombreMes}')">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </td>
-                        <td id=BodyDeuda${nombreMes} class="table-danger"><strong class="text-danger">${deuda} $</strong></td>
-                        <input type="hidden" name="deuda${nombreMes}" id="deuda${nombreMes}" value=${deuda}>
-                        <td class="table-info">
-                            <textarea class="form-control" id="comentario${nombreMes}" rows="1" required onchange="agregar_comentario_al_json('${nombreMes}')"></textarea>
-                        </td>
-                        <td class="table-info" id="dataSaldoFavor${nombreMes}">
-                            <div class="input-group">
-                                <input type="number" min="0" max="${saldoFavor}" class="form-control" id="valorUsoSaldoFavor${nombreMes}" onchange="usarSaldoFavor('${nombreMes}')">
-                            </div>
-                        </td>
-                    </tr>
-                `)
+
+            for (let i = 0; i < dataMesesHTML.nombreMes.length; i++) {
+                for (let j = 0; j < saldoAcreedor.length; j++) {
+                    var saldoFavorHTML = $(`#optionSaldoFavor${saldoAcreedor[j].nombreMes}_Fila${dataMesesHTML.nombreMes[i]}`)
+                    if (saldoAcreedor[j].usaSaldoFavor == false) {
+                        saldoFavorHTML.remove()
+                    }
+                    if (saldoAcreedor[j].usaSaldoFavor == true && saldoFavorHTML.length == 0) {
+                        $(`#listaMesesSaldofavor${dataMesesHTML.nombreMes[i]}`).append(`
+                                    <option value="${saldoAcreedor[j].nombreMes}" id="optionSaldoFavor${saldoAcreedor[j].nombreMes}_Fila${dataMesesHTML.nombreMes[i]}" >${saldoAcreedor[j].nombreMes}</option>
+                        `)
+
+                        var mensajeSaldoFavorActual = $(`#mensajeSaldoFavorRestante`)
+                        var mensajeMes = $(`#saldoFavorActualMensaje${saldoAcreedor[j].nombreMes}`)
+
+                        if (mensajeMes.length == 0) {
+                            mensajeSaldoFavorActual.append(`
+                                <center id="saldoFavorActualMensaje${saldoAcreedor[j].nombreMes}">
+                                    <strong>el saldo a favor disponible del mes de ${saldoAcreedor[j].nombreMes} es de </strong>
+                                    <strong id="mensajeValorSaldofavorActual${saldoAcreedor[j].nombreMes}">${saldoAcreedor[j].saldoFavor} $</strong>
+                                </center>
+                            `)
+                        }
+                    }
+                }
             }
-
-
         } else {
             tabla.append(`
                     <tr id="data${nombreMes}">
-                        <td class="table-info">${nombreMes}</td>
+                        <td class="table-info" id="contenedorNombreMes${nombreMes}">${nombreMes}</td>
+                            
                         <input type="hidden" id="numeroMes${nombreMes}" value="${mes}">
-                        <td class="table-info" id="precio${nombreMes}">${precioMes}$</td>
-                        <td class="table-info">
+
+                        <td id="precio${nombreMes}" class="table-info" >${precioMes}$</td>
+
+                        <td class="table-info" id="contenedorPago${nombreMes}">
                             <div class="input-group">
                                 <input class="form-control" type="number" id="pagoAlumno${nombreMes}" 
                                 style="width: 50px;" onchange="agregar_saldo_a_la_lista('${nombreMes}')" required>
                             </div>
                         </td>
+
                         <td class="table-info" id="saldo${nombreMes}" value=0></td>
-                        <td class="table-info">
+
+                        <td class="table-info" id="contenedorEliminar${nombreMes}">
                             <button class="btn btn-outline-danger" type="button" onclick="eliminarPago('${nombreMes}')">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </td>
-                        <td id=BodyDeuda${nombreMes} class="table-danger"><strong class="text-danger">${deuda} $</strong></td>
-                        <input type="hidden" name="deuda${nombreMes}" id="deuda${nombreMes}" value=${deuda}>
-                        <td class="table-info">
+
+                        <td class="table-danger" id=BodyDeuda${nombreMes}>
+                            <strong class="text-danger">${deuda} $</strong>
+                            <input type="hidden" name="deuda${nombreMes}" id="deuda${nombreMes}" value=${deuda}>
+                        </td>
+
+                        <td class="table-info" id="contenedorComentario${nombreMes}">
                             <textarea class="form-control" id="comentario${nombreMes}" rows="1" required onchange="agregar_comentario_al_json('${nombreMes}')"></textarea>
                         </td>
                     </tr>
@@ -470,40 +324,11 @@ function funValidMonth() {
 // % ------------------------- agregamos los comentarios al json ----------------------------- %
 // % -------------------------- que envia los datos al servidor ------------------------------ %
 // % ----------------------------------------------------------------------------------------- %
-function agregar_comentario_al_json(nombreMes){
+function agregar_comentario_al_json(nombreMes) {
     var comentario = $(`#comentario${nombreMes}`).val()
     const Index = dataMesesHTML.nombreMes.indexOf(nombreMes)
-    if(comentario != "") dataMesesHTML.comentario[Index] = comentario
+    if (comentario != "") dataMesesHTML.comentario[Index] = comentario
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // % ----------------------------------------------------------------------------------------- %
 // % -------------------- calculamos el saldo a favor que posee el alumno -------------------- %
@@ -521,52 +346,68 @@ function calcular_saldo_a_favor() {
                 var contador = 0
                 var saldofavor = 0
 
-                console.log("")
-                console.log("-------------------------------------------------")
-                console.log("-------------------------------------------------")
                 for (let i = 0; i < saldoAcreedor.length; i++) {
+
                     if (saldoAcreedor[i].idAlumno == idAlumno) {
                         contador++
+
                         saldofavor += saldoAcreedor[i].saldoFavor
-                        console.log("datos del saldo a favor")
-                        console.log(saldoAcreedor[i])
+                        var mensajeSaldoFavor = $(`#mensajeSaldoFavor`)
+                        var listaSaldoFavor = $(`#listaSaldoFavor`)
+                        var saldoFavorMes = $(`#elementoListaSaldoFavor${saldoAcreedor[i].nombreMes}`)
+                        var checkboxMes = $(`#checkbox${saldoAcreedor[i].nombreMes}`)
+
+                        if (mensajeSaldoFavor.html() == "") {
+                            mensajeSaldoFavor.html(`
+                                <center id="saldoFavorSelectMensaje">
+                                    <strong>selecciona el saldo a favor que desea usar para pagar</strong>
+                                </center>
+                            `)
+                        }
+
+                        if (saldoFavorMes.length == 0) {
+                            listaSaldoFavor.append(`
+                                <li class="list-group-item" id="elementoListaSaldoFavor${saldoAcreedor[i].nombreMes}">
+                                    <input class="form-check-input me-1" type="checkbox" value="" id="checkbox${saldoAcreedor[i].nombreMes}" onchange="cambiar_uso_saldo_favor('${saldoAcreedor[i].nombreMes}')">
+                                    <label class="form-check-label" for="checkbox${saldoAcreedor[i].nombreMes}">
+                                        <strong>${saldoAcreedor[i].saldoFavor}</strong>
+                                    </label>
+                                    <span class="badge bg-primary rounded-pill">${saldoAcreedor[i].nombreMes}</span>
+                                    <input type="hidden" id="SaldoFavor${saldoAcreedor[i].nombreMes}" value=${saldoAcreedor[i].saldoFavor}>
+                                </li>
+                            `)
+                        }
+
+                        $('#divSaldofavor').html(`
+                            <div class="d-grid gap-2 col-6 mx-auto">
+                                <button class="btn btn-primary" type="button" id="usarSaldofavor" onclick="agregarSaldoFavor()">usar el saldo a favor seleccionado</button>
+                            </div>
+                        `)
                     }
                 }
-                console.log("-------------------------------------------------")
-                console.log("-------------------------------------------------")
-                console.log("")
-
-
-
-                if (saldofavor > 0) {
-                    $('#saldoFavorTotal').html(`
-                    <div class="position-relative py-2 px-4 text-bg-secondary border border-secondary rounded-pill">
-                        <strong id="saldoFavorAlumno">El saldo a favor del alumno: ${nombreAlumno} es de ${saldofavor} $</strong> <svg width="1em" height="1em" viewBox="0 0 16 16"
-                            class="position-absolute top-100 start-50 translate-middle mt-1"
-                            fill="var(--bs-secondary)" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                        </svg>
-                    </div>
-
-                    <input type="hidden" id="Saldofavor_${idAlumno}" value=${saldofavor}>
-                `)
-
-                    $('#divSaldofavor').html(`
-                    <div class="d-grid gap-2 col-6 mx-auto">
-                        <button class="btn btn-primary" type="button" id="usarSaldofavor" onclick="agregarSaldoFavor()">usar saldo a favor</button>
-                    </div>
-                `)
-                }
-
                 if (contador == 0) {
                     alert("el alumno seleccionado no tiene saldo a favor")
-                    $('#saldoFavorTotal').html("")
+                    //$('#saldoFavorSelectMensaje').html("")
+                    //$(`#listaSaldoFavor`).html("")
                 }
             }
         })
     }
 }
+
+function cambiar_uso_saldo_favor(nombreMes) {
+    $(document).ready(function () {
+        var saldoFavorMes = $(`#SaldoFavor${nombreMes}`).val()
+        var checkMes = $(`#checkbox${nombreMes}`).prop('checked')
+
+        for (let i = 0; i < saldoAcreedor.length; i++) {
+            if (saldoAcreedor[i].nombreMes == nombreMes) {
+                saldoAcreedor[i].usaSaldoFavor = checkMes
+            }
+        }
+    })
+}
+
 
 // % ----------------------------------------------------------------------------------------- %
 // % ----------------------------- agregamos un input para usar ------------------------------ %
@@ -584,36 +425,176 @@ function agregarSaldoFavor() {
         var idAlumno = $("#idAlumno").val()
         var valorSaldoFavor = $(`#Saldofavor_${idAlumno}`).val()
         var nombresMeses = dataMesesHTML.nombreMes
+        //console.log(nombresMeses)
 
         if (saldoFavorHeadHTML.length == 0) {
             if (saldoFavor.length == 0) {
                 HeadTabla.append(`
-                <th id="saldoFavor">Usar saldo a favor para pagar</th>        
-            `)
+                    <th id="saldoFavor">Usar saldo a favor para pagar</th>        
+                `)
+
                 for (let i = 0; i < nombresMeses.length; i++) {
                     $(`#data${nombresMeses[i]}`).append(`
-                    <td class="table-info" id="dataSaldoFavor${nombresMeses[i]}">
-                        <div class="input-group">
-                            <input type="number" min="0" max="${valorSaldoFavor}" class="form-control" id="valorUsoSaldoFavor${nombresMeses[i]}" onchange="usarSaldoFavor('${nombresMeses[i]}')">
-                        </div>
-                    </td>
-                `)
-                }
-            } else {
-                for (let i = 0; i < nombresMeses.length; i++) {
-                    $(`#data${nombresMeses[i]}`).append(`
-                    <td class="table-info" id="dataSaldoFavor${nombresMeses[i]}">
-                        <div class="input-group">
-                            <input type="number" min="0" max="${valorSaldoFavor}" class="form-control" id="valorUsoSaldoFavor${nombresMeses[i]}" onchange="usarSaldoFavor('${nombresMeses[i]}')">
-                        </div>
-                    </td>
-                `)
+                        <td class="table-info" id="dataSaldoFavor${nombresMeses[i]}">
+
+                            <select class="form-select imput" id="listaMesesSaldofavor${nombresMeses[i]}" onchange="habilitar_input_saldo_favor('${nombresMeses[i]}')" required>
+                                <option class="text-center" selected disabled>Mes</option>
+                            </select>
+                            
+                            <input type="number" id="inputUsoSaldoFavor${nombresMeses[i]}" class="form-control" onchange="calcular_uso_saldo_favor('${nombresMeses[i]}')" disabled required>
+                            <input type="hidden" id="saldoFavorActual${nombresMeses[i]}" value="">
+                        
+                        </td>
+                    `)
                 }
             }
         }
-        $('#usarSaldofavor').remove()
-    })
 
+        for (let i = 0; i < nombresMeses.length; i++) {
+            dataArray.push({ fila: nombresMeses[i], mesesSaldoFavor: [] })
+        }
+
+        for (let i = 0; i < dataArray.length; i++) {
+            for (let j = 0; j < saldoAcreedor.length; j++) {
+                dataArray[i].mesesSaldoFavor.push(saldoAcreedor[j])
+            }
+        }
+
+        for (let i = 0; i < dataMesesHTML.nombreMes.length; i++) {
+            for (let j = 0; j < saldoAcreedor.length; j++) {
+
+                var saldoFavorHTML = $(`#optionSaldoFavor${saldoAcreedor[j].nombreMes}_Fila${dataMesesHTML.nombreMes[i]}`)
+
+                if (saldoAcreedor[j].usaSaldoFavor == false) {
+                    saldoFavorHTML.remove()
+                }
+
+                if (saldoAcreedor[j].usaSaldoFavor == true && saldoFavorHTML.length == 0) {
+                    $(`#listaMesesSaldofavor${dataMesesHTML.nombreMes[i]}`).append(`
+                                <option value="${saldoAcreedor[j].nombreMes}" id="optionSaldoFavor${saldoAcreedor[j].nombreMes}_Fila${dataMesesHTML.nombreMes[i]}" >${saldoAcreedor[j].nombreMes}</option>
+                    `)
+
+                    if ($(`#saldoFavorDisponible${saldoAcreedor[j].nombreMes}`).length == 0) {
+                        $(`#divSaldoActual`).append(`
+                            <input type="hidden" id="saldoFavorDisponible${saldoAcreedor[j].nombreMes}" value="${saldoAcreedor[j].saldoFavor}">
+                            <input type="hidden" id="ultimoMesQueUso${saldoAcreedor[j].nombreMes}" value="" >
+                        `)
+                    }
+
+                    var mensajeSaldoFavorActual = $(`#mensajeSaldoFavorRestante`)
+                    var mensajeMes = $(`#saldoFavorActualMensaje${saldoAcreedor[j].nombreMes}`)
+
+                    if (mensajeMes.length == 0) {
+                        mensajeSaldoFavorActual.append(`
+                            <center id="saldoFavorActualMensaje${saldoAcreedor[j].nombreMes}">
+                                <strong>el saldo a favor disponible del mes de ${saldoAcreedor[j].nombreMes} es de </strong>
+                                <strong id="mensajeValorSaldofavorActual${saldoAcreedor[j].nombreMes}">${saldoAcreedor[j].saldoFavor} $</strong>
+                            </center>
+                        `)
+                    }
+                }
+            }
+        }
+    })
+}
+
+// % ----------------------------------------------------------------------------------------- %
+// % -------- cuando el usauario seleccione el mes del que hara uso del saldo a favor -------- %
+// % --------------- habilitamos para que coloque el saldo a favor que usara  ---------------- %
+// % ----------------------------------------------------------------------------------------- %
+function habilitar_input_saldo_favor(nombreMesFila) {
+    $(document).ready(function () {
+        var saldoFavorListaHTML = $(`#listaMesesSaldofavor${nombreMesFila}`).val()
+        var inputSaldoFavorHTML = $(`#inputUsoSaldoFavor${nombreMesFila}`)
+        inputSaldoFavorHTML.prop('disabled', false);
+        inputSaldoFavorHTML.val('')
+    })
+}
+
+// % ----------------------------------------------------------------------------------------- %
+// % ------------------- cuando el usuario usa el saldo a favor para pagar ------------------- %
+// % ------------ hacemos los calculos para obtener el el saldo a favor restante ------------- %
+// % ----------------------------------------------------------------------------------------- %
+function calcular_uso_saldo_favor(nombreMesFila) {
+    var usoSaldoFavorHTML = $(`#inputUsoSaldoFavor${nombreMesFila}`)
+    var valorUsoSaldoFavor = parseInt(usoSaldoFavorHTML.val())
+    var nombreMesSaldoFavorSeleccionado = $(`#listaMesesSaldofavor${nombreMesFila}`).val()
+    var hiddenSaldoFavorActual = $(`#saldoFavorActual${nombreMesFila}`)
+    hiddenSaldoFavorActual.val(0)
+
+    //#: 1) recorremos los elementos de la tabla
+    for (let i = 0; i < dataMesesHTML.nombreMes.length; i++) {
+        //#: 2) el elemento es igual a la fila en la que estamos trabajando
+        if (dataMesesHTML.nombreMes[i] == nombreMesFila) {
+            //#: 3) recorremos el array de saldo a favor
+            for (let j = 0; j < saldoAcreedor.length; j++) {
+                //#: 4) el elemento es igual al mes del saldo a favor seleccionado en la fila
+                if (saldoAcreedor[j].nombreMes == nombreMesSaldoFavorSeleccionado) {
+                    //#: 6) el saldo a favor usado es mayor al saldo a favor total disponible
+                    if (valorUsoSaldoFavor > saldoAcreedor[j].saldoFavor) {
+                        alert(`no puede colocar un saldo mayor al que tiene disponible en el saldo a favor del mes de ${saldoAcreedor[i].nombreMes} que es de ${saldoAcreedor[j].saldoFavor}$`)
+                        usoSaldoFavorHTML.val("")
+                    } else {
+                        var saldoTotal = 0
+                        for (let k = 0; k < dataMesesHTML.nombreMes.length; k++) {
+                            var mesSeleccionadoK = $(`#listaMesesSaldofavor${dataMesesHTML.nombreMes[k]}`).val()
+                            var salodFavorUsadoK = $(`#inputUsoSaldoFavor${dataMesesHTML.nombreMes[k]}`).val()
+
+                            if (mesSeleccionadoK == nombreMesSaldoFavorSeleccionado) {
+                                saldoTotal += parseInt(salodFavorUsadoK)
+                            }
+                        }
+                        var saldoDisponibleHTML = $(`#saldoFavorDisponible${saldoAcreedor[j].nombreMes}`)
+
+                        if (saldoTotal > saldoAcreedor[j].saldoFavor) {
+                            var temporal = usoSaldoFavorHTML.val()
+                            alert(`no puede colocar un saldo mayor al que tiene disponible en el saldo a favor del mes de ${saldoAcreedor[j].nombreMes}`)
+                            if (saldoDisponibleHTML.val() == 0) {
+                                usoSaldoFavorHTML.val(dataMesesHTML.saldoFavorUsado[i])
+                            }
+                        } else {
+                            saldoDisponibleHTML.val(saldoAcreedor[j].saldoFavor - saldoTotal)
+                            $(`#mensajeValorSaldofavorActual${nombreMesSaldoFavorSeleccionado}`).html(`${saldoAcreedor[j].saldoFavor - saldoTotal} $`)
+                            dataMesesHTML.saldoFavorUsado[i] = valorUsoSaldoFavor
+                            dataMesesHTML.saldoFavorOriginal[i] = saldoAcreedor[j].saldoFavor
+
+                            const deudaHTML = $(`#deuda${nombreMesFila}`).val()
+                            const pagoAlumno = $(`#pagoAlumno${nombreMesFila}`).val()
+                            const Index = dataMesesHTML.nombreMes.indexOf(nombreMesFila)
+                            const precioMes = dataMesesHTML.precioMes[Index]
+
+                            // % ----------------------------------------------------------------------------------------- %
+                            // % ------------------- cuando el usuario usa el saldo a favor para pagar ------------------- %
+                            // % ---------------------- hacemos los calculos para obtener el saldo ----------------------- %
+                            // % ----------------------------------------------------------------------------------------- %
+                            var saldo = 0
+
+                            if (valorUsoSaldoFavor != undefined && valorUsoSaldoFavor != "") {
+                                if (deudaHTML != undefined) {
+                                    if (pagoAlumno != undefined && pagoAlumno != "") {
+                                        saldo = valorUsoSaldoFavor + parseInt(pagoAlumno) - parseInt(deudaHTML)
+                                    } else {
+                                        saldo = valorUsoSaldoFavor - parseInt(deudaHTML)
+                                    }
+                                } else {
+                                    if (pagoAlumno != undefined && pagoAlumno != "") {
+                                        saldo = valorUsoSaldoFavor + parseInt(pagoAlumno) - parseInt(precioMes)
+                                    } else {
+                                        saldo = valorUsoSaldoFavor - parseInt(precioMes)
+                                    }
+                                }
+                            }
+
+                            const saldoMes = $(`#saldo${nombreMesFila}`)
+                            saldoMes.html(`${saldo} $`)
+                            saldoMes.val(saldo)
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // % ----------------------------------------------------------------------------------------- %
@@ -629,168 +610,24 @@ function agregarSaldoFavorArray(data) {
 }
 
 // % ----------------------------------------------------------------------------------------- %
-// % ------------------- cuando el usuario usa el saldo a favor para pagar ------------------- %
-// % ---------------------- hacemos los calculos para obtener el saldo ----------------------- %
-// % ----------------------------------------------------------------------------------------- %
-function usarSaldoFavor(nombreMes) {
-    $(document).ready(function () {
-        //#: datos del id alumno
-        const idAlumno = $("#idAlumno").val()
-
-        //#: datos del saldo a favor
-        const saldofavorHiddenHTML = parseInt($(`#Saldofavor_${idAlumno}`).val())
-        const usaSaldoFavorHTML = $(`#valorUsoSaldoFavor${nombreMes}`)
-        const usaSaldoFavor = parseInt(usaSaldoFavorHTML.val())
-        const saldoFavorAlumnoMensaje = $(`#saldoFavorAlumno`)
-        const divSaldoFavorTotal = $(`#saldoFavorTotal`)
-        const hiddenSaldoFavorActual = $(`#SaldofavorActual_${idAlumno}`)
-
-        //#: datos del pago del alumno
-        const pagoAlumno = $(`#pagoAlumno${nombreMes}`).val()
-
-        //#: datos de la deuda del alumno
-        const BodyDeudaHTML = $(`#BodyDeuda${nombreMes}`)
-        const deudaMes = $(`#deuda${nombreMes}`).val()
-
-        //#: datos del saldo y precio del mes seleccionadd
-        const saldoMes = $(`#saldo${nombreMes}`)
-        const Index = dataMesesHTML.nombreMes.indexOf(nombreMes)
-        const precioMes = dataMesesHTML.precioMes[Index]
-        
-        var saldoTotal = 0
-        var saldoFavorActual = 0
-        var saldoActual = 0
-
-        console.log(`usaSaldoFavorHTML.val(): ${usaSaldoFavorHTML.val()}`)
-
-        if(usaSaldoFavorHTML.val() != ""){
-            dataMesesHTML.usoSaldoFavor[Index] = true
-        }else{
-            dataMesesHTML.usoSaldoFavor[Index] = false
-        }
-
-        if (usaSaldoFavor > saldofavorHiddenHTML) {
-            alert("no puede colocar un valor mayor al saldo a favor disponible para usar")
-            usaSaldoFavorHTML.val("")
-        } else {
-            //?: 1) sumamos todo el saldo a favor usado en cada fila
-            for (let i = 0; i < dataMesesHTML.nombreMes.length; i++) {
-                const saldoFavorUsadoN = $(`#valorUsoSaldoFavor${dataMesesHTML.nombreMes[i]}`)
-                //console.log(saldoFavorUsadoN)
-                //console.log(`saldoFavorUsadoN.val(): ${saldoFavorUsadoN.val()}`)
-                if (saldoFavorUsadoN.val() != "") saldoActual += parseInt(saldoFavorUsadoN.val())
-            }
-
-            //?: 2) calculamos el saldo total (para mostrarlo en la tabla) que queda usando el saldo a favor
-            if (usaSaldoFavor > 0) {
-                if (deudaMes > 0) {
-                    if (pagoAlumno != "") {
-                        saldoTotal = parseInt(pagoAlumno) + usaSaldoFavor - deudaMes
-                    } else {
-                        saldoTotal = usaSaldoFavor - deudaMes
-                    }
-                } else {
-                    if (pagoAlumno != "") {
-                        saldoTotal = parseInt(pagoAlumno) + usaSaldoFavor - precioMes
-                    } else {
-                        saldoTotal = usaSaldoFavor - precioMes
-                    }
-                }
-            }
-            //?: 3) calculamos el saldo a favor actual restando la suma de los saldos 
-            //?:    a favor de toda la tabla con el saldo a favor disponible del alumno
-            saldoFavorActual = saldofavorHiddenHTML - saldoActual
-
-            //?: 4) mostramos el saldo total luego de realizar la cuenta y lo mostramos en la tabla
-            const saldoMes = $(`#saldo${nombreMes}`)
-            saldoMes.html(`${saldoTotal} $`)
-            saldoMes.val(saldoTotal)
-
-            //?: 5) validamos que no se coloque un saldo a favor mayor al disponible para usar
-            if (saldoFavorActual < 0) {
-                alert("no puede colocar un numero mayor al saldo disponible")
-                usaSaldoFavorHTML.val("")
-            }
-            //?: 5) si ya no queda saldo a favor disponible desactivamos los demas inputs
-            if (saldoFavorActual == 0) {
-                for (let i = 0; i < dataMesesHTML.nombreMes.length; i++) {
-                    const saldoFavorUsadoN = $(`#valorUsoSaldoFavor${dataMesesHTML.nombreMes[i]}`)
-                    //console.log(`saldoFavorUsadoN.val(): ${saldoFavorUsadoN.val()}`)
-                    if (saldoFavorUsadoN.val() == "") {
-                        saldoFavorUsadoN.prop('disabled', true);
-                    }
-                }
-            } else {
-                for (let i = 0; i < dataMesesHTML.nombreMes.length; i++) {
-                    const saldoFavorUsadoN = $(`#valorUsoSaldoFavor${dataMesesHTML.nombreMes[i]}`)
-                    saldoFavorUsadoN.prop('disabled', false);
-                }
-            }
-
-            //?: 5) agregamos el saldo a favor actual como un input hidden
-            if (hiddenSaldoFavorActual.length == 0) {
-                divSaldoFavorTotal.append(`
-                    <input type="hidden" id="SaldofavorActual_${idAlumno}" value=${saldoFavorActual}>
-                `)
-            } else {
-                hiddenSaldoFavorActual.val(saldoFavorActual)
-            }
-
-            //?: 6) mostramos un mensaje con el saldo a favor dispoble en el momento
-            //#: datos del mensaje de saldo a favor mostrado
-            var splitMsg = saldoFavorAlumnoMensaje.html().split("es de")
-            var nuevoMensaje = `${splitMsg[0]} es de ${saldoFavorActual}$`
-            var hiddenSaldoFavor = $(`#Saldofavor_${idAlumno}`)
-
-            if (saldoFavorActual > 0) {
-                saldoFavorAlumnoMensaje.html(nuevoMensaje)
-            } else {
-                var splitMsg2 = saldoFavorAlumnoMensaje.html().split("alumno:")
-                var nombreAlumno = splitMsg2[1].split("es de")
-                saldoFavorAlumnoMensaje.html(`ya uso todo el saldo a favor disponible del alumno: ${nombreAlumno[0]}`)
-            }
-        }
-    })
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// % ----------------------------------------------------------------------------------------- %
 // % ------------------- cuando el usuario elimina un es de la lista ------------------------- %
 // % --------------------------- borramos el mes de la lista y ------------------------------- %
 // % -------------------- borramos los datos guardados en los arrays ------------------------- %
 // % ----------------------------------------------------------------------------------------- %
-
 function eliminarPago(nombreMes) {
     const index = dataMesesHTML.nombreMes.indexOf(nombreMes)
 
     dataMesesHTML.numeroMes.splice(index, 1)
     dataMesesHTML.nombreMes.splice(index, 1)
     dataMesesHTML.precioMes.splice(index, 1)
+    dataMesesHTML.pagoAlumno.splice(index, 1)
     dataMesesHTML.saldoMes.splice(index, 1)
     dataMesesHTML.deuda.splice(index, 1)
-    dataMesesHTML.usoSaldoFavor.splice(index, 1)
+    dataMesesHTML.saldoFavor.splice(index, 1)
     dataMesesHTML.comentario.splice(index, 1)
+    dataMesesHTML.nombreMesSaldoFavor.splice(index, 1)
+    dataMesesHTML.saldoFavorOriginal.splice(index, 1)
+    dataMesesHTML.saldoFavorUsado.splice(index, 1)
 
     $(`#data${nombreMes}`).remove()
 }
@@ -805,10 +642,8 @@ function agregar_saldo_a_la_lista(nombreMes) {
         const Index = dataMesesHTML.nombreMes.indexOf(nombreMes)
         const precioMes = dataMesesHTML.precioMes[Index]
         const deuda = $(`#deuda${nombreMes}`).val()
-        const usaSaldoFavorHTML = $(`#valorUsoSaldoFavor${nombreMes}`).val()
+        const usaSaldoFavorHTML = $(`#inputUsoSaldoFavor${nombreMes}`).val()
         var saldo = 0
-
-        //console.log(`usaSaldoFavorHTML: ${usaSaldoFavorHTML}`)
 
         if (usaSaldoFavorHTML != undefined && usaSaldoFavorHTML != "") {
             if (deuda > 0) {
@@ -841,7 +676,7 @@ function agregar_saldo_a_la_lista(nombreMes) {
 // % ----------------------------------------------------------------------------------------- %
 $(document).ready(function () {
     $("#formularioAgregarPago").submit(function (e) {
-        //e.preventDefault();
+        e.preventDefault();
         const mes = $("#mesInput").val();
         const numeroMes = mes.split('-')[1];
         const nombreMes = dataMes.nombreMes[dataMes.numeroMes.indexOf(numeroMes)];
@@ -855,17 +690,12 @@ $(document).ready(function () {
         const transformData = dataRequest.replace(/"/g, "'")
         var dataString = `"${transformData}"`
 
-        //console.log("dataMesesHTML")
-        //console.log(dataMesesHTML)
-        //console.log("transformamos el json en string")
-        //console.log(transformData)
-        //console.log("---------------------------------------------------")
-        //console.log($(`#dataTotal`).val())
-        //console.log("---------------------------------------------------")
-
         const idAlumn = $(`#idAlumno`).val()
 
         ordenarArray(dataMesesHTML)
+
+        console.log("dataMesesHTML")
+        console.log(dataMesesHTML)
 
         if (!idAlumn) {
             alert("no ha seleccionado ningun alumno para pagar")
@@ -899,7 +729,10 @@ function ordenarArray(jsonData) {
     var saldoMesTemp
     var deudaTemp
     var saldoFavorTemp
-    var tempComentario
+    var comentariotemp
+    var nombreMesSaldoFavortemp
+    var saldoFavorOriginalTemp
+    var saldoFavorUsadoTemp
 
     contador = 0
 
@@ -941,14 +774,28 @@ function ordenarArray(jsonData) {
                 jsonData.usoSaldoFavor[contador] = jsonData.usoSaldoFavor[index]
                 jsonData.usoSaldoFavor[index] = saldoFavorTemp
 
-                //#: ordenamos el array de comntarios
-                tempComentario = jsonData.comentario[contador]
+                //#: ordenamos el array de comentarios
+                comentariotemp = jsonData.comentario[contador]
                 jsonData.comentario[contador] = jsonData.comentario[index]
-                jsonData.comentario[index] = saldoFavorTemp
+                jsonData.comentario[index] = comentariotemp
+
+                //#: ordenamos el array de los nombre de los meses de los saldo a favor
+                nombreMesSaldoFavortemp = jsonData.nombreMesSaldoFavor[contador]
+                jsonData.nombreMesSaldoFavor[contador] = jsonData.nombreMesSaldoFavor[index]
+                jsonData.nombreMesSaldoFavor[index] = nombreMesSaldoFavortemp
+
+                //#: ordenamos el array de los saldo a favor maximos disponibles
+                saldoFavorOriginalTemp = jsonData.saldoFavorOriginal[contador]
+                jsonData.saldoFavorOriginal[contador] = jsonData.saldoFavorOriginal[index]
+                jsonData.saldoFavorOriginal[index] = saldoFavorOriginalTemp
+
+                //#: ordenamos el array del uso de los saldos a favor
+                saldoFavorUsadoTemp = jsonData.saldoFavorUsado[contador]
+                jsonData.saldoFavorUsado[contador] = jsonData.saldoFavorUsado[index]
+                jsonData.saldoFavorUsado[index] = saldoFavorUsadoTemp
 
                 contador++
             }
         })
     })
 }
-

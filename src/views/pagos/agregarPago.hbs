@@ -50,31 +50,8 @@
                         <input type="hidden" name="idCourse" id="idCourse" value="{{dataCourse._id}}">
                     </div>
 
-                    {{!-- <div class="input-group mb-3">
-                        <label class="input-group-text" for="inputGroupSelect01" id="idAlumno" name="idAlumno"
-                            required>Selecciona el alumno que paga</label>
-                        <select class="form-select" id="inputGroupSelect01">
-                            {{#each alumnList}}
-                            <option value="{{_id}}">{{nombre}} {{apellido}}</option>
-                            {{/each}}
-                        </select>
-                    </div> --}}
 
                     <div class="d-grid gap-2 mx-auto text-center pt-1" id="saldoFavorTotal">
-                        {{!-- <div
-                            class="position-relative py-2 px-4 text-bg-secondary border border-secondary rounded-pill">
-                            <strong id="saldoFavorAlumno">El saldo a favor del alumno: dsadasdsa es de xxxx $</strong>
-                            <svg width="1em" height="1em" viewBox="0 0 16 16"
-                                class="position-absolute top-100 start-50 translate-middle mt-1"
-                                fill="var(--bs-secondary)" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-                            </svg>
-                        </div>
-                        <div class="d-grid gap-2 col-6 mx-auto">
-                            <button class="btn btn-primary" type="button" id="usarSaldofavor">usar saldo a
-                                favor</button>
-                        </div> --}}
                     </div>
 
                     <!-- seleccionar alumno que paga -->
@@ -87,23 +64,25 @@
                             {{/each}}
                         </select>
                         <div id="divSaldofavor" class="d-grid gap-2 d-md-flex justify-content-center">
-{{!--                             <button id="botonSaldoFavor" class="btn btn-outline-dark" type="button">Calcular Saldo A
-                                Favor del
-                                alumno</button> --}}
                         </div>
                     </div>
 
+                    <div id="mensajeSaldoFavor"></div>
 
+                    <div class="">
+                        <div class="input-group">
+                            <ul class="list-group mx-auto" id="listaSaldoFavor"></ul>
+                        </div>
+                    </div>
 
-                    <!-- impot comentario pago/s -->
-{{!--                     <div class="input-group mb-4 pt-4">
-                        <label for="comentario" class="input-group-text">Comentarios</label>
-                        <input type="text" class="form-control" id="comentario" name="comentario"
-                            placeholder="ingresar el comentario" required>
-                    </div> --}}
+                    <div id="divSaldoActual" class="">
+                    </div>
+
+                    <div id="mensajeSaldoFavorRestante"></div>
+
 
                     <!-- boton de enviar datos -->
-                    <div class="d-grid pt-4">
+                    <div class="d-grid pt-2">
                         <button type="submit" class="btn btn-primary">
                             Guardar Datos
                         </button>
