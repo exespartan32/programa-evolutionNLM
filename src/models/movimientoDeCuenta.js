@@ -34,7 +34,7 @@ const saldoSchema = new Schema({
         type: Number,
         required: true
     },
-    saldoFavorUsado:{
+    saldoAcreedorUsado:{
         type: Number,
         //default: 0,
         required: true

@@ -64,19 +64,18 @@ paymentControllers.savePayment = async (req, res) => {
     const ArrayNumeroMeses = jsonData.numeroMes
     const ArrayNombreMeses = jsonData.nombreMes
     const ArrayPrecioMes = jsonData.precioMes
+    const ArrayPagoAlumno = jsonData.pagoAlumno
     const ArraySaldoMes = jsonData.saldoMes
     const ArrayDeudaMes = jsonData.deuda
-    const ArrayPagoAlumno = jsonData.pagoAlumno
     const ArrayUsoSaldoFavor = jsonData.usoSaldoFavor
     const ArrayComentario = jsonData.comentario
+    const ArrayNombreMesSaldoFavor = jsonData.nombreMesSaldoFavor
+    const ArrayNumeroMesSaldoFavor = jsonData.numeroMesSaldoFavor
+    const ArraySaldoFavorOriginal = jsonData.saldoFavorOriginal
+    const ArraySaldoFavorUsado = jsonData.saldoFavorUsado
     const arraySuccesses = []
     const arrayErrors = []
     var IdPagoConjunto = new mongoose.Types.ObjectId();
-
-    //console.log("IdPagoConjunto: " + IdPagoConjunto)
-    //console.log("ArrayNumeroMeses")
-    //console.log(ArrayNumeroMeses)
-    //console.log(ArrayNumeroMeses.length)
 
     for (let i = 0; i < ArrayNumeroMeses.length; i++) {
         //#: datos de cada item
@@ -87,7 +86,11 @@ paymentControllers.savePayment = async (req, res) => {
         var deudaMesI = ArrayDeudaMes[i]
         var pagoAlumnoI = ArrayPagoAlumno[i]
         var usaSaldoFavorI = ArrayUsoSaldoFavor[i]
-        var comentario = ArrayComentario[i]
+        var comentarioI = ArrayComentario[i]
+        var nombreMesSaldoFavorI = ArrayNombreMesSaldoFavor[i]
+        var saldoFavorOriginalI = ArraySaldoFavorOriginal[i]
+        var saldoFavorUsadoI = ArraySaldoFavorUsado[i]
+        var numeroMesSaldoFavorI = ArrayNumeroMesSaldoFavor[i]
 
         //#: variables de busquedas
         const valCourse = await valorCurso.find({ mes: NumeroMesI, idCurso: idCurso })
@@ -101,88 +104,88 @@ paymentControllers.savePayment = async (req, res) => {
         var debe = 0
         var haber = pagoAlumnoI
         var numeroBoleta = 0
-        var saldoFavorUsado = 0
-        var ultimFechUsoSaldoFavor = ""
+        var ultimFechUsoSaldoFavor = null
+        var saldoFavorTotalUsado = 0
 
-        //?: cuando el pago del alumno cancela la deuda
-        if (saldoMesI == 0) {
-            estado = 'pago_total'
-        } else {
-            //?: cuando el pago del alumno es mayor a la deuda queda con saldo a favor
+        //?: 1) calculamos el numero de boleta 
+        if (datosDB.length > 0) {
+            numeroBoleta = datosDB.at(-1).NumeroBoleta
+        }
+        var numeroBoletaActual = parseInt(numeroBoleta) + 1
+
+        //?: 2) calculamos si tiene deuda o saldo a favor
+        if (saldoMesI != 0) {
             if (saldoMesI > 0) {
                 acreedor = saldoMesI
                 estado = 'saldo_a_favor'
             }
-            //?: cuando el pago del alumno no cancela el total de la deuda sigue qudando con el saldo en negativo
-            else {
+            if (saldoMesI < 0) {
                 deudor = Math.abs(saldoMesI)
                 estado = 'pago_parcial'
             }
-        }
-        var objectpayment
+        } else { estado = 'pago_total' }
+
+        //?: 2) si el mes pagado tiene deuda el haber es la deuda 
+        //?:    en caso contrario el haber sera el precio del mes
         if (deudaMesI > 0) {
             debe = deudaMesI
         } else {
             debe = precioMesI
         }
 
-        if(datosDB.length == 0){
-            //numeroBoleta = 0
-            ultimFechUsoSaldoFavor = setDate()
-        }else{
-            numeroBoleta = datosDB.at(-1).NumeroBoleta
-            saldoFavorUsado = 1
-            ultimFechUsoSaldoFavor = setDate()
+        //?: 3) modificamos el registro del mes con el saldo a favor usado
+        if (usaSaldoFavorI == true) {
+            const valCourseSaldoFavor = await valorCurso.find({ mes: numeroMesSaldoFavorI, idCurso: idCurso })
+            var idValorCursoSaldoFavor = valCourseSaldoFavor[0]._id
+
+            for (let j = 0; j < ArraySaldoFavorUsado.length; j++) {
+                if (ArrayNombreMesSaldoFavor[i] == ArrayNombreMesSaldoFavor[j]) {
+                    saldoFavorTotalUsado += ArraySaldoFavorUsado[j]
+                }
+            }
+
+            const saldoFavorUsadoDB = await movAcc.find({
+                idCurso: idCurso,
+                idAlumno: idAlumno,
+                idValorCurso: idValorCursoSaldoFavor,
+                Estado: "saldo_a_favor"
+            })
+
+            saldoFavorTotalUsado += saldoFavorUsadoDB[0].saldoAcreedorUsado
+
+            var datosDBSaldoFavor = await movAcc.findOneAndUpdate({
+                idCurso: idCurso,
+                idAlumno: idAlumno,
+                idValorCurso: idValorCursoSaldoFavor
+            }, {
+                saldoAcreedorUsado: saldoFavorTotalUsado,
+                ultimFechUsoSaldoFavor: setDate()
+            })
+
+            if (datosDBSaldoFavor) {
+                console.log("el registro del saldo a favor usado se actualizo correctamente")
+            } else {
+                console.log("¡ERROR! el registro del saldo a favor usado no se pudo actualizar")
+            }
         }
 
-        var numeroBoletaActual = parseInt(numeroBoleta) + 1
-
-        console.log("")
-        console.log(`datosDB.length: ${datosDB.length}`)
-        console.log("-----------------------------")
-        console.log(`la deuda de ${NombreMesI} es de ${deudaMesI}`)
-        console.log("-----------------------------")
-        console.log(`debe: ${debe}`)
-        console.log(`haber: ${haber}`)
-        console.log(`saldo acreedor: ${acreedor}`)
-        console.log(`saldo deudor: ${deudor}`)
-        console.log(`estado: ${estado}`)
-        console.log(`precio del mes: ${precioMesI}`)
-        console.log(`pago Alumno: ${pagoAlumnoI}`)
-        console.log(`usa saldo a favor para pagar?: ${usaSaldoFavorI}`)
-        console.log(`Ultimo numero de Boleta: ${numeroBoleta}`)
-        console.log(`numeroBoletaActual: ${numeroBoletaActual}`)
-        console.log(`saldo a favor usado: ${saldoFavorUsado}`)
-        console.log(`ultimFechUsoSaldoFavor: ${ultimFechUsoSaldoFavor}`)
-        console.log("-----------------------------")
-        console.log("-----------------------------")
-
-        //console.log(`ultimo numero de boleta ${numeroBoleta}`)
-        //console.log(`numero de boleta actual ${numeroBoletaActual}`)
-        
         if (ArrayNumeroMeses.length > 1) {
-            objectpayment = createObjectPayment(numeroBoletaActual, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate(), IdPagoConjunto, saldoFavorUsado, ultimFechUsoSaldoFavor)
+            objectpayment = createObjectPayment(numeroBoletaActual, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentarioI, setDate(), IdPagoConjunto, 0, ultimFechUsoSaldoFavor)
         } else {
-            objectpayment = createObjectPayment(numeroBoletaActual, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate(), "", saldoFavorUsado, ultimFechUsoSaldoFavor)
+            objectpayment = createObjectPayment(numeroBoletaActual, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentarioI, setDate(), "", 0, ultimFechUsoSaldoFavor)
         }
         console.log(objectpayment)
-        
+
         const resDB = await objectpayment.save()
         if (resDB) {
             arraySuccesses.push(`el pago ${haber}$ corresponiente al mes de ${NombreMesI} se guardo correctamente`)
         } else {
             arrayErrors.push(`ocurrio un error al tratar de guardar el pago ${haber}$ corresponiente al mes de ${NombreMesI}`)
-        } 
+        }
     }
-    
     const courses = await course.find().sort({ fechaInicioCurso: 'asc' });
     res.render('pagos/selectCourseAddPayment', { courses, arraySuccesses, arrayErrors })
-    //res.send(jsonData)
 }
-
-
-
-
 
 paymentControllers.renderShowPay = async (req, res) => {
     const dataDB = await movAcc.find()
@@ -225,10 +228,7 @@ paymentControllers.seachTicket = async (req, res) => {
 // ····················· URLs para mostrar datos ·························· //
 // ------------------------------------------------------------------------ //
 paymentControllers.returnPriceMonth = async (req, res) => {
-
 }
-
-
 
 paymentControllers.priceMonthData = async (req, res) => {
     const mes = req.params.mes
@@ -290,23 +290,14 @@ paymentControllers.loadTotaldata = async (req, res) => {
 
         if (requestData.length > 0) {
             var saldoFavor = requestData.at(-1).SaldoAcreedor
-            //res.json({nombreMes: nombreMes, numeroMes: numeroMes, saldoFavor: saldoFavor})
-            console.log("------------------------------------------------------")
-            console.log("------------------------------------------------------")
-            console.log(`numeroMes: ${mes}`)
-            console.log(`saldoFavor: ${saldoFavor}`)
-            console.log("------------------------------------------------------")
-            console.log("------------------------------------------------------")
-
             response.nombreMes = nombreMes
             response.numeroMes = mes
             response.saldoFavor = saldoFavor
             response.idAlumno = idAlumno
             response.usaSaldoFavor = false
-            response.valorUsoSaldoFavor = 0
+            response.valorUsoSaldoFavor = requestData.at(-1).saldoAcreedorUsado
         }
     }
-
     res.json(response)
 }
 
@@ -320,7 +311,6 @@ paymentControllers.loadAlumndata = async (req, res) => {
 // ············ funciones para retornar informacion de DB ················· //
 // ------------------------------------------------------------------------ //
 function createObject(numeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, saldo, comentario, itemsNum, IdPagoConjunto) {
-    //const saldo = haber - deudaUltimo
     var deudor = 0
     var acreedor = 0
     estado = null
@@ -358,19 +348,6 @@ function loadNombreMes(mes) {
 
 function createObjectPayment(NumeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, fechaDB, IdPagoConjunto, saldoFavorUsado, ultimFechUsoSaldoFavor) {
     //* guardamos en DB 
-    console.log(`NumeroBoleta: ${NumeroBoleta}`)
-    console.log(`idCurso: ${idCurso}`)
-    console.log(`idAlumno: ${idAlumno}`)
-    console.log(`debe: ${debe}`)
-    console.log(`haber: ${haber}`)
-    console.log(`deudor: ${deudor}`)
-    console.log(`acreedor: ${acreedor}`)
-    console.log(`estado: ${estado}`)
-    console.log(`comentario: ${comentario}`)
-    console.log(`fechaDB: ${fechaDB}`)
-    console.log(`IdPagoConjunto: ${IdPagoConjunto}`)
-    console.log(`saldoFavorUsado: ${saldoFavorUsado}`)
-    console.log(`ultimFechUsoSaldoFavor: ${ultimFechUsoSaldoFavor}`)
     var MovAccount
     if (IdPagoConjunto != "") {
         MovAccount = new movAcc({
@@ -382,7 +359,7 @@ function createObjectPayment(NumeroBoleta, idCurso, idAlumno, idValorCurso, debe
             Haber: haber,
             SaldoDeudor: deudor,
             SaldoAcreedor: acreedor,
-            saldoFavorUsado: saldoFavorUsado,
+            saldoAcreedorUsado: saldoFavorUsado,
             ultimFechUsoSaldoFavor: ultimFechUsoSaldoFavor,
             Estado: estado,
             IdPagoConjunto: IdPagoConjunto,
@@ -399,7 +376,7 @@ function createObjectPayment(NumeroBoleta, idCurso, idAlumno, idValorCurso, debe
             Haber: haber,
             SaldoDeudor: deudor,
             SaldoAcreedor: acreedor,
-            saldoFavorUsado: saldoFavorUsado,
+            saldoAcreedorUsado: saldoFavorUsado,
             ultimFechUsoSaldoFavor: ultimFechUsoSaldoFavor,
             Estado: estado,
             Comentario: comentario,
@@ -418,8 +395,5 @@ function setDate() {
     })
     return new Date(dateParse.fechaCreacion.getTime() - (dateParse.offset * 60000));
 }
-
-
-
 
 module.exports = paymentControllers
