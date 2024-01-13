@@ -1,17 +1,40 @@
-<div class="container text-center" style="padding-top: 30px;">
+{{!-- cuando hay mas de un mensaje que mostrar --}}
+{{#each arraySuccesses}}
+<div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+    <img src="/img/icon/tick.png" alt="" height="40">
+    <strong>{{this}}!</strong>
+    <img src="/img/icon/tick.png" alt="" height="40">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/each}}
+
+{{#each arrayErrors}}
+<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+    {{this}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/each}}
+
+
+<div class="container hidden-center" style="padding-top: 30px;">
     {{#if arrayData}}
     <div class="row">
-        <div class="table-responsive-md text-center">
+        <div class="table-responsive-md hidden-center">
             <br>
-            <table class="table table-dark table-hover">
-                <tr>
-                    <th>Curso</th>
-                    <th>Alumno </th>
-                    <th>Pago del alumno</th>
-                    <th>Mes Pagado</th>
-                    <th>Fecha de emicion</th>
-                    <th>boleta PDF</th>
-                </tr>
+            <p>{{arrayData.nombreCurso}}</p>
+            <p>{{arrayData.nombreAlumno}}</p>
+            <p>{{arrayData.DNI}}</p>
+
+            <table class="table table-dark table-hover text-center">
+                <thead>
+                    <tr>
+                        <th>Curso</th>
+                        <th>Alumno </th>
+                        <th>Pago del alumno</th>
+                        <th>Mes Pagado</th>
+                        <th>Fecha de emicion</th>
+                        <th>boleta PDF</th>
+                    </tr>
                 </thead>
                 <tbody id="tabla">
                     {{#each arrayData}}
@@ -23,41 +46,56 @@
                         <td class="table-info">{{fechaCreacion}}</td>
                         <td class="table-info">
                             <form action="/payment/generatedPDF" method="POST">
-                                {{!-- input hidden con el valor del nombre del curso --}}
-                                <input type="hidden" name="nombreCurso" value={{nombreCurso}}>
-
                                 {{!-- input hidden con el valor del nombre del alumno --}}
                                 <input type="hidden" name="nombreAlumno" value={{nombreAlumno}}>
 
                                 {{!-- input hidden con el valor del apellido del alumno --}}
                                 <input type="hidden" name="apellidoAlumno" value={{apellidoAlumno}}>
 
+                                {{!-- input hidden con el valor del DNI del alumno --}}
+                                <input type="hidden" name="DNIAlumno" value={{DNI}}>
+
+                                {{!-- input hidden con el valor del nombre del curso --}}
+                                <input type="hidden" name="nombreCurso" value={{nombreCurso}}>
+
+                                {{!-- input hidden con el valor del nombre del Mes --}}
+                                <input type="hidden" name="nombreMes" value={{nombreMes}}>
+
+                                {{!-- input hidden con el valor del numero del Mes --}}
+                                <input type="hidden" name="numeroMes" value={{numeroMes}}>
+
+                                {{!-- input hidden con el valor del precio del Mes --}}
+                                <input type="hidden" name="precioMes" value={{precioMes}}>
+
                                 {{!-- input hidden con el valor del pago del alumno --}}
                                 <input type="hidden" name="pagoAlumno" value={{pagoAlumno}}>
 
-                                {{!-- input hidden con el valor del nombre del mes --}}
-                                <input type="hidden" name="nombreMes" value={{nombreMes}}>
-
-                                {{!-- input hidden con el valor del precio del mes--}}
-                                <input type="hidden" name="precioMes" value={{precioMes}}>
+                                {{!-- input hidden del saldo actual --}}
+                                <input type="hidden" name="saldoMes" value={{saldoMes}}>
 
                                 {{!-- input hidden si tiene deuda anterior --}}
-                                <input type="hidden" name="SaldoDeudor" value={{SaldoDeudor}}>
+                                <input type="hidden" name="deudaAnterior" value={{deudaAnterior}}>
 
-                                {{!-- input hidden si tiene saldo a favor --}}
-                                <input type="hidden" name="SaldoAcreedor" value={{SaldoAcreedor}}>
+                                {{!-- input hidden con el valor del nombre del mes del saldo a favor usado--}}
+                                <input type="hidden" name="nombreMesSaldoFavor" value={{nombreMesSaldoFavor}}>
 
-                                {{!-- input hidden con el valor de la fecha de creacion --}}
-                                <input type="hidden" name="fechaCreacion" value={{fechaCreacion}}>
+                                {{!-- input hidden con el valor del saldo a favor original --}}
+                                <input type="hidden" name="saldoFavorOriginal" value={{saldoFavorOriginal}}>
+
+                                {{!-- input hidden con el valor del saldo a favor usado --}}
+                                <input type="hidden" name="saldoFavorUsado" value={{saldoFavorUsado}}>
 
                                 {{!-- input hidden con el valor del id del objeto en si --}}
                                 <input type="hidden" name="idObjeto" value={{idObjeto}}>
 
                                 {{!-- input hidden con el valor del id del pago conjunto (si asi fuera) --}}
                                 <input type="hidden" name="IdPagoConjunto" value={{IdPagoConjunto}}>
-                                
+
                                 {{!-- input hidden con el valor del numero de boleta --}}
                                 <input type="hidden" name="numeroBoleta" value={{numeroBoleta}}>
+
+                                {{!-- input hidden con el valor de la fecha de creacion --}}
+                                <input type="hidden" name="fechaCreacion" value={{fechaCreacion}}>
 
                                 <button type="submit" class="btn btn-outline-danger">
                                     <i class="fa fa-file-pdf"></i>
@@ -69,20 +107,14 @@
                 </tbody>
             </table>
         </div>
-    </div>
-    {{else}}
-    <div class="py-2 col-3 mx-auto">
-        <div class="rounded-3 shadow bg-danger">
-            <div class="modal-body p-4 text-center ">
-                <h5 class="mb-0 text-white card-title">
-                    <strong>ERROR</strong>
-                    <hr>
-                    <strong>No hay datos de pagos que mostrar</strong>
-                    <br><br>
-                    <a href="/payment/selectCourseAddPay" class="btn btn-success btn-block">ingresar pagos</a>
-                </h5>
-            </div>
+
+        <div class="d-grid gap-2 text-center pt-3">
+            <form action="/payment/selectCourseAddPay" method="GET">
+                <input type="hidden" name="courses" id="courses" value="{{courses}}">
+                <button class="btn btn-primary">Realizar Nuevo Pago</button>
+            </form>
         </div>
+
     </div>
     {{/if}}
 </div>

@@ -9,7 +9,6 @@ const {
     priceMonthData,
     loadDebitMonth,
     loadMonthData,
-    seachTicket,
     readyToGeneratePDF,
     generatedPDF,
     loadTotaldata,
@@ -17,9 +16,9 @@ const {
 
 } = require('../controllers/payment.controllers')
 
-// --------------------------------------------------------------- //
-// ····················· ingresar pagos ·························· //
-// --------------------------------------------------------------- //
+// ------------------------------------------------------------------------ //
+// ························· ingresar pagos ······························· //
+// ------------------------------------------------------------------------ //
 router.get('/payment/selectCourseAddPay', renderSelectCourse)
 router.get('/payment/addPayment/:id', addPayment)
 router.post('/payment/savePayment/:id', savePayment)
@@ -33,12 +32,16 @@ router.get('/payment/loadMonths/:id', loadMonthData)
 router.get('/payment/loadSaldoFavorData/:mes/:nombreMes/:idAlumno', loadTotaldata)
 router.get('/payment/loadDataAlumn/:idAlumno', loadAlumndata)
 
+// ------------------------------------------------------------------------ //
+// ············ rutas para generar los PDF de las facturas ················ //
+// ------------------------------------------------------------------------ //
+router.get('/payment/renderDataPDF/:objetosPagos/:objetoDatosHTML/:arraySuccesses/:arrayErrors/:courses', readyToGeneratePDF)
+router.post('/payment/generatedPDF', generatedPDF)
 
-// --------------------------------------------------------------- //
-// ························ ver pagos ···························· //
-// --------------------------------------------------------------- //
+// ------------------------------------------------------------------------ //
+// ············· rutas para visualizar los datos de los pagos ············· //
+// ------------------------------------------------------------------------ //W
 router.get('/payment/showPay', renderShowPay)
-router.get('/payment/searchTiket', seachTicket)
 
 
 

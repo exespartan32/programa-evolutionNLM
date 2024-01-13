@@ -20,40 +20,67 @@ priceCourseControllers.renderShowCourse = async (req, res) => {
 priceCourseControllers.renderPriceMonth = async (req, res) => {
     const id = req.params.id
     const dataCurso = await course.findById(id)
-    res.render('cursos/precioCursos/addPriceCourse', { dataCurso, })
+    const dataValCourse = await priceCourse.find({ idCurso: id })
+
+    var dataMes = {
+        nombreMes: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        numeroMes: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+        numeroAño: ['2023', '2024']
+    }
+
+    var datosMeses = {
+        numeroMeses: [],
+        nombreMeses: [],
+        precioMeses: []
+    }
+
+    if (dataValCourse.length > 0) {
+        for (let i = 0; i < dataValCourse.length; i++) {
+            const month = (dataValCourse[i].mes.split("-"))[1]
+            datosMeses.numeroMeses.push(dataValCourse[i].mes)
+
+            for (let j = 0; j < dataMes.numeroMes.length; j++) {
+                if (month == dataMes.numeroMes[j]) {
+                    datosMeses.nombreMeses.push(dataMes.nombreMes[j])
+                    datosMeses.precioMeses.push(dataValCourse[i].precioMes)
+                }
+            }
+        }
+    }
+
+    res.render('cursos/precioCursos/addPriceCourse', { dataCurso, datosMeses })
 }
 
 // ------------- 3) guardar valor del mes del curso ------------- //
 priceCourseControllers.savePriceMonth = async (req, res) => {
     const idCourse = req.params.id
     const { mes, precioMes } = req.body
-    const errors = [];
-    // comprobamos si se reciben campos vacios
-    if (!mes || !precioMes) {
-        req.flash('error_msg', 'no deben de haber campos vacios');
-        res.redirect('/course/selectCourse')
-    } else {
-        const costCourse = new priceCourse({
-            mes: mes,
-            precioMes: precioMes,
-            idCurso: idCourse,
-            fechaCreacion: new Date()
-        })
-        // comprobamos que no exista el valor de ese mes en la DB
-        const courseAction = await priceCourse.find({
-            mes: { $eq: mes }
-        })
-        // si existe en la DB redireccionamos a /course/selectCourse
-        if (courseAction.length > 0) {
-            req.flash('error_msg', 'el mes seleccionado ya tiene precio');
-            res.redirect('/course/selectCourse')
-            // si no existe en la DB lo gurdamos en la tabla valorCurso y Curso
-        } else {
-            await costCourse.save()
-            req.flash('success_msg', 'precio agregado correctamente');
-            res.redirect('/course/selectCourse')
-        }
+
+    var dataMes = {
+        nombreMes: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        numeroMes: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+        numeroAño: ['2023', '2024']
     }
+
+    var nombreMes
+    for (let i = 0; i < dataMes.numeroMes.length; i++) {
+        if (dataMes.numeroMes[i] == mes.split('-')[1]) { nombreMes = dataMes.nombreMes[i] }
+    }
+
+    var ObjectPriceCourse = new priceCourse({
+        mes: mes,
+        precioMes: precioMes,
+        idCurso: idCourse,
+        fechaCreacion: setDate()
+    })
+
+    var savedata = await ObjectPriceCourse.save()
+    if (savedata.length == 0) {
+        req.flash('error_msg', `error al tratar de guardar el precio del mes de ${nombreMes}`);
+    } else {
+        req.flash('success_msg', `el precio del mes de ${nombreMes} se guardo correctamente`);
+    }
+    res.redirect('/course/selectCourse')
 }
 
 // --------------------------------------------------------------- //
@@ -93,7 +120,6 @@ priceCourseControllers.renderEditPrice = async (req, res) => {
 priceCourseControllers.saveEditCourse = async (req, res) => {
     const id = req.params.id
     const { precioMes } = req.body
-    console.log(precioMes)
 
     const updatePC = await priceCourse.findByIdAndUpdate(id, {
         $set: {
@@ -108,7 +134,16 @@ priceCourseControllers.saveEditCourse = async (req, res) => {
         req.flash('success_msg', 'precio modificado correctamente')
         res.redirect('/course/selectViewPC/')
     }
+}
 
+function setDate() {
+    //* Seteamos el Date para que se guarde correctamente en DB
+    var date = new Date()
+    const dateParse = new priceCourse({
+        fechaCreacion: date,
+        offset: date.getTimezoneOffset()
+    })
+    return new Date(dateParse.fechaCreacion.getTime() - (dateParse.offset * 60000));
 }
 
 module.exports = priceCourseControllers;

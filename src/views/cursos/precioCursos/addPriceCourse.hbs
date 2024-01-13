@@ -1,37 +1,47 @@
-<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo">
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
     <div class="wrapper wrapper--w960">
-        <div class="card card-2">
-            <div class="card-heading"></div>
-            <div class="card-body">
-                <form action="/course/savePriceMonth/{{dataCurso._id}}" method="post">
-                    <h1 class="title text-center">{{dataCurso.nombre}}</h1>
-                    <!-- imput de mes a agregar precio -->
-                    <div class="input-group mb-4">
-                        <label class="input-group-text" for="mes">Mes a agregar precio</label>
-                        <input type="month" id="mes" name="mes" 
-                        min="{{dataCurso.fechaInicioCurso}}"
-                        max="{{dataCurso.fechaFinCurso}}" class="form-control imput-month" name="trip-start">
+        <div class="card mb-3 card-2">
+            <div class="row g-0">
+                <div class="col-md-4" id="fondo">
+                    {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h2 class="title">Agregar precio a las cuotas de {{dataCurso.nombre}}</h2>
+                        <form action="/course/savePriceMonth/{{dataCurso._id}}" method="post">
+                            <!-- impot mes(cuota) curso -->
+                            <div class="input-group mb-4">
+                                <label for="mes" class="input-group-text">Mes (cuota)</label>
+                                <input type="month" class="form-control" id="mes" name="mes"
+                                    placeholder="ingresar nombre del alumno" min="{{dataCurso.fechaInicioCurso}}"
+                                    max="{{dataCurso.fechaFinCurso}}" required>
+                            </div>
+
+                            {{!-- impot precio del mes (cuota) --}}
+                            <div class="input-group mb-4">
+                                <label for="precioMes" class="input-group-text">Precio Mes(cuota)</label>
+                                <input type="number" class="form-control" id="precioMes" name="precioMes"
+                                    placeholder="ingrese el precio de la cuota del mes seleccionado" required>
+                            </div>
+
+                            <div id="contenedorInputsHidden">
+                                <input type="hidden" id="numeroMeses" value="{{datosMeses.numeroMeses}}">
+                                <input type="hidden" id="nombreMeses" value="{{datosMeses.nombreMeses}}">
+                                <input type="hidden" id="precioMeses" value="{{datosMeses.precioMeses}}">
+                            </div>
+
+                            <br>
+                            {{!-- boton de enviar datos --}}
+                            <div class="d-grid pt-4">
+                                <button type="submit" class="btn btn-primary"><img src="/img/icon/save.png" alt=""
+                                        height="27">
+                                    Guardar Datos
+                                </button>
+                            </div>
+                        </form>
                     </div>
-
-                    <!-- imput precio del mes seleccionado -->
-                    <label for="precioMes" class="form-label">precio del mes</label>
-                    <div class="input-group mb-4">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">$</span>
-                        </div>
-                        <input type="number" class="form-control imput" aria-label="Amount (to the nearest dollar)"
-                            id="precioMes" name="precioMes" placeholder="ingresar precio del mes">
-                    </div>
-
-
-
-                    <!-- boton de enviar datos -->
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Guardar Datos</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>

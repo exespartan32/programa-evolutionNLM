@@ -18,6 +18,9 @@ const valorCurso = new Schema({
         type: Date,
         required: true
     },
+    offset: {
+        type: Number,
+    },
     fechaModificacion: {
         type: Date,
         default: null

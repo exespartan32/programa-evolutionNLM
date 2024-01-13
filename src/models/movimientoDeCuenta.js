@@ -34,22 +34,31 @@ const saldoSchema = new Schema({
         type: Number,
         required: true
     },
-    saldoAcreedorUsado:{
+    saldoAcreedorUsado_Total: {
         type: Number,
         //default: 0,
-        required: true
+        //required: false
     },
-    ultimFechUsoSaldoFavor: {
+    saldoAcreedorUsado_PagoActual: {
+        type: Number,
+        //required: false
+    },
+    IdMesUsoSaldoAcreedor: {
+        type: Schema.Types.ObjectId, ref: 'movimiento_De_Cuenta',
+        //default: null
+    },
+    ultimFechUsoSaldoAcreedor: {
         type: Date,
-        required: true,
+        //default: null,
     },
     Estado: {
         type: String,
-        enum : ['pago_total','pago_parcial', 'saldo_a_favor', 'vencida'],
+        enum: ['pago_total', 'pago_parcial', 'saldo_a_favor', 'vencida'],
         required: true
     },
     IdPagoConjunto: {
-        type: Schema.Types.ObjectId
+        type: Schema.Types.ObjectId,
+        //required: false
     },
     Comentario: {
         type: String,
@@ -60,19 +69,17 @@ const saldoSchema = new Schema({
         required: true,
         //format: "Day %d of Month %m (Day %j of year %Y) at %H hours, %M minutes, and %S seconds (timezone offset: %UTC-3000)",
         timezone: "America/Argentina/Buenos_Aires",
-
     },
     offset: {
         type: Number,
-        //required: true,
     },
     fechaModificacion: {
         type: Date,
-        default: null
+        //default: null
     },
     fechaEliminacion: {
         type: Date,
-        default: null
+        //default: null
     }
 })
 

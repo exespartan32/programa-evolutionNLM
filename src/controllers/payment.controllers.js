@@ -5,13 +5,13 @@ const alumn = require('../models/alumno')
 const priceCourse = require('../models/valorCurso');
 const movAlumn = require('../models/movimientoDeAlumno')
 const movAcc = require('../models/movimientoDeCuenta')
-const functionspayment = require('./functionsPaymentControllers');
 const valorCurso = require('../models/valorCurso');
 const PDF = require('pdfkit-construct')
 const fs = require('fs');
 const { bufferedPageRange } = require('pdfkit');
 const { Stream } = require('stream');
 const { join } = require('path');
+const curso = require('../models/curso');
 // --------------------------------------------------------------- //
 // ····················· ingresar pagos ·························· //
 // --------------------------------------------------------------- //
@@ -34,8 +34,27 @@ paymentControllers.addPayment = async (req, res) => {
     const listMovAlumn = await movAlumn.find({ idCurso: { $eq: idCourse } })
     const valCourse = await priceCourse.find({ idCurso: idCourse }).sort({ mes: 1 })
 
-    var listMonth = functionspayment.listMonth(valCourse)
-    var numerMonth = listMonth.numerMonth
+    var dataMes = {
+        nombreMes: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        numeroMes: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+        numeroAño: ['2023', '2024']
+    }
+
+    var datosMeses = {
+        numerMonth: [],
+        nameMonth: []
+    }
+
+    for (let i = 0; i < valCourse.length; i++) {
+        const month = (valCourse[i].mes.split("-"))[1]
+        datosMeses.numerMonth.push(valCourse[i].mes)
+
+        for (let j = 0; j < dataMes.numeroMes.length; j++) {
+            if (month == dataMes.numeroMes[j]) {
+                datosMeses.nameMonth.push(dataMes.nombreMes[j])
+            }
+        }
+    }
 
     //* recorremos la lista de MovAlumn
     //* buscamos los alumnos que tiene el curso
@@ -46,7 +65,7 @@ paymentControllers.addPayment = async (req, res) => {
         const alumnData = await alumn.findById(idAlumn)
         alumnList.push(alumnData)
     }
-    res.render('pagos/agregarPago', { dataCourse, alumnList, numerMonth })
+    res.render('pagos/agregarPago', { dataCourse, alumnList, datosMeses })
 }
 
 // ------------------------- 2) guardamos el pago --------------------- //
@@ -58,7 +77,7 @@ paymentControllers.savePayment = async (req, res) => {
     const transformData = dataTotal.replace(/['"]+/g, '"');
     const jsonData = JSON.parse(transformData)
 
-    //res.send(jsonData)
+    //res.send(req.body)
 
     //TODO: variables
     const ArrayNumeroMeses = jsonData.numeroMes
@@ -73,9 +92,12 @@ paymentControllers.savePayment = async (req, res) => {
     const ArrayNumeroMesSaldoFavor = jsonData.numeroMesSaldoFavor
     const ArraySaldoFavorOriginal = jsonData.saldoFavorOriginal
     const ArraySaldoFavorUsado = jsonData.saldoFavorUsado
+    const ArrayIdMesSaldoFavor = jsonData.IdMesSaldoFavor
     const arraySuccesses = []
     const arrayErrors = []
     var IdPagoConjunto = new mongoose.Types.ObjectId();
+
+    var arrayObjetosPagos = []
 
     for (let i = 0; i < ArrayNumeroMeses.length; i++) {
         //#: datos de cada item
@@ -91,6 +113,7 @@ paymentControllers.savePayment = async (req, res) => {
         var saldoFavorOriginalI = ArraySaldoFavorOriginal[i]
         var saldoFavorUsadoI = ArraySaldoFavorUsado[i]
         var numeroMesSaldoFavorI = ArrayNumeroMesSaldoFavor[i]
+        var IdMesSaldoFavorI = ArrayIdMesSaldoFavor[i]
 
         //#: variables de busquedas
         const valCourse = await valorCurso.find({ mes: NumeroMesI, idCurso: idCurso })
@@ -133,10 +156,16 @@ paymentControllers.savePayment = async (req, res) => {
             debe = precioMesI
         }
 
+        var saldoFavorUsado = 0
+        var IdMesUsoSaldoAcreedor = null
+        var saldoFavorUsado = 0
+        var ultimFechUsoSaldoAcreedor = null
+
         //?: 3) modificamos el registro del mes con el saldo a favor usado
         if (usaSaldoFavorI == true) {
-            const valCourseSaldoFavor = await valorCurso.find({ mes: numeroMesSaldoFavorI, idCurso: idCurso })
-            var idValorCursoSaldoFavor = valCourseSaldoFavor[0]._id
+            var IdMes = mongoose.Types.ObjectId(IdMesSaldoFavorI)
+            IdMesUsoSaldoAcreedor = IdMes
+            saldoFavorUsado = saldoFavorUsadoI
 
             for (let j = 0; j < ArraySaldoFavorUsado.length; j++) {
                 if (ArrayNombreMesSaldoFavor[i] == ArrayNombreMesSaldoFavor[j]) {
@@ -144,23 +173,17 @@ paymentControllers.savePayment = async (req, res) => {
                 }
             }
 
-            const saldoFavorUsadoDB = await movAcc.find({
-                idCurso: idCurso,
-                idAlumno: idAlumno,
-                idValorCurso: idValorCursoSaldoFavor,
-                Estado: "saldo_a_favor"
-            })
+            const saldoFavorUsadoDB = await movAcc.findById(IdMes)
+            saldoFavorTotalUsado += saldoFavorUsadoDB.saldoAcreedorUsado_Total
 
-            saldoFavorTotalUsado += saldoFavorUsadoDB[0].saldoAcreedorUsado
+            //console.log(`saldoFavorTotalUsado: ${saldoFavorTotalUsado}`)
 
             var datosDBSaldoFavor = await movAcc.findOneAndUpdate({
-                idCurso: idCurso,
-                idAlumno: idAlumno,
-                idValorCurso: idValorCursoSaldoFavor
+                _id: IdMes,
             }, {
-                saldoAcreedorUsado: saldoFavorTotalUsado,
-                ultimFechUsoSaldoFavor: setDate()
-            })
+                saldoAcreedorUsado_Total: saldoFavorTotalUsado,
+                ultimFechUsoSaldoAcreedor: setDate(),
+            });
 
             if (datosDBSaldoFavor) {
                 console.log("el registro del saldo a favor usado se actualizo correctamente")
@@ -169,64 +192,445 @@ paymentControllers.savePayment = async (req, res) => {
             }
         }
 
+        var objectpayment
         if (ArrayNumeroMeses.length > 1) {
-            objectpayment = createObjectPayment(numeroBoletaActual, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentarioI, setDate(), IdPagoConjunto, 0, ultimFechUsoSaldoFavor)
+            objectpayment = createObjectPayment(
+                numeroBoletaActual,
+                idCurso,
+                idAlumno,
+                idValorCurso,
+                debe,
+                haber,
+                deudor,
+                acreedor,
+                estado,
+                comentarioI,
+                setDate(),
+                IdPagoConjunto,
+                saldoFavorUsado,
+                IdMesUsoSaldoAcreedor,
+                ultimFechUsoSaldoAcreedor,
+            )
+
         } else {
-            objectpayment = createObjectPayment(numeroBoletaActual, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentarioI, setDate(), "", 0, ultimFechUsoSaldoFavor)
+            IdPagoConjunto = ""
+            objectpayment = createObjectPayment(
+                numeroBoletaActual,
+                idCurso,
+                idAlumno,
+                idValorCurso,
+                debe,
+                haber,
+                deudor,
+                acreedor,
+                estado,
+                comentarioI,
+                setDate(),
+                IdPagoConjunto,
+                saldoFavorUsado,
+                IdMesUsoSaldoAcreedor,
+                ultimFechUsoSaldoAcreedor,
+            )
         }
-        console.log(objectpayment)
+        arrayObjetosPagos.push(objectpayment)
 
         const resDB = await objectpayment.save()
         if (resDB) {
-            arraySuccesses.push(`el pago ${haber}$ corresponiente al mes de ${NombreMesI} se guardo correctamente`)
+            arraySuccesses.push(`el pago de la cuota de ${NombreMesI} se guardo correctamente`)
         } else {
-            arrayErrors.push(`ocurrio un error al tratar de guardar el pago ${haber}$ corresponiente al mes de ${NombreMesI}`)
+            arrayErrors.push(`ocurrio un error al tratar de guardar el pago el pago de la cuota de ${NombreMesI}`)
         }
     }
     const courses = await course.find().sort({ fechaInicioCurso: 'asc' });
-    res.render('pagos/selectCourseAddPayment', { courses, arraySuccesses, arrayErrors })
+
+    const objetosPagos = JSON.stringify(arrayObjetosPagos)
+    const objetoDatosHTML = dataTotal
+
+    if (arrayErrors.length == 0) { arrayErrors.push("-") }
+
+    var stringArraySuccesses = arraySuccesses.toString()
+    var stringArrayErrors = arrayErrors.toString()
+
+    var coursesData = JSON.stringify(courses)
+
+    res.redirect(`/payment/renderDataPDF/${objetosPagos}/${objetoDatosHTML}/${stringArraySuccesses}/${stringArrayErrors}/${coursesData}`)
 }
 
 paymentControllers.renderShowPay = async (req, res) => {
     const dataDB = await movAcc.find()
     const arrayData = []
     for (let i = 0; i < dataDB.length; i++) {
-        //console.log(dataDB[i]);
         var dataCurso = await course.findById(dataDB[i].idCurso)
-        var dataAlumno = await alumn.findById(dataDB[i].idAlumno)
+        var datosAlumno = await alumn.findById(dataDB[i].idAlumno)
         var dataPriceCourse = await priceCourse.findById(dataDB[i].idValorCurso)
         var fechaCreacion = (dataDB[i].fechaCreacion).toLocaleDateString()
 
-        var nombreCurso = dataCurso.nombre
-        var nombreAlumno = dataAlumno.nombre + " " + dataAlumno.apellido
-        var pagoAlumno = dataDB[i].Haber
-        var comentarioPago = dataDB[i].Comentario
         var mes = dataPriceCourse.mes
         var nombreMes = loadNombreMes(mes)
 
+        var deudaAnterior = 0
+        if (dataDB[i].SaldoDeudor > 0) {
+            deudaAnterior = dataDB[i].SaldoDeudor
+        }
+
+        var IdPagoConjunto = ""
+        if (dataDB[i].IdPagoConjunto != undefined) {
+            IdPagoConjunto = dataDB[i].IdPagoConjunto
+        }
+
+        var mesSaldoFavor = "-"
+        var nombreMesSaldoFavor = "-"
+        var saldoAcreedor = 0
+        var saldoAcreedorUsado_Total = 0
+
+        if (dataDB[i].IdMesUsoSaldoAcreedor != null) {
+            var id = dataDB[i].IdMesUsoSaldoAcreedor
+            mesSaldoFavor = await movAcc.findById(id)
+
+            var dataMes = await priceCourse.findById(mesSaldoFavor.idValorCurso)
+            nombreMesSaldoFavor = loadNombreMes(dataMes.mes)
+
+            saldoAcreedor = mesSaldoFavor.SaldoAcreedor
+            saldoAcreedorUsado_Total = mesSaldoFavor.saldoAcreedorUsado_Total
+        }
+
+        var saldo = 0
+        var pagoAlumno = dataDB[i].Haber
+        var precioMes = dataPriceCourse.precioMes
+
+        if (saldoAcreedorUsado_Total > 0) {
+            if (deudaAnterior > 0) {
+                saldo = parseInt(pagoAlumno) + parseInt(saldoAcreedorUsado_Total) - parseInt(deudaAnterior)
+            } else {
+                saldo = parseInt(pagoAlumno) + parseInt(saldoAcreedorUsado_Total) - parseInt(precioMes)
+            }
+        } else {
+            if (deudaAnterior > 0) {
+                saldo = parseInt(pagoAlumno) - parseInt(deudaAnterior)
+            } else {
+                saldo = parseInt(pagoAlumno) - parseInt(precioMes)
+            }
+        }
+
         var resObject = {
-            nombreCurso: nombreCurso,
-            nombreAlumno: nombreAlumno,
-            pagoAlumno: pagoAlumno,
-            comentarioPago: comentarioPago,
+            nombreAlumno: datosAlumno.nombre,
+            apellidoAlumno: datosAlumno.apellido,
+            DNI: datosAlumno.DNI,
+            nombreCurso: dataCurso.nombre,
             nombreMes: nombreMes,
+            numeroMes: mes,
+            precioMes: precioMes,
+            pagoAlumno: pagoAlumno,
+            comentario: dataDB[i].Comentario,
+
+            saldoMes: saldo,
+            deudaAnterior: deudaAnterior,
+            nombreMesSaldoFavor: nombreMesSaldoFavor,
+
+            saldoFavorOriginal: saldoAcreedor,
+            saldoFavorUsado: saldoAcreedorUsado_Total,
+
+            idObjeto: dataDB[i]._id,
+            IdPagoConjunto: IdPagoConjunto,
+            numeroBoleta: dataDB[i].NumeroBoleta,
             fechaCreacion: fechaCreacion,
-            idCurso: dataDB[i].idCurso,
-            idAlumno: dataDB[i].idAlumno,
-            idValorCurso: dataDB[i].idValorCurso
         }
         arrayData.push(resObject)
     }
-    res.render('pagos/showPayment', { arrayData })
+
+    const courses = await course.find().sort({ fechaInicioCurso: 'asc' });
+
+    var nombreCursos = []
+
+    for (let i = 0; i < courses.length; i++) {
+        //console.log(courses[i])
+        //console.log(courses[i].nombre)
+        nombreCursos.push(courses[i].nombre)
+    }
+
+    res.render('pagos/showPayment', { arrayData, courses, nombreCursos })
 }
 
-paymentControllers.seachTicket = async (req, res) => {
-    res.render('pagos/searchTicket')
+// ? ------------------------------------------------------------------------ ? //
+// ? -------- mostramos una lista con los datos para generar el pdf ? ------- ? //
+// ? ------------------------------------------------------------------------ ? //
+paymentControllers.readyToGeneratePDF = async (req, res) => {
+    const pagosObject = req.params.objetosPagos
+
+    var arraySuccesses = ""
+    var arrayErrors = ""
+    var courses = req.params.courses
+
+    if (req.params.arrayErrors == '-') {
+        arrayErrors = []
+    } else {
+        arraySuccesses = req.params.arrayErrors.split(",")
+    }
+
+    if (req.params.arraySuccesses == undefined) {
+        arrayErrors = []
+    } else {
+        //console.log(req.params.arraySuccesses)
+        arraySuccesses = req.params.arraySuccesses.split(",")
+    }
+
+    const datosHTML = req.params.objetoDatosHTML
+    const transformData = datosHTML.replace(/['"]+/g, '"');
+    const jsonDataHTML = JSON.parse(transformData)
+
+    const jsonDataObjectPayment = JSON.parse(pagosObject)
+
+    // #: datos del alumno
+    var datosAlumno = await alumn.findById(jsonDataHTML.idAlumno)
+    var DNI_alumno = datosAlumno.DNI
+
+    var arrayData = []
+    var nombreCurso = ""
+    var IdPagoConjunto = ""
+
+    for (let i = 0; i < jsonDataObjectPayment.length; i++) {
+        var fecha = (new Date(jsonDataObjectPayment[i].fechaCreacion).toLocaleDateString())
+        var dataCurso = await curso.findById(jsonDataObjectPayment[i].idCurso)
+        if (nombreCurso == "") { nombreCurso = dataCurso.nombre }
+        if (jsonDataObjectPayment[i].IdPagoConjunto != "" && jsonDataObjectPayment[i].IdPagoConjunto != undefined) {
+            IdPagoConjunto = jsonDataObjectPayment[i].IdPagoConjunto
+        }
+
+        arrayData.push({
+            nombreAlumno: datosAlumno.nombre,
+            apellidoAlumno: datosAlumno.apellido,
+            DNI: DNI_alumno,
+            nombreCurso: nombreCurso,
+            nombreMes: jsonDataHTML.nombreMes[i],
+            numeroMes: jsonDataHTML.numeroMes[i],
+            precioMes: jsonDataHTML.precioMes[i],
+            pagoAlumno: jsonDataHTML.pagoAlumno[i],
+            saldoMes: jsonDataHTML.saldoMes[i],
+            deudaAnterior: jsonDataHTML.deuda[i],
+            nombreMesSaldoFavor: jsonDataHTML.nombreMesSaldoFavor[i],
+            saldoFavorOriginal: jsonDataHTML.saldoFavorOriginal[i],
+            saldoFavorUsado: jsonDataHTML.saldoFavorUsado[i],
+            idObjeto: jsonDataObjectPayment[i]._id,
+            IdPagoConjunto: IdPagoConjunto,
+            numeroBoleta: jsonDataObjectPayment[i].NumeroBoleta,
+            fechaCreacion: fecha,
+        })
+    }
+
+    res.render('pagos/readyToGeneratePDF', { arrayData, arraySuccesses, arrayErrors, courses })
 }
 
-// ------------------------------------------------------------------------ //
-// ····················· URLs para mostrar datos ·························· //
-// ------------------------------------------------------------------------ //
+// ? ------------------------------------------------------------------------ ? //
+// ? -------------------- generamos el PDF de la factura ? ------------------ ? //
+// ? ------------------------------------------------------------------------ ? //
+paymentControllers.generatedPDF = async (req, res) => {
+    const {
+        nombreAlumno,
+        apellidoAlumno,
+        DNIAlumno,
+        nombreCurso,
+        nombreMes,
+        numeroMes,
+        precioMes,
+        pagoAlumno,
+        saldoMes,
+        deudaAnterior,
+        nombreMesSaldoFavor,
+        saldoFavorOriginal,
+        saldoFavorUsado,
+        idObjeto,
+        IdPagoConjunto,
+        numeroBoleta,
+        fechaCreacion,
+    } = req.body
+
+    //console.log(req.body)
+
+    const doc = new PDF({ bufferedPage: true });
+    const filename = `FacturaNº${numeroBoleta}_Evolution.pdf`
+
+    const date = new Date()
+    const fechaStr = date.toLocaleDateString()
+
+    const stream = res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-disposition': `attachement; filename=${filename}`,
+    })
+    doc.on('data', (data) => { stream.write(data) })
+    doc.on('end', () => { stream.end() })
+
+    // % ------------------------------------------------------------------------------------------- % //
+    // % ····························· generamos el contenido del PDF % ······························ //
+    // % ------------------------------------------------------------------------------------------- % //
+
+    // ? ...................................... ? //
+    // ? agregamos el que estara sobre la tabla ? //
+    // ? ...................................... ? //
+    doc.setDocumentHeader({ height: '28' }, () => {
+        // # -------------------------------- # //
+        // # ////// Numero de factura /////// # //
+        // # -------------------------------- # //
+        doc.font('Helvetica-Bold')
+            .fontSize(15)
+            .text(`FACTURA Nº ${numeroBoleta}`, 100, 105, {
+                width: 420,
+                height: 1000,
+                align: 'center'
+            })
+
+        doc.moveTo(120, 125)
+            .lineTo(doc.page.width - 120, 125)
+            .stroke()
+
+        // # -------------------------------- # //
+        // # ////// nombre del alumno /////// # //
+        // # -------------------------------- # //
+        doc.fontSize(12)
+        doc.font('Courier-BoldOblique').fillColor('green')
+            .text(`A nombre de: `, 60, 150, {
+                width: 420,
+                align: 'left',
+                continued: true
+            })
+            .fillColor('blue')
+            .text(`${nombreAlumno} ${apellidoAlumno}`, {
+                width: 420,
+                align: 'left',
+            })
+
+        // # -------------------------------- # //
+        // # ////// dni del alumno /////// # //
+        // # -------------------------------- # //
+        doc.fillColor('green')
+            .text(`DNI: `, 60, 170, {
+                width: 420,
+                align: 'left',
+                continued: true
+            })
+            .fillColor('blue')
+            .text(`${DNIAlumno}`, {
+                width: 420,
+                align: 'left',
+            })
+
+        // # --------------------------------------- # //
+        // # ////// ID de la boleta (objeto) /////// # //
+        // # --------------------------------------- # //
+        doc.fillColor('green')
+            .text(`ID boleta: `, 60, 190, {
+                width: 420,
+                align: 'left',
+                continued: true
+            })
+            .fillColor('blue')
+            .text(`${idObjeto}`, {
+                width: 420,
+                align: 'left',
+            })
+
+        doc.font('Times-BoldItalic')
+            .fontSize(13)
+            .fillColor('black')
+            .text(`Fecha Emicion: ${fechaStr}`, 370, 50)
+    })
+
+    // ? ...................................... ? //
+    // ? agregamos los datos a la tabla del PDF ? //
+    // ? le asignamos un color a la tabla del PDF ? //
+    // ? ...................................... ? //
+    var colores = []
+
+    var importe = ""
+    if (deudaAnterior > 0) {
+        importe = `$${deudaAnterior} (deuda)`
+        colores.push('#FFCCCC')
+    } else {
+        importe = `$${precioMes}`
+        colores.push('#CCFFCC')
+    }
+
+    var saldoExtra = ""
+    if (saldoFavorUsado > 0) {
+        //console.log(`saldoFavorOriginal: ${saldoFavorOriginal}`)
+        //console.log(`saldoFavorUsado: ${saldoFavorUsado}`)
+        //var saldo = parseInt(saldoFavorOriginal) - parseInt(saldoFavorUsado)
+        saldoExtra = `$${saldoFavorUsado} (${nombreMesSaldoFavor})`
+    } else {
+        saldoExtra = '0'
+    }
+
+    var saldo = saldoMes
+
+    if (saldoMes > 0) {
+        saldo = `+$${saldoMes}`
+    }
+    if (saldoMes < 0) {
+        saldo = `-$${saldoMes}`
+    }
+
+    const data = [
+        {
+            concepto: `cuota del mes de ${nombreMes} del curso de ${nombreCurso}`,
+            importe: importe,
+            pago: `$${pagoAlumno}`,
+            saldo: saldo,
+            extra: saldoExtra,
+            fechaPago: fechaCreacion,
+        }
+    ]
+
+    // ? ......................................... ? //
+    // ? creamos la tabla con el contenido del PDF ? //
+    // ? ......................................... ? //
+    doc.addTable([
+        { key: 'concepto', label: 'Concepto', align: 'center' },
+        { key: 'importe', label: 'Importe', align: 'center' },
+        { key: 'pago', label: 'Pago', align: 'center' },
+        { key: 'saldo', label: 'Saldo', align: 'center' },
+        { key: 'extra', label: 'Saldo Extra', align: 'center' },
+        { key: 'fechaPago', label: 'fecha del pago', align: 'center' },
+    ], data, {
+        border: { size: 0.1, color: '#cdcdcd' },
+        width: "fill_body",
+        striped: true,
+        stripedColors: colores,
+        cellsColor: "#000",
+        cellsPadding: 10,
+        marginLeft: 45,
+        marginRight: 45,
+        headAlign: 'center'
+    })
+
+    doc.setDocumentFooter({ height: '60' }, () => {
+        doc.moveTo(doc.footer.x + 550, doc.footer.y + 45)
+            //.dash(5, { space: 5 })
+            .lineTo(doc.footer.x + 350, doc.footer.y + 45)
+            .stroke()
+
+
+        doc.fontSize(12)
+            .text(`firma/sello`, doc.footer.x + 250, doc.footer.y + 50, {
+                width: 420,
+                align: 'center'
+            })
+    })
+
+    doc.render();
+
+    doc.fillOpacity(0.2)
+        .image('src/public/img/logo/evolutionNLM.jpg',
+            (doc.page.width - 250) * 0.5,
+            (doc.page.height - 380),
+            { align: 'center', fit: [300, 300], lineBreak: false })
+        .lineWidth(3)
+        .fillAndStroke("red", "#900")
+
+    doc.end();
+}
+
+// # ------------------------------------------------------------------------ //
+// # ····················· URLs para mostrar datos ·························· //
+// # ------------------------------------------------------------------------ //
 paymentControllers.returnPriceMonth = async (req, res) => {
 }
 
@@ -270,6 +674,7 @@ paymentControllers.loadTotaldata = async (req, res) => {
     var precioMes = await priceCourse.find({ mes: mes, })
 
     var response = {
+        idMesSaldoFavor: "",
         numeroMes: "",
         nombreMes: "",
         saldoFavor: "",
@@ -286,16 +691,19 @@ paymentControllers.loadTotaldata = async (req, res) => {
             Estado: 'saldo_a_favor',
             idAlumno: idAlumno
         })
-        console.log(requestData)
 
         if (requestData.length > 0) {
             var saldoFavor = requestData.at(-1).SaldoAcreedor
+            var salodUsado = requestData.at(-1).saldoAcreedorUsado_Total
+            var idMes = requestData.at(-1)._id
+
+            response.idMesSaldoFavor = idMes
             response.nombreMes = nombreMes
             response.numeroMes = mes
             response.saldoFavor = saldoFavor
             response.idAlumno = idAlumno
             response.usaSaldoFavor = false
-            response.valorUsoSaldoFavor = requestData.at(-1).saldoAcreedorUsado
+            response.valorUsoSaldoFavor = salodUsado
         }
     }
     res.json(response)
@@ -307,34 +715,6 @@ paymentControllers.loadAlumndata = async (req, res) => {
     res.json(datosAlumno)
 }
 
-// ------------------------------------------------------------------------ //
-// ············ funciones para retornar informacion de DB ················· //
-// ------------------------------------------------------------------------ //
-function createObject(numeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, saldo, comentario, itemsNum, IdPagoConjunto) {
-    var deudor = 0
-    var acreedor = 0
-    estado = null
-    //?: cuando el pago del alumno es menor a la deuda queda con saldo negativo
-    if (saldo < 0) {
-        deudor = Math.abs(saldo)
-        estado = 'pago_parcial'
-    }
-    //?: cuando el pago del alumno es mayor a la deuda queda con saldo a favor
-    else {
-        acreedor = saldo
-        estado = 'saldo_a_favor'
-    }
-    var objectpayment
-    //?: cuando se pagan mas de un mes al mismo tiempo
-    if (itemsNum > 1) {
-        objectpayment = createObjectPayment(numeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate(), IdPagoConjunto)
-    }
-    //?: cuando se pagan un solo mes
-    else {
-        objectpayment = createObjectPayment(numeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, setDate())
-    }
-    return objectpayment
-}
 
 function loadNombreMes(mes) {
     var dataMes = {
@@ -346,45 +726,113 @@ function loadNombreMes(mes) {
     return nombreMes
 }
 
-function createObjectPayment(NumeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, fechaDB, IdPagoConjunto, saldoFavorUsado, ultimFechUsoSaldoFavor) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function createObjectPayment(NumeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, fechaDB, IdPagoConjunto, saldoFavorUsado, IdMesUsoSaldoAcreedor, ultimFechUsoSaldoAcreedor) {
     //* guardamos en DB 
-    var MovAccount
-    if (IdPagoConjunto != "") {
-        MovAccount = new movAcc({
-            NumeroBoleta: NumeroBoleta,
-            idCurso: idCurso,
-            idAlumno: idAlumno,
-            idValorCurso: idValorCurso,
-            Debe: debe,
-            Haber: haber,
-            SaldoDeudor: deudor,
-            SaldoAcreedor: acreedor,
-            saldoAcreedorUsado: saldoFavorUsado,
-            ultimFechUsoSaldoFavor: ultimFechUsoSaldoFavor,
-            Estado: estado,
-            IdPagoConjunto: IdPagoConjunto,
-            Comentario: comentario,
-            fechaCreacion: fechaDB
-        })
-    } else {
-        MovAccount = new movAcc({
-            NumeroBoleta: NumeroBoleta,
-            idCurso: idCurso,
-            idAlumno: idAlumno,
-            idValorCurso: idValorCurso,
-            Debe: debe,
-            Haber: haber,
-            SaldoDeudor: deudor,
-            SaldoAcreedor: acreedor,
-            saldoAcreedorUsado: saldoFavorUsado,
-            ultimFechUsoSaldoFavor: ultimFechUsoSaldoFavor,
-            Estado: estado,
-            Comentario: comentario,
-            fechaCreacion: fechaDB
-        })
+    /*     console.log("")
+        console.log("")
+        console.log(`NumeroBoleta : ${NumeroBoleta}`)
+        console.log(`idCurso : ${idCurso}`)
+        console.log(`idAlumno : ${idAlumno}`)
+        console.log(`idValorCurso : ${idValorCurso}`)
+        console.log(`debe : ${debe}`)
+        console.log(`haber : ${haber}`)
+        console.log(`deudor : ${deudor}`)
+        console.log(`acreedor : ${acreedor}`)
+        console.log(`estado : ${estado}`)
+        console.log(`comentario : ${comentario}`)
+        console.log(`fechaDB : ${fechaDB}`)
+        console.log(`IdPagoConjunto : ${IdPagoConjunto}`)
+        console.log(`saldoFavorUsado : ${saldoFavorUsado}`)
+        console.log(`IdMesUsoSaldoAcreedor : ${IdMesUsoSaldoAcreedor}`)
+        console.log(`ultimFechUsoSaldoAcreedor : ${ultimFechUsoSaldoAcreedor}`) */
+
+    var dataJson = {
+        NumeroBoleta: NumeroBoleta,
+        idCurso: idCurso,
+        idAlumno: idAlumno,
+        idValorCurso: idValorCurso,
+        Debe: debe,
+        Haber: haber,
+        SaldoDeudor: deudor,
+        SaldoAcreedor: acreedor,
     }
-    return MovAccount
+
+    if (IdPagoConjunto != "") {
+        dataJson.IdPagoConjunto = IdPagoConjunto
+    }
+    if (acreedor > 0) {
+        dataJson.saldoAcreedorUsado_Total = 0
+        dataJson.ultimFechUsoSaldoAcreedor = ultimFechUsoSaldoAcreedor
+    }
+    if (saldoFavorUsado > 0) {
+        dataJson.IdMesUsoSaldoAcreedor = IdMesUsoSaldoAcreedor
+        dataJson.saldoAcreedorUsado_PagoActual = saldoFavorUsado
+    }
+    dataJson.Estado = estado
+    dataJson.Comentario = comentario
+    dataJson.fechaCreacion = fechaDB
+
+    var responseData = new movAcc(dataJson)
+
+    return responseData
 }
+
+
+
+
+
+
+
+
+
+
 
 function setDate() {
     //* Seteamos el Date para que se guarde correctamente en DB
