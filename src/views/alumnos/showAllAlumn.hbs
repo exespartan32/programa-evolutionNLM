@@ -9,6 +9,7 @@
           <th>Apellido</th>
           <th>DNI</th>
           <th>Curso</th>
+          <th>Editar</th>
         </tr>
         </thead>
         <tbody id="tabla">
@@ -18,10 +19,20 @@
             <td class="table-info">{{apellidoAlumno}}</td>
             <td class="table-info">{{dniAlumno}}</td>
             <td class="table-info">{{nombreCurso}}</td>
+            <td class="table-info">
+              <form action="/alumn/editAlumn/{{IdMovAlumn}}?_method=GET" method="POST">
+                <input type="hidden" name="_method" value="GET">
+                <input type="hidden" name="formularioAction" id="formularioAction" value="showAllAlumn">
+                <button type="submit" class="btn btn-outline-success">
+                  <img src="/img/icon/edit.png" alt="" height="40">
+                </button>
+              </form>
+            </td>
           </tr>
           {{/each}}
         </tbody>
       </table>
+
     </div>
   </div>
   {{else}}

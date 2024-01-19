@@ -20,7 +20,6 @@ const alumnosSchema = new Schema({
     },
     fechaEliminacion: {
         type: Date,
-        default: null
     },
 })
 module.exports = model('movimiento_De_Alumno', alumnosSchema)

@@ -18,13 +18,15 @@ const alumnoSchema = new Schema({
         type: Date,
         required: true
     },
+    offset: {
+        type: Number,
+    },
     fechaModificacion: {
         type: Date,
         default: null
     },
     fechaEliminacion: {
         type: Date,
-        default: null
     },
 })
 module.exports = model('alumno', alumnoSchema)

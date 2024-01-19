@@ -17,28 +17,28 @@
                 <div class="col-md-8">
                     <div class="card-body">
                         <h2 class="title">Agregar nuevo Alumno</h2>
-                        <form action="/alumn/saveAlumn" method="post">
+                        <form action="/alumn/saveAlumn" method="post" id="formularioAgregarAlumno" >
                             <div id="current_date"></div>
 
                             <!-- impot nombre curso -->
                             <div class="input-group mb-4">
                                 <label for="nombreAlumno" class="input-group-text">Nombre del Alumno</label>
                                 <input type="text" class="form-control" id="nombreAlumno" name="nombreAlumno"
-                                    placeholder="ingresar nombre del alumno">
+                                    placeholder="ingresar nombre del alumno" required>
                             </div>
 
                             {{!-- impot apellido alumno --}}
                             <div class="input-group mb-4">
                                 <label for="apellidoAlumno" class="input-group-text">Apellido del Alumno</label>
                                 <input type="text" class="form-control" id="apellidoAlumno" name="apellidoAlumno"
-                                    placeholder="ingresar apellido del alumno">
+                                    placeholder="ingresar apellido del alumno" required>
                             </div>
 
                             {{!-- impot DNI alumno --}}
                             <div class="input-group mb-4">
                                 <label for="dniAlumno" class="input-group-text">DNI del Alumno</label>
-                                <input type="text" class="form-control" id="dniAlumno" name="dniAlumno"
-                                    placeholder="ingresar DNI del alumno">
+                                <input type="number" class="form-control" id="dniAlumno" name="dniAlumno"
+                                    placeholder="ingresar DNI del alumno" required>
                             </div>
 
                             {{!-- seleccion de curso --}}
@@ -53,6 +53,7 @@
                                 </select>
 
                             </div>
+
 
                             <br>
                             {{!-- boton de enviar datos --}}

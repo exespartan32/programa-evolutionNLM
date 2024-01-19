@@ -4,9 +4,10 @@ const { parse } = require('url');
 const alumn = require('../models/alumno')
 const course = require('../models/curso')
 const movAlumn = require('../models/movimientoDeAlumno')
-// --------------------------------------------------------------- //
-// ····················· ingresar alumno ························· //
-// --------------------------------------------------------------- //
+
+// % --------------------------------------------------------------- % //
+// % ····················· ingresar alumno ························· % //
+// % --------------------------------------------------------------- % //
 alumnControllers.renderaddAlumn = async (req, res) => {
     const dataCourseAA = await course.find({
         fechaEliminacion: { $eq: null }
@@ -20,56 +21,64 @@ alumnControllers.renderaddAlumn = async (req, res) => {
     //res.send('ok')
 }
 
+// % --------------------------------------------------------------- % //
+// % ·················· guardar datos de alumno ···················· % //
+// % --------------------------------------------------------------- % //
 alumnControllers.saveAlumn = async (req, res) => {
     const { nombreAlumno, apellidoAlumno, dniAlumno, cursos } = req.body
-    //console.log(req.body)
-    //res.send('ok')
 
-    if (!nombreAlumno || !apellidoAlumno || !dniAlumno) {
-        req.flash('error_msg', 'no deben de haber campos vacios');
-        res.redirect('/alumn/addAlumn')
+    //res.send(req.body)
+
+    const nombreAlumnoMinus = nombreAlumno.toLowerCase()
+    const ApellidoAlumnoMinus = apellidoAlumno.toLowerCase()
+
+    const dataCurso = await course.findOne({ nombre: cursos })
+    const idCurso = dataCurso._id
+
+    console.log(`nombre en minsucula: ${nombreAlumnoMinus}`)
+    console.log(`apellido en minsucula: ${ApellidoAlumnoMinus}`)
+    console.log(`id del curso: ${idCurso}`)
+    console.log(`fecha y hora actual:  ${setDate()}`)
+
+    // ? : ------------------------------------------ ? : //
+    // ? : guardamos el alumno en la tabla de alumnos ? : //
+    // ? : ------------------------------------------ ? : //
+    const newAlumnDB = new alumn({
+        nombre: nombreAlumnoMinus,
+        apellido: ApellidoAlumnoMinus,
+        DNI: dniAlumno,
+        fechaCreacion: setDate(),
+    })
+    const saveAlumn = newAlumnDB.save()
+
+    // ? : -------------------------------------------------------------- ? : //
+    // ? : guardamos el alumno juno con el curso que realizara el alumno  ? : //
+    // ? : -------------------------------------------------------------- ? : //
+    const newMovAlumnDB = new movAlumn({
+        idCurso: idCurso,
+        idAlumno: newAlumnDB._id,
+        fechaCreacion: setDate(),
+    })
+    const saveMovAlumn = newMovAlumnDB.save()
+
+    // ? : --------------------------------------------------------- ? : //
+    // ? : mostramos un mensaje si se guardo el alumno correctanete  ? : //
+    // ? : si no se guardo el alumno mostramos un mensaje de error   ? : //
+    // ? : --------------------------------------------------------- ? : //
+    if (saveAlumn && saveMovAlumn) {
+        req.flash('success_msg', 'alumno agregado correctamente');
+        res.redirect('/alumn/addAlumn/')
     } else {
-        const datAlumn = await alumn.find({
-            nombre: nombreAlumno,
-            apellido: apellidoAlumno,
-            DNI: dniAlumno,
-        })
+        req.flash('error_msg', 'ha ocurrido un error al tratar de guardar el alumno');
+        res.redirect('/alumn/addAlumn/')
+    }
 
-        if (datAlumn.length > 0) {
-            req.flash('error_msg', 'ya existe este alumno');
-            res.redirect('/alumn/addAlumn')
-        } else {
-            const dataAlumn = new alumn({
-                nombre: nombreAlumno,
-                apellido: apellidoAlumno,
-                DNI: dniAlumno,
-                cursos: cursos,
-                fechaCreacion: new Date()
-            })
-            const saveAlumn = await dataAlumn.save()
-            const idAlumno = saveAlumn._id
-            const dataCourse = await course.find({
-                nombre: { $eq: cursos }
-            })
-            const idCurso = dataCourse[0]._id
-            const saveMovAlumn = new movAlumn({
-                idCurso: idCurso,
-                idAlumno: idAlumno,
-                fechaCreacion: new Date()
-
-            })
-            await saveMovAlumn.save()
-
-            req.flash('success_msg', 'el alumno fue agregado correctamente');
-            res.redirect('/alumn/addAlumn')
-        }
-    } /**/
 }
 
-// --------------------------------------------------------------- //
-// ················ render editar - eliminar ····················· //
-// --------------------------------------------------------------- //
-alumnControllers.renderAlumn = async (req, res) => {
+// % --------------------------------------------------------------- % //
+// % ················ ver todos los alumnos / editar ··············· % //
+// % --------------------------------------------------------------- % //
+alumnControllers.renderAllAlumn = async (req, res) => {
     const dataMovAlumn = await movAlumn.find()
 
     const dataAlumn = []
@@ -84,6 +93,9 @@ alumnControllers.renderAlumn = async (req, res) => {
         const detailsAlumn = {}
 
         detailsAlumn.nombreCurso = courseDt.nombre
+        detailsAlumn.IdMovAlumn = dataMovAlumn[item]._id
+        detailsAlumn.idCurso = courseDt._id
+        detailsAlumn.idAlumno = alumnDt._id
         detailsAlumn.nombreAlumno = alumnDt.nombre
         detailsAlumn.apellidoAlumno = alumnDt.apellido
         detailsAlumn.dniAlumno = alumnDt.DNI
@@ -93,16 +105,19 @@ alumnControllers.renderAlumn = async (req, res) => {
     //console.log(dataAlumn)
     res.render('alumnos/showAllAlumn', { dataAlumn })
 }
-// --------------------------------------------------------------- //
-// ······················· editar alumno ························· //
-// --------------------------------------------------------------- //
+
+
+// % --------------------------------------------------------------- % //
+// % ······················· editar alumno ························· % //
+// % --------------------------------------------------------------- % //
 alumnControllers.renderEditAlumn = async (req, res) => {
+    const formularioAction = req.body.formularioAction
     // buscamos los datos del alumno
     const IdMovAlumn = req.params.id
     const dataMovAlumn = await movAlumn.findById(IdMovAlumn)
 
     const dataAlumn = await alumn.findById(dataMovAlumn.idAlumno)
-    const dataCourse = await course.findById(dataMovAlumn.idCurso)
+    const cursoActualAlumno = await course.findById(dataMovAlumn.idCurso)
 
     // buscamos los cursos
     const courses = await course.find({
@@ -115,25 +130,66 @@ alumnControllers.renderEditAlumn = async (req, res) => {
     }
 
     const variables = {
-        'dataAlumn': dataAlumn,
-        'dataCourse': dataCourse,
-        'courses': courses,
+        dataAlumn: dataAlumn,
+        dataAlumnStr: JSON.stringify(dataAlumn),
+        cursoActualAlumno: cursoActualAlumno,
+        courses: courses,
+        formularioAction: formularioAction,
     }
+
+    for (let i = 0; i < variables.courses.length; i++) {
+        var cursoIString = JSON.stringify(variables.courses[i])
+        var cursoActualString = JSON.stringify(cursoActualAlumno)
+
+        if (cursoIString == cursoActualString) {
+            variables.courses.splice(i, 1)
+        }
+    }
+
     //res.render('alumnos/editAlumn', { dataAlumn, dataCourse, courses })
     res.render('alumnos/editAlumn', { variables })
 }
 
-// --------------------------------------------------------------- //
-// ··················· dar de baja a alumno ······················ //
-// --------------------------------------------------------------- //
+// % --------------------------------------------------------------- % //
+// % ··········· guardar edicion de los datos del alumno ··········· % //
+// % --------------------------------------------------------------- % //
+alumnControllers.saveEditAlumn = async (req, res) => {
+    const idAlumno = req.params.id
+    const { nombreAlumno, apellidoAlumno, dniAlumno, cursos } = req.body
 
-// --------------------------------------------------------------- //
-// ·················· dar de alta a alumno ······················· //
-// --------------------------------------------------------------- //
+    //res.send(req.body)
 
-// --------------------------------------------------------------- //
-// ····················· ver los alumnos ························· //
-// --------------------------------------------------------------- //
+    const nombreAlumnoMinus = nombreAlumno.toLowerCase()
+    const ApellidoAlumnoMinus = apellidoAlumno.toLowerCase()
+
+    // ? : --------------------------------------------------------- ? : //
+    // ? : ------------- editamos los datos el alumno  ------------- ? : //
+    // ? : --------------------------------------------------------- ? : //
+    const editAlumnDB = await alumn.findByIdAndUpdate(idAlumno, {
+        nombre: nombreAlumnoMinus,
+        apellido: ApellidoAlumnoMinus,
+        DNI: dniAlumno,
+        fechaModificacion: setDate(),
+    })
+
+    const editMovAlumn = await movAlumn.findOneAndUpdate({ idAlumno: idAlumno }, {
+        idCurso: cursos,
+        fechaModificacion: setDate(),
+    })
+
+    if (editAlumnDB && editMovAlumn) {
+        req.flash('success_msg', 'alumno editado correctamente');
+        res.redirect('/alumn/selectCourseShowAlumn')
+    } else {
+        req.flash('error_msg', 'ha ocurrido un error al tratar de editar el alumno');
+        res.redirect('/alumn/selectCourseShowAlumn')
+    }
+
+}
+
+// % --------------------------------------------------------------- % //
+// % ····················· ver los alumnos ························· % //
+// % --------------------------------------------------------------- % //
 alumnControllers.renderSelectCourse = async (req, res) => {
     const courses = await await course.find().sort({ fechaInicioCurso: 'asc' });
     const errors = []
@@ -166,5 +222,35 @@ alumnControllers.renderShowAlumn = async (req, res) => {
     //res.send("ok")
     res.render('alumnos/showAlumn', { courseMembers, dataCourse })
 }
+
+// # ------------------------------------------------------------------------ //
+// # ···························· funciones  ································ //
+// # ------------------------------------------------------------------------ //
+function setDate() {
+    //* Seteamos el Date para que se guarde correctamente en DB
+    var date = new Date()
+    const dateParse = new alumn({
+        fechaCreacion: date,
+        offset: date.getTimezoneOffset()
+    })
+    return new Date(dateParse.fechaCreacion.getTime() - (dateParse.offset * 60000));
+}
+
+// # ------------------------------------------------------------------------ //
+// # ····················· URLs para mostrar datos ·························· //
+// # ------------------------------------------------------------------------ //
+alumnControllers.searchAlumn = async (req, res) => {
+    //console.log(req.params)
+    var { nombre, apellido, DNI } = req.params
+    const datAlumn = await alumn.findOne({
+        nombre: nombre,
+        apellido: apellido,
+        DNI: DNI,
+    })
+    //console.log(datAlumn)
+    res.json(datAlumn)
+}
+
+
 
 module.exports = alumnControllers
