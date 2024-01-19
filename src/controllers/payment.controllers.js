@@ -192,12 +192,14 @@ paymentControllers.savePayment = async (req, res) => {
             }
         }
 
+        const datMovAlumn = await movAlumn.findOne({ idCurso: idCurso, idAlumno: idAlumno })
+        const idMovAlumn = datMovAlumn._id
+
         var objectpayment
         if (ArrayNumeroMeses.length > 1) {
             objectpayment = createObjectPayment(
                 numeroBoletaActual,
-                idCurso,
-                idAlumno,
+                idMovAlumn,
                 idValorCurso,
                 debe,
                 haber,
@@ -216,8 +218,7 @@ paymentControllers.savePayment = async (req, res) => {
             IdPagoConjunto = ""
             objectpayment = createObjectPayment(
                 numeroBoletaActual,
-                idCurso,
-                idAlumno,
+                idMovAlumn,
                 idValorCurso,
                 debe,
                 haber,
@@ -260,13 +261,29 @@ paymentControllers.renderShowPay = async (req, res) => {
     const dataDB = await movAcc.find()
     const arrayData = []
     for (let i = 0; i < dataDB.length; i++) {
-        var dataCurso = await course.findById(dataDB[i].idCurso)
-        var datosAlumno = await alumn.findById(dataDB[i].idAlumno)
-        var dataPriceCourse = await priceCourse.findById(dataDB[i].idValorCurso)
+
+        // #: -------- datos de movimientoDeAlumno ------- :# //
+        var idMovAlumn = dataDB[i].idMovimientoAlumno
+        var dataMovimientoAlumno = await movAlumn.findById(idMovAlumn)
+
+        // #: --------------  fecha de pago -------------- :# //
         var fechaCreacion = (dataDB[i].fechaCreacion).toLocaleDateString()
 
+        // #: ----------- datos de valorCurso ------------ :# //
+        var dataPriceCourse = await priceCourse.findById(dataDB[i].idValorCurso)
+
+        // #: ----- datos del numero del mes y año ------- :# //
         var mes = dataPriceCourse.mes
+
+        // #: -------- datos del nombre del mes ---------- :# //
         var nombreMes = loadNombreMes(mes)
+
+        // #: ------ datos del curso ------ :# //
+        var dataCurso = await course.findById(dataPriceCourse.idCurso)
+
+        // #: ------- datos del alumno -------- :# //
+        var idAlumno = dataMovimientoAlumno.idAlumno
+        var datosAlumno = await alumn.findById(idAlumno)
 
         var deudaAnterior = 0
         if (dataDB[i].SaldoDeudor > 0) {
@@ -389,16 +406,28 @@ paymentControllers.readyToGeneratePDF = async (req, res) => {
     var IdPagoConjunto = ""
 
     for (let i = 0; i < jsonDataObjectPayment.length; i++) {
+        var idMovimientoAlumno = jsonDataObjectPayment[i].idMovimientoAlumno
+        var valorId_MovAlumn = idMovimientoAlumno[0]
+
+        var movAlumnDB = await movAlumn.findById(valorId_MovAlumn)
+        var dataCurso = await course.findById(movAlumnDB.idCurso)
+        var dataAlumno = await alumn.findById(movAlumnDB.idAlumno)
+
+
+        var nombreAlumno = dataAlumno.nombre
+        var apellidoAlumno = dataAlumno.apellido
+
         var fecha = (new Date(jsonDataObjectPayment[i].fechaCreacion).toLocaleDateString())
-        var dataCurso = await curso.findById(jsonDataObjectPayment[i].idCurso)
+
         if (nombreCurso == "") { nombreCurso = dataCurso.nombre }
+
         if (jsonDataObjectPayment[i].IdPagoConjunto != "" && jsonDataObjectPayment[i].IdPagoConjunto != undefined) {
             IdPagoConjunto = jsonDataObjectPayment[i].IdPagoConjunto
         }
 
         arrayData.push({
-            nombreAlumno: datosAlumno.nombre,
-            apellidoAlumno: datosAlumno.apellido,
+            nombreAlumno: nombreAlumno,
+            apellidoAlumno: apellidoAlumno,
             DNI: DNI_alumno,
             nombreCurso: nombreCurso,
             nombreMes: jsonDataHTML.nombreMes[i],
@@ -528,6 +557,39 @@ paymentControllers.generatedPDF = async (req, res) => {
                 align: 'left',
             })
 
+        // # --------------------------------------- # //
+        // # ////////// nombre del curso /////////// # //
+        // # --------------------------------------- # //
+        doc.fillColor('green')
+            .text(`Curso: `, 400, 150, {
+                width: 420,
+                align: 'left',
+                continued: true
+            })
+            .fillColor('blue')
+            .text(`${nombreCurso}`, {
+                width: 420,
+                align: 'left',
+            })
+
+        // # --------------------------------------- # //
+        // # /////// nombre del mes (cuota) //////// # //
+        // # --------------------------------------- # //
+        doc.fillColor('green')
+            .text(`Cuota: `, 400, 170, {
+                width: 420,
+                align: 'left',
+                continued: true
+            })
+            .fillColor('blue')
+            .text(`${numeroMes} (${nombreMes})`, {
+                width: 420,
+                align: 'left',
+            })
+
+        // # ------------------------------------------- # //
+        // # /////// fecha de emicion de boleta //////// # //
+        // # ------------------------------------------- # //
         doc.font('Times-BoldItalic')
             .fontSize(13)
             .fillColor('black')
@@ -551,9 +613,6 @@ paymentControllers.generatedPDF = async (req, res) => {
 
     var saldoExtra = ""
     if (saldoFavorUsado > 0) {
-        //console.log(`saldoFavorOriginal: ${saldoFavorOriginal}`)
-        //console.log(`saldoFavorUsado: ${saldoFavorUsado}`)
-        //var saldo = parseInt(saldoFavorOriginal) - parseInt(saldoFavorUsado)
         saldoExtra = `$${saldoFavorUsado} (${nombreMesSaldoFavor})`
     } else {
         saldoExtra = '0'
@@ -570,7 +629,7 @@ paymentControllers.generatedPDF = async (req, res) => {
 
     const data = [
         {
-            concepto: `cuota del mes de ${nombreMes} del curso de ${nombreCurso}`,
+            concepto: `Cuota del Mes de ${nombreMes}, del Curso de ${nombreCurso}`,
             importe: importe,
             pago: `$${pagoAlumno}`,
             saldo: saldo,
@@ -601,15 +660,17 @@ paymentControllers.generatedPDF = async (req, res) => {
         headAlign: 'center'
     })
 
+    // # --------------------------------------- # //
+    // # /////// mensaje de firma/sello //////// # //
+    // # --------------------------------------- # //
     doc.setDocumentFooter({ height: '60' }, () => {
-        doc.moveTo(doc.footer.x + 550, doc.footer.y + 45)
+        doc.moveTo(doc.footer.x + 550, doc.footer.y + 70)
             //.dash(5, { space: 5 })
-            .lineTo(doc.footer.x + 350, doc.footer.y + 45)
+            .lineTo(doc.footer.x + 350, doc.footer.y + 70)
             .stroke()
 
-
         doc.fontSize(12)
-            .text(`firma/sello`, doc.footer.x + 250, doc.footer.y + 50, {
+            .text(`firma/sello`, doc.footer.x + 250, doc.footer.y + 73, {
                 width: 420,
                 align: 'center'
             })
@@ -617,6 +678,9 @@ paymentControllers.generatedPDF = async (req, res) => {
 
     doc.render();
 
+    // # ---------------------------------------- # //
+    // # /////// marca de agua de boleta //////// # //
+    // # ---------------------------------------- # //
     doc.fillOpacity(0.2)
         .image('src/public/img/logo/evolutionNLM.jpg',
             (doc.page.width - 250) * 0.5,
@@ -773,7 +837,7 @@ function loadNombreMes(mes) {
 
 
 
-function createObjectPayment(NumeroBoleta, idCurso, idAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, fechaDB, IdPagoConjunto, saldoFavorUsado, IdMesUsoSaldoAcreedor, ultimFechUsoSaldoAcreedor) {
+function createObjectPayment(NumeroBoleta, idMovimientoAlumno, idValorCurso, debe, haber, deudor, acreedor, estado, comentario, fechaDB, IdPagoConjunto, saldoFavorUsado, IdMesUsoSaldoAcreedor, ultimFechUsoSaldoAcreedor) {
     //* guardamos en DB 
     /*     console.log("")
         console.log("")
@@ -795,8 +859,7 @@ function createObjectPayment(NumeroBoleta, idCurso, idAlumno, idValorCurso, debe
 
     var dataJson = {
         NumeroBoleta: NumeroBoleta,
-        idCurso: idCurso,
-        idAlumno: idAlumno,
+        idMovimientoAlumno: idMovimientoAlumno,
         idValorCurso: idValorCurso,
         Debe: debe,
         Haber: haber,

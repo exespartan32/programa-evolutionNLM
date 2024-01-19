@@ -6,12 +6,8 @@ const saldoSchema = new Schema({
         type: Number,
         required: true
     },
-    idCurso: [{
-        type: Schema.Types.ObjectId, ref: 'curso',
-        required: true
-    }],
-    idAlumno: [{
-        type: Schema.Types.ObjectId, ref: 'alumno',
+    idMovimientoAlumno: [{
+        type: Schema.Types.ObjectId, ref: 'movimiento_De_Alumno',
         required: true
     }],
     idValorCurso: [{

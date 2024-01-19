@@ -84,6 +84,9 @@ $("#formularioEditarAlumno").submit(function (e) {
     var valorApellidoAlumno = $('#apellidoAlumno').val()
     var valorDNI_Alumno = $('#dniAlumno').val()
 
+    var cursoActivoOriginal = $('#cursoActivoOriginal').val()
+    var cursoActual = $('#cursos').val()
+
     // # : -------------------------------------------------------------------------------------------- : # //
     // # : -------------- si no se modifican datos mostramos un mensaje de confirmacion --------------- : # //
     // # : -------- 1) si se de en aceptar se muetsra nuevamente la lista de selecion de curso -------- : # //
@@ -91,7 +94,8 @@ $("#formularioEditarAlumno").submit(function (e) {
     // # : -------------------------------------------------------------------------------------------- : # //
     if (valorNombreAlumno == datosAlumnoOriginal.nombre &&
         valorApellidoAlumno == datosAlumnoOriginal.apellido &&
-        valorDNI_Alumno == datosAlumnoOriginal.DNI
+        valorDNI_Alumno == datosAlumnoOriginal.DNI &&
+        cursoActivoOriginal == cursoActual
     ) {
         var confirmacion = confirm('                             ¡¡ No se han realizado cambios !! \npulse aceptar si desea continuar sin realizar cambio o cancelar si desea continuar realizando cambios')
 
