@@ -1,0 +1,57 @@
+{{#if listaCursosVerPrecios}}
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
+  <div class="wrapper wrapper--w960">
+    <div class="card mb-3 card-2">
+      <div class="row g-0">
+        <div class="col-md-4" id="fondo">
+          {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h2 class="title">seleccionar el curso para ver los precios</h2>
+            <div class="table-responsive-md text-center">
+              <br>
+              <table class="table table-dark table-hover">
+                <tr>
+                  <th>Seleccionar</th>
+                  <th>Nombre del curso</th>
+                </tr>
+                </thead>
+                <tbody id="tabla">
+                  {{#each listaCursosVerPrecios}}
+                  <tr>
+                    <td class="table-info">
+                      <form action="/course/showPriceCourse/{{_id}}?_method=get" method="post">
+                        <input type="hidden" name="_method" value="get">
+                        <button class="btn btn-outline-info" type="submit">
+                          <img src="/img/icon/tick.png" alt="" height="40">
+                        </button>
+                      </form>
+                    </td>
+                    <td class="table-info">{{nombre}}</td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{else}}
+<div class="py-2 col-3 mx-auto">
+  <div class="rounded-3 shadow bg-danger">
+    <div class="modal-body p-4 text-center ">
+      <h5 class="mb-0 text-white card-title">
+        <strong>ERROR</strong>
+        <hr>
+        <strong>No hay datos que mostrar</strong>
+        <br><br>
+        <a href="/course/selectViewPC/" class="btn btn-success btn-block">ingresar datos</a>
+      </h5>
+    </div>
+  </div>
+</div>
+{{/if}}

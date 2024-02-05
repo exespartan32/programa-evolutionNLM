@@ -9,36 +9,33 @@ const movAlumn = require('../models/movimientoDeAlumno')
 // % ····················· ingresar alumno ························· % //
 // % --------------------------------------------------------------- % //
 alumnControllers.renderaddAlumn = async (req, res) => {
-    const dataCourseAA = await course.find({
-        fechaEliminacion: { $eq: null }
-    }).sort({ date: 'desc' });
+    const dataCourses = await course.find().sort({ date: 'desc' });
     const errors = [];
-    if (dataCourseAA.length == 0) {
+    if (dataCourses.length == 0) {
         errors.push({ text: 'no hay datos para mostrar' })
-        res.render('/alumn/addAlumn', { errors })
+        res.render('alumnos/addAlumn', { errors })
+    }else{
+        res.render('alumnos/addAlumn', { dataCourses })
     }
-    res.render('alumnos/addAlumn', { dataCourseAA })
-    //res.send('ok')
 }
 
 // % --------------------------------------------------------------- % //
 // % ·················· guardar datos de alumno ···················· % //
 // % --------------------------------------------------------------- % //
 alumnControllers.saveAlumn = async (req, res) => {
-    const { nombreAlumno, apellidoAlumno, dniAlumno, cursos } = req.body
-
+    const { nombreAlumno, apellidoAlumno, dniAlumno, nombreCurso } = req.body
     //res.send(req.body)
-
     const nombreAlumnoMinus = nombreAlumno.toLowerCase()
     const ApellidoAlumnoMinus = apellidoAlumno.toLowerCase()
-
-    const dataCurso = await course.findOne({ nombre: cursos })
+    const dataCurso = await course.findOne({ nombre: nombreCurso })
     const idCurso = dataCurso._id
 
-    console.log(`nombre en minsucula: ${nombreAlumnoMinus}`)
-    console.log(`apellido en minsucula: ${ApellidoAlumnoMinus}`)
-    console.log(`id del curso: ${idCurso}`)
-    console.log(`fecha y hora actual:  ${setDate()}`)
+    //console.log(`nombre en minsucula: ${nombreAlumnoMinus}`)
+    //console.log(`apellido en minsucula: ${ApellidoAlumnoMinus}`)
+    //console.log(`DNI del alumno: ${dniAlumno}`)
+    //console.log(`id del curso: ${idCurso}`)
+    //console.log(`fecha y hora actual:  ${setDate()}`)
+    //console.log(`nombre del curso:  ${nombreCurso}`)
 
     // ? : ------------------------------------------ ? : //
     // ? : guardamos el alumno en la tabla de alumnos ? : //
@@ -72,7 +69,6 @@ alumnControllers.saveAlumn = async (req, res) => {
         req.flash('error_msg', 'ha ocurrido un error al tratar de guardar el alumno');
         res.redirect('/alumn/addAlumn/')
     }
-
 }
 
 // % --------------------------------------------------------------- % //

@@ -1,32 +1,3 @@
-{{!-- <div class="row text-center">
-    {{#if dataCourse}}
-    <h1 class="title text-secundary">Precios del curso de {{dataCourse.nombre}}</h1>
-    {{/if}}
-    {{#each dataPriceCourse}}
-    <div class="py-2 col-3 mx-auto">
-        <div class="rounded-3 shadow bg-success">
-            <div class="modal-body p-4 text-center ">
-                <h5 class="mb-0 text-white card-title">
-                    <strong>Mes: {{mes}}</strong>
-                    <hr>
-                    <strong>precio del Mes: ${{precioMes}}</strong>
-                </h5>
-            </div>
-        </div>
-    </div>
-    {{else}}
-
-    <div class="text-white bg-danger mb-3 mx-auto text-center" style="max-width: 20rem;">
-        <div class="card-header">error!</div>
-        <div class="card-body">
-            <img src="/img/icon/warning.png" alt="" height="40">
-            no hay datos para mostrar
-            <img src="/img/icon/warning.png" alt="" height="40">
-            <a href="" class="btn btn-success btn-block ">ingresar datos</a>
-        </div>
-    </div>
-    {{/each}}
-</div> --}}
 <div class="container text-center" style="padding-top: 30px;">
     {{#if dataPriceCourse}}
     <div class="row">
@@ -65,9 +36,9 @@
                 <h5 class="mb-0 text-white card-title">
                     <strong>ERROR</strong>
                     <hr>
-                    <strong>No hay datos que mostrar</strong>
+                    <strong>No hay datos que mostrar en precio curso</strong>
                     <br><br>
-                    <a href="" class="btn btn-success btn-block">ingresar datos</a>
+                    <a href="/course/selectCourse" class="btn btn-success btn-block">ingresar datos</a>
                 </h5>
             </div>
         </div>

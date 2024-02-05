@@ -13,7 +13,7 @@ priceCourseControllers.renderShowCourse = async (req, res) => {
         errors.push({ text: 'no hay datos para mostrar' })
         res.render('cursos/precioCursos/selectCourse', { errors })
     }
-    res.render('cursos/precioCursos/selectCourse', { cursos })
+    res.render('cursos/precioCursos/selectCourseAdd', { cursos })
 }
 
 // ---------------- 2) agregar precio al mes --------------------- //
@@ -88,16 +88,21 @@ priceCourseControllers.savePriceMonth = async (req, res) => {
 // ······················ editar precios ························· // 
 // --------------------------------------------------------------- //
 priceCourseControllers.renderSelectCourseViewPrice = async (req, res) => {
-    const viewPC = await await course.find().sort({ fechaInicioCurso: 'asc' });
+    const listaCursosVerPrecios = await await course.find().sort({ fechaInicioCurso: 'asc' });
     const errors = []
-    if (viewPC.length == 0) {
+
+    if (listaCursosVerPrecios.length == 0) {
         errors.push({ text: 'no hay datos para mostrar' })
         res.render('cursos/precioCursos/selectCourse', { errors })
     }
-    res.render('cursos/precioCursos/selectCourse', { viewPC })
+
+    res.render('cursos/precioCursos/selectCourseShow', { listaCursosVerPrecios })
 }
 
 priceCourseControllers.ViewPriceCourse = async (req, res) => {
+
+    console.log('/course/showPriceCourse/:id')
+
     const idCourse = req.params.id
     const dataPriceCourse = await priceCourse.find({
         idCurso: { $eq: idCourse },

@@ -7,6 +7,7 @@
 </div>
 {{/each}}
 
+{{#if dataCourses}}
 <div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
     <div class="wrapper wrapper--w960">
         <div class="card mb-3 card-2">
@@ -43,11 +44,11 @@
 
                             {{!-- seleccion de curso --}}
                             <div class="input-group mb-3">
-                                <label class="input-group-text" for="cursos">Curso</label>
+                                <label class="input-group-text" for="nombreCurso">Curso</label>
 
-                                <select class="form-select" id="cursos" name="cursos">
+                                <select class="form-select" id="nombreCurso" name="nombreCurso">
                                     {{!-- <option selected> - </option> --}}
-                                    {{#each dataCourseAA}}
+                                    {{#each dataCourses}}
                                     <option value={{{nombre}}}>{{{nombre}}}</option>
                                     {{/each}}
                                 </select>
@@ -71,3 +72,18 @@
     </div>
 
 </div>
+{{else}}
+  <div class="py-2 col-3 mx-auto">
+    <div class="rounded-3 shadow bg-danger">
+      <div class="modal-body p-4 text-center ">
+        <h5 class="mb-0 text-white card-title">
+          <strong>ERROR</strong>
+          <hr>
+          <strong>No hay ningun curso en existencia</strong>
+          <br><br>
+          <a href="/course/addCourse" class="btn btn-success btn-block">ingresar datos</a>
+        </h5>
+      </div>
+    </div>
+  </div>
+{{/if}}

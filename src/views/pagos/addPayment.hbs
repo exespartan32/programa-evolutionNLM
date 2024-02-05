@@ -1,95 +1,123 @@
-<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
-    <div class="wrapper wrapper--w960">
-        <div class="card mb-3 card-2">
-            <div class="row g-0">
-                <div class="col-md-3" id="fondo">
-                    {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
-                </div>
-                <div class="col-md-9">
-                    <div class="card-body">
-                        <form action="/payment/savePayment/{{dataCourse._id}}" method="post">
-                            <h1 class="title text-center">pagar el curso de {{dataCourse.nombre}}</h1>
+{{#if alumnList}}
+<br><br><br><br><br>
+<div class="container col-xxl-8 px-4 py-5 bg-body-tertiary text-dark bg-opacity-50" style="border-radius: 20px">
+    <div class="mx-auto">
+        <img src="https://i.pinimg.com/550x/e7/5a/1f/e75a1fd28bacbb51e9fdcb046a9e7692.jpg" class="imgNuevoPago">
+    </div>
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="">
+            <form action="/payment/savePayment/{{dataCourse._id}}" method="post" id="formularioAgregarPago">
+                <h1 class="title text-center">pagar el curso de {{dataCourse.nombre}}</h1>
+                <div class="row">
+                    <div class="col-8" id="containerMeses">
+                        <div class="input-group mb-1" id="containerMes1" style="border-radius: 50px;">
+                            <label class="input-group-text" for="mes1">Mes Nº1</label>
 
-                            <div class="row">
-                                <div class="col-6" id="containerMeses">
-                                    <div class="input-group mb-1" id="containerMes1">
-                                        <label class="input-group-text" for="mes1">Mes Nº1</label>
-                                        <input type="month" min="{{dataCourse.fechaInicioCurso}}" id="mes1" name="mes1"
-                                            max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month"
-                                            name="trip-start"
-                                            onchange="funValidMonth('{{dataCourse._id}}', '#mes1', '#priceMonth1' )" required>
-                                    </div>
-                                </div>
-                                <div class="col-6" id="containerPagosMeses">
-                                    <div class="input-group mb-1" id="containerPagoNº1" title="">
-                                        <label for="pagoAlumno1" class="input-group-text" id="textoMesNº1">
-                                            pago Nº1
-                                        </label>
-                                        <input type="number" class="form-control imput" id="pagoAlumno1"
-                                            name="pagoAlumno1" required>
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">$</span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <input type="month" min="{{dataCourse.fechaInicioCurso}}" id="mesInput" name="mesInput"
+                                max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month" name="trip-start"
+                                onchange="funValidMonth()">
+
+                            <button class="btn btn-outline-primary" type="button" id="agregar_lista">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                            <div id="passwordHelpBlock" class="form-text text-danger mx-auto">
+                                {{!-- <strong>el mes de .... tiene una deuda de .... $</strong> --}}
                             </div>
-                            <!-- muestra el si el mes tiene deuda -->
-                            <div class="pb-2 mx-auto justify-content-center input-group" id="debtMonthContainer"></div>
-                            {{!--
-                            <div id="containerMonthGeneral">
-                                <div class="input-group mb-2" id="containerMes1">
-                                    <label class="input-group-text" for="mes1">Mes Nº 1 a pagar</label>
-                                    <input type="month" id="mes1" name="mes1" min="{{dataCourse.fechaInicioCurso}}"
-                                        max="{{dataCourse.fechaFinCurso}}" class="form-control imput-month"
-                                        name="trip-start"
-                                        onchange="funValidMonth('{{dataCourse._id}}', '#mes1', '#priceMonth1' )">
-                                </div>
-                            </div> --}}
-                            <!-- botones de agregar y eliminar mes y pago -->
-                            <div class="mb-2">
-                                <button type="button"
-                                    onclick="addMonth('{{dataCourse._id}}', '{{dataCourse.duracion}}')"><img
-                                        src="/img/icon/plus.png" height="35px"></button>
-                                <button type="button" id="deleteMonth"><img src="/img/icon/trash.png"
-                                        height="35px"></button>
-
-                            </div>
-
-                            <!-- numero del mes como informacion oculta -->
-                            <input type="hidden" name="numerMonth" id="numerMonth" value="{{numerMonth}}">
-                            <!-- id del curso como informacion oculta -->
-                            <input type="hidden" name="idCourse" id="idCourse" value="{{dataCourse._id}}">
-
-
-
-                            <!-- seleccionar alumno que paga -->
-                            <div class="">
-                                <select class="form-select imput" id="idAlumno" name="idAlumno" required>
-                                    <option selected disabled class="text-center">seleccionar al alumno que pagara
-                                    </option>
-                                    {{#each alumnList}}
-                                    <option value="{{_id}}">{{nombre}} {{apellido}}</option>
-                                    {{/each}}
-                                </select>
-                            </div>
-
-                            <!-- impot nombre curso -->
-                            <div class="input-group mb-4 pt-4">
-                                <label for="comentario" class="input-group-text">Comentarios</label>
-                                <input type="text" class="form-control" id="comentario" name="comentario"
-                                    placeholder="ingresar el comentario" required>
-                            </div>
-
-                            <!-- boton de enviar datos -->
-                            <div class="d-grid pt-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Guardar Datos
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
+
+                    <div class="table-responsive text-center">
+                        <br>
+                        <table class="table table-dark table-hover table-bordered text-center">
+                            <tr id="trTable">
+                                <th id="mesTable">Mes</th>
+                                <th id="precioTable">Precio</th>
+                                <th id="pagoTable">Pago</th>
+                                <th id="saldoTable">Saldo</th>
+                                <th id="eliminarTable">Eliminar</th>
+                                <th id="HeadDeuda"><strong class="text-danger">Deuda</strong></th>
+                                <th id="comentarioTable">Comentario</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tabla"></tbody>
+                        </table>
+                    </div>
+
+
+                    <div id="inputsHidden">
+                        <!-- numero del mes como informacion oculta -->
+                        <input type="hidden" name="numerMonth" id="numerMonth" value="{{datosMeses.numerMonth}}">
+                        <!-- id del curso como informacion oculta -->
+                        <input type="hidden" name="idCourse" id="idCourse" value="{{dataCourse._id}}">
+                    </div>
+
+
+                    <div class="d-grid gap-2 mx-auto text-center pt-1" id="saldoFavorTotal">
+                    </div>
+
+                    <!-- seleccionar alumno que paga -->
+                    <div class="pt-2">
+                        <select class="form-select imput" id="idAlumno" name="idAlumno" required>
+                            <option selected disabled class="text-center">seleccionar al alumno que pagara
+                            </option>
+                            {{#each alumnList}}
+                            <option value="{{_id}}">{{nombre}} {{apellido}}</option>
+                            {{/each}}
+                        </select>
+                        <div id="divSaldofavor" class="d-grid gap-2 d-md-flex justify-content-center">
+                        </div>
+                    </div>
+
+                    <div id="mensajeSaldoFavor"></div>
+
+                    <div class="">
+                        <div class="input-group">
+                            <ul class="list-group mx-auto" id="listaSaldoFavor"></ul>
+                        </div>
+                    </div>
+
+                    <div id="divSaldoActual" class="">
+                    </div>
+
+                    <div id="mensajeSaldoFavorRestante"></div>
+
+
+                    <!-- boton de enviar datos -->
+                    <div class="d-grid pt-2">
+                        <button type="submit" class="btn btn-primary">
+                            Guardar Datos
+                        </button>
+                    </div>
+
+                    {{!-- <div class="d-grid pt-4">
+                        <button type="button" class="btn btn-primary" onclick="calcularSaldoFavor()">
+                            calcular saldo favor
+                        </button>
+                    </div> --}}
+
+
+
+                    <div id="hiddenSaldoFavor"></div>
+
+
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
+<br><br><br><br><br>
+{{else}}
+<div class="py-2 col-3 mx-auto">
+    <div class="rounded-3 shadow bg-danger">
+        <div class="modal-body p-4 text-center ">
+            <h5 class="mb-0 text-white card-title">
+                <strong>ERROR</strong>
+                <hr>
+                <strong>No existe ningun alumno guardado en base de datos para que realice el pago de las cuotas de {{dataCourse.nombre}}</strong>
+                <br><br>
+                <a href="/alumn/addAlumn/" class="btn btn-success btn-block">agregar nuevo alumno</a>
+            </h5>
+        </div>
+    </div>
+</div>
+{{/if}}

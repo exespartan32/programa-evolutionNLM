@@ -17,13 +17,13 @@ const curso = require('../models/curso');
 // --------------------------------------------------------------- //
 // -------------------- 1) eleguir curso ------------------------- //
 paymentControllers.renderSelectCourse = async (req, res) => {
-    const courses = await course.find().sort({ fechaInicioCurso: 'asc' });
+    const cursos = await course.find().sort({ fechaInicioCurso: 'asc' });
     const errors = []
-    if (courses.length == 0) {
+    if (cursos.length == 0) {
         errors.push({ text: 'no hay datos para mostrar' })
         res.render('pagos/selectCourseAddPayment', { errors })
     }
-    res.render('pagos/selectCourseAddPayment', { courses })
+    res.render('pagos/selectCourseAddPayment', { cursos })
 }
 
 // ------------------------- 2) agregar pago --------------------- //
@@ -65,7 +65,7 @@ paymentControllers.addPayment = async (req, res) => {
         const alumnData = await alumn.findById(idAlumn)
         alumnList.push(alumnData)
     }
-    res.render('pagos/agregarPago', { dataCourse, alumnList, datosMeses })
+    res.render('pagos/addPayment', { dataCourse, alumnList, datosMeses })
 }
 
 // ------------------------- 2) guardamos el pago --------------------- //

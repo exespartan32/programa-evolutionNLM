@@ -5,7 +5,9 @@ const {
     saveCourse,
     renderEditCourse,
     saveEdirCourse,
-    renderShowCourse
+    renderShowCourse,
+    searchCourse,
+    
 } = require('../controllers/course.controllers')
 
 // % --------------------------------------------------------------- % //
@@ -26,6 +28,9 @@ router.get('/course/showCourse', renderShowCourse)
 router.get('/course/editCourse/:id', renderEditCourse)
 router.put('/course/saveEditCourse/:id', saveEdirCourse)
 
-
+// # ------------------------------------------------------------------------ //
+// # ······················ URLs para buscar datos ·························· //
+// # ------------------------------------------------------------------------ //
+router.get('/course/searchCourse/:nombreCurso', searchCourse)
 
 module.exports = router;
