@@ -11,7 +11,7 @@ priceCourseControllers.renderShowCourse = async (req, res) => {
     const errors = []
     if (cursos.length == 0) {
         errors.push({ text: 'no hay datos para mostrar' })
-        res.render('cursos/precioCursos/selectCourse', { errors })
+        res.render('cursos/precioCursos/selectCourseAdd', { errors })
     }
     res.render('cursos/precioCursos/selectCourseAdd', { cursos })
 }
@@ -93,16 +93,13 @@ priceCourseControllers.renderSelectCourseViewPrice = async (req, res) => {
 
     if (listaCursosVerPrecios.length == 0) {
         errors.push({ text: 'no hay datos para mostrar' })
-        res.render('cursos/precioCursos/selectCourse', { errors })
+        res.render('cursos/precioCursos/selectCourseShow', { errors })
     }
 
     res.render('cursos/precioCursos/selectCourseShow', { listaCursosVerPrecios })
 }
 
 priceCourseControllers.ViewPriceCourse = async (req, res) => {
-
-    console.log('/course/showPriceCourse/:id')
-
     const idCourse = req.params.id
     const dataPriceCourse = await priceCourse.find({
         idCurso: { $eq: idCourse },
