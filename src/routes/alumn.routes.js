@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const { isAuthenticated } = require('../helpers/auth')
 const {
     renderaddAlumn,
     saveAlumn,
@@ -16,30 +16,30 @@ const {
 // % --------------------------------------------------------------- % //
 // % ····················· ingresar alumno ························· % //
 // % --------------------------------------------------------------- % //
-router.get('/alumn/addAlumn/', renderaddAlumn)
-router.post('/alumn/saveAlumn', saveAlumn)
+router.get('/alumn/addAlumn/', isAuthenticated, renderaddAlumn)
+router.post('/alumn/saveAlumn', isAuthenticated, saveAlumn)
 
 // % --------------------------------------------------------------- % //
 // % ····················· ver los alumnos ························· % //
 // % --------------------------------------------------------------- % //
-router.get('/alumn/selectCourseShowAlumn', renderSelectCourse)
-router.get('/alumn/showAlumn/:id', renderShowAlumn)
+router.get('/alumn/selectCourseShowAlumn', isAuthenticated, renderSelectCourse)
+router.get('/alumn/showAlumn/:id', isAuthenticated, renderShowAlumn)
 
 // % --------------------------------------------------------------- % //
 // % ·················· ver todos los alumnos ······················ % //
 // % --------------------------------------------------------------- % //
-router.get('/alumn/showAllAlumn', renderAllAlumn)
+router.get('/alumn/showAllAlumn', isAuthenticated, renderAllAlumn)
 
 // % --------------------------------------------------------------- % //
 // % ······················· editar alumno ························· % //
 // % --------------------------------------------------------------- % //
-router.get('/alumn/editAlumn/:id', renderEditAlumn)
-router.post('/alumn/saleEditAlumn/:id', saveEditAlumn)
+router.get('/alumn/editAlumn/:id', isAuthenticated, renderEditAlumn)
+router.post('/alumn/saleEditAlumn/:id', isAuthenticated, saveEditAlumn)
 
 // # ------------------------------------------------------------------------ //
 // # ····················· URLs para mostrar datos ·························· //
 // # ------------------------------------------------------------------------ //
-router.get('/alumn/searchAlumn/:nombre/:apellido/:DNI', searchAlumn)
+router.get('/alumn/searchAlumn/:nombre/:apellido/:DNI', isAuthenticated, searchAlumn)
 
 
 module.exports = router;

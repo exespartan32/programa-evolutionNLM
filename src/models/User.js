@@ -1,28 +1,32 @@
 const moongose = require('mongoose');
 const { Schema, model } = moongose
-const bcryptjs = require('bcryptjs')
+const bcrypt = require('bcryptjs')
 
-const userSchema = new Schema(
+const UserSchema = new Schema(
     {
-        name: { type: String, trim: true },
         email: { type: String, required: true, unique: true, trim: true },
+        nombre: { type: String, trim: true },
+        apellido: { type: String, trim: true },
+        nombreUsuario: { type: String, trim: true },
         password: { type: String, required: true },
-        date: { type: Date, default: Date.now },
+        fechaCreacion: { type: Date, default: Date.now },
+        offset: { type: Number},
     },
-    {
+/*     {
         timestamps: true,
         versionKey: false,
-    }
+    } */
 )
 
-
-UserSchema.methods.encryptPassword = async (password) => {
+UserSchema.methods.encryptPassword = async password => {
     const salt = await bcrypt.genSalt(10);
-    return await bcrypt.hash(password, salt);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
 };
 
 UserSchema.methods.matchPassword = async function (password) {
-    return await bcrypt.compare(password, this.password);
+    const compare = await bcrypt.compare(password, this.password);
+    return compare
 };
 
 module.exports = model('User', UserSchema);

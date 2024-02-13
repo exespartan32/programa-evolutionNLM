@@ -1,76 +1,99 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Sixth navbar example">
-    <div class="container-fluid">
-        <img src="/img/logo/evolutionNLM.jpg" width="70" height="50" class="rounded-circle" alt="Cinque Terre">
-        <ul class="navbar-nav ml-5 mb-2 mb-lg-0">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/">
-                    <p class="white">home</p><img src="/img/icon/home.png" alt="" height="30">
-                </a>
-            </li>
-        </ul>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample06"
-            aria-controls="navbarsExample06" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse mx-auto" id="navbarsExample06">
-            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                <!-- cursos -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown06" data-bs-toggle="dropdown"
-                        aria-expanded="false">Cursos
-                        <img src="/img/icon/course.png" alt="" height="30">
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdown06">
-                        <li><a class="dropdown-item" href="/course/addCourse">Agregar</a></li>
-                        <li><a class="dropdown-item" href="/course/showCourse">Editar / Listar</a></li>
-                    </ul>
-                </li>
-
-                <!-- precio cursos -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown06" data-bs-toggle="dropdown"
-                        aria-expanded="false">Precio Cursos
-                        <img src="/img/icon/tag.png" alt="" height="30">
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdown06">
-                        <li><a class="dropdown-item" href="/course/selectCourse">Agregar</a></li>
-                        <li><a class="dropdown-item" href="/course/selectViewPC">Ver todos / Editar</a></li>
-                    </ul>
-                </li>
-
-                <!-- alumnos -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown06" data-bs-toggle="dropdown"
-                        aria-expanded="false">Alumnos
-                        <img src="/img/icon/graduated.png" alt="" height="30">
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdown06">
-                        <li><a class="dropdown-item" href="/alumn/addAlumn">Agregar</a></li>
-                        <li><a class="dropdown-item" href="/alumn/showAllAlumn">Ver todos / Editar</a></li>
-                        <li><a class="dropdown-item" href="/alumn/selectCourseShowAlumn">Ver Alumnos / Editar</a></li>
-                    </ul>
-                </li>
-
-                <!-- pagos -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="dropdown06" data-bs-toggle="dropdown"
-                        aria-expanded="false">Pagos
-                        <img src="/img/icon/payment-method.png" alt="" height="30">
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdown06">
-                        <li><a class="dropdown-item" href="/payment/selectCourseAddPay">Agregar Nuevo</a></li>
-                        <li><a class="dropdown-item" href="/payment/showPay">Ver todos / Buscar Pago</a></li>
-                    </ul>
-                </li>
-            </ul>
-
-{{!--             <a href="/users/signin" class="btn btn-outline-secondary text-white" disabled>Crear Usuario
-                <img src="/img/icon/add-group.png" alt="" height="40">
+   <div class="container-fluid">
+      <img src="/img/logo/evolutionNLM.jpg" width="70" height="50" class="rounded-circle" alt="Cinque Terre">
+      <ul class="navbar-nav ml-5 mb-2 mb-lg-0">
+         <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">
+               <p class="white">home</p><img src="/img/icon/home.png" alt="" height="30">
             </a>
-            <a href="/users/signup" class="btn btn-outline-info text-white">Iniciar Sesion
-                <img src="/img/icon/iniciar-sesion.png" alt="" height="40">
-            </a> --}}
-        </div>
-    </div>
+         </li>
+      </ul>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsEvolution"
+         aria-controls="navbarsEvolution" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsEvolution">
+         {{#if user}}
+         <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <!-- cursos -->
+            <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="dropdown06" data-bs-toggle="dropdown"
+                  aria-expanded="false">Cursos
+                  <img src="/img/icon/course.png" alt="" height="30">
+               </a>
+               <ul class="dropdown-menu" aria-labelledby="dropdown06">
+                  <li><a class="dropdown-item" href="/course/addCourse">Agregar</a></li>
+                  <li><a class="dropdown-item" href="/course/showCourse">Editar / Listar</a></li>
+               </ul>
+            </li>
+
+            <!-- precio cursos -->
+            <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="dropdown06" data-bs-toggle="dropdown"
+                  aria-expanded="false">Precio Cursos
+                  <img src="/img/icon/tag.png" alt="" height="30">
+               </a>
+               <ul class="dropdown-menu" aria-labelledby="dropdown06">
+                  <li><a class="dropdown-item" href="/course/selectCourse">Agregar</a></li>
+                  <li><a class="dropdown-item" href="/course/selectViewPC">Ver todos / Editar</a></li>
+               </ul>
+            </li>
+
+            <!-- alumnos -->
+            <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="dropdown06" data-bs-toggle="dropdown"
+                  aria-expanded="false">Alumnos
+                  <img src="/img/icon/graduated.png" alt="" height="30">
+               </a>
+               <ul class="dropdown-menu" aria-labelledby="dropdown06">
+                  <li><a class="dropdown-item" href="/alumn/addAlumn">Agregar</a></li>
+                  <li><a class="dropdown-item" href="/alumn/showAllAlumn">Ver todos / Editar</a></li>
+                  <li><a class="dropdown-item" href="/alumn/selectCourseShowAlumn">Ver Alumnos / Editar</a></li>
+               </ul>
+            </li>
+
+            <!-- pagos -->
+            <li class="nav-item dropdown">
+               <a class="nav-link dropdown-toggle" href="#" id="dropdown06" data-bs-toggle="dropdown"
+                  aria-expanded="false">Pagos
+                  <img src="/img/icon/payment-method.png" alt="" height="30">
+               </a>
+               <ul class="dropdown-menu" aria-labelledby="dropdown06">
+                  <li><a class="dropdown-item" href="/payment/selectCourseAddPay">Agregar Nuevo</a></li>
+                  <li><a class="dropdown-item" href="/payment/showPay">Ver todos / Buscar Pago</a></li>
+               </ul>
+            </li>
+
+
+
+
+         </ul>
+         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 text-white">
+            <li class="nav-item dropdown ">
+               <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                  data-bs-toggle="dropdown" aria-expanded="false"> 
+                  <strong class="text-white">{{user.nombre}} {{user.apellido}}</strong>
+                  <img src="/img/icon/woman.png" alt="mdo" width="32" height="32" class="rounded-circle">
+               </a>
+               <ul class="dropdown-menu" aria-labelledby="dropdown06">
+                  <li><a class="dropdown-item text-danger" href="/users/logout/">Cerrar Sesion</a></li>
+               </ul>
+            </li>
+         </ul>
+
+
+         {{else}}
+         <ul class="navbar-nav ms-auto">
+            <a href="/users/signUp" class="btn btn-outline-secondary text-white" disabled>Crear Usuario
+               <img src="/img/icon/add-group.png" height="30">
+            </a>
+            <a href="/users/signIn/" class="btn btn-outline-info text-white">Iniciar Sesion
+               <img src="/img/icon/iniciar-sesion.png" height="30">
+            </a>
+         </ul>
+         {{/if}}
+      </div>
+
+   </div>
 </nav>

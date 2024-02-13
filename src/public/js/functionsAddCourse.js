@@ -49,7 +49,6 @@ $('#nombre').on('change', function () {
   $.ajax({
     url: '/course/searchCourse/' + $(this).val(),
     success: function (data) {
-      console.log(data)
       if (data != null) {
         alert('ya existe un curso con ese nombre, debe colocar otro nombre')
         const nombreCursoOriginal = $('#nombreCursoOriginal').val()

@@ -1,48 +1,51 @@
-<section class="banner contenedor text-center">
-    <secrion class="banner_title">
-        <form action="#" method="post">
-            <!-- email input -->
-            <div class="mb-4">
-                <input type="email" class="form-control" id="email" name="email">
-                <label for="email" class="form-label">Correo Electronico</label>
-            </div>
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
+    <div class="wrapper wrapper--w960">
+        <div class="card mb-3 card-2">
+            <div class="row g-0">
+                <div class="col-md-4" id="fondo">
+                    {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body mx-auto">
+                        <h2 class="title">Iniciar Sesion</h2>
+                        <form action="/users/loginUser" method="POST" id="formularioIniciarSesion">
 
-            <!-- Password input -->
-            <div class="form-group form-outline mb-4">
-                <div class="input-group">
-                    <input ID="txtPassword" type="Password" Class="form-control">
-                    <div class="input-group-append">
-                        <button id="show_password" class="btn btn-primary" type="button" onclick="mostrarPassword()">
-                            <span class="fa fa-eye-slash icon"></span></button>
+                            <div class="input-group mb-4">
+                                <label for="email" class="input-group-text">@Email</label>
+                                <input type="text" class="form-control" id="email" name="email"
+                                    placeholder="ingresar nombre del usuario" required>
+                            </div>
+
+                            <!-- impot contraseña usuario -->
+                            <div class="input-group mb-4">
+                                <label for="password" class="input-group-text">Contraseña</label>
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="ingresar la contraseña" required>
+                                <div class="input-group-append">
+                                    <button id="mostrarContraseña" class="btn btn-primary" type="button">
+                                        <span class="fa fa-eye-slash icon"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{!-- boton de enviar datos --}}
+                            <div class="d-grid pt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <img src="/img/icon/sign-in.png" alt="" height="27">
+                                    <strong>Iniciar Sesion</strong>
+                                    <img src="/img/icon/sign-in.png" alt="" height="27">
+                                </button>
+                            </div>
+
+                            <hr class="my-4">
+                            <div class="my-3">
+                                <span>No tienes cuenta? <a href="/users/signUp">Registrarse</a></span>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <label class="form-label" for="txtPassword" style="margin-left: 0px;">password</label>
             </div>
-
-            <div class="mb-4 form-check">
-                <input type="checkbox" name="connected" class="form-check-input" id="con">
-                <label for="connected" class="form-check-label">Mantenerme Conectado</label>
-            </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-            </div>
-
-            <div class="my-3">
-                <span>No tines cuenta? <a href="#">Registrarse</a></span>
-            </div>
-
-            <!-- Register buttons -->
-            <p>iniciar sesion  con:</p>
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-facebook-f"></i>
-            </button>
-
-            <button type="button" class="btn btn-link btn-floating mx-1">
-                <i class="fab fa-google"></i>
-            </button>
-        </form>
-    </secrion>
-    <div class="banner_img">
-        <img src="/img/imganes/img.png" alt="">
+        </div>
     </div>
-</section>
+</div>
+<br><br>

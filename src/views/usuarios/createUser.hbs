@@ -1,0 +1,90 @@
+<div class="page-wrapper bg-red p-t-180 p-b-100 font-robo text-center">
+    <div class="wrapper wrapper--w960">
+        <div class="card mb-3 card-2">
+            <div class="row g-0">
+                <div class="col-md-4" id="fondo">
+                    {{!-- <img src="/img/imagenes/peluqueria3.jpg" class="img-fluid rounded-start" alt="imagen"> --}}
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body mx-auto">
+                        <h2 class="title">Crear Usuario</h2>
+                        <form action="/users/saveNewUser" method="post" id="formularioCrearUsuario">
+
+                            <!-- impot email -->
+                            {{!-- <div class="input-group mb-3">
+                                <span class="input-group-text">@</span>
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="floatingInputGroup1" placeholder="email"
+                                        id="email" name="email">
+                                    <label for="floatingInputGroup1">Email</label>
+                                </div>
+                            </div> --}}
+
+                            <!-- impot nombre usuario -->
+                            <div class="input-group mb-4">
+                                <label for="emailUser" class="input-group-text">@Email</label>
+                                <input type="text" class="form-control" id="emailUser" name="emailUser"
+                                    placeholder="ingresar el email" required>
+                            </div>
+
+                            <!-- impot nombre y apelllido -->
+                            <div class="input-group mb-4">
+                                <span class="input-group-text">Nombre y Apellido</span>
+                                <input type="text" class="form-control" placeholder="Nombre" id="FirstName"
+                                    name="FirstName">
+                                <input type="text" class="form-control" placeholder="Apellido" id="LastName"
+                                    name="LastName">
+                            </div>
+
+                            <!-- impot nombre usuario -->
+                            <div class="input-group mb-4">
+                                <label for="UserName" class="input-group-text">Nombre de Usuario</label>
+                                <input type="text" class="form-control" id="UserName" name="UserName"
+                                    placeholder="ingresar nombre del usuario" required>
+                            </div>
+
+                            <!-- impot contraseña usuario -->
+                            <div class="input-group mb-4">
+                                <label for="password" class="input-group-text">Contraseña</label>
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="ingresar la contraseña" required>
+                                <div class="input-group-append">
+                                    <button id="mostrarContraseña" class="btn btn-primary" type="button">
+                                        <span class="fa fa-eye-slash icon"></span>
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <!-- impot confrimar contraseña usuario -->
+                            <div class="input-group mb-4" id="inputConfirmPass">
+                                <label for="passwordConfirm" class="input-group-text">Confirmar Contraseña</label>
+                                <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm"
+                                    placeholder="ingresar nuevamente la contraseña"
+                                    title="para confirmar la contraseña, ingrese la contraseña ingresada arriva nuevamente"
+                                    required disabled>
+                                <div class="input-group-append">
+                                    <button id="mostrarContraseñaConfrim" class="btn btn-primary" type="button">
+                                        <span class="fa fa-eye-slash icon"></span>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback" id="invalid-msg"></div>
+                            </div>
+
+                            {{!-- boton de enviar datos --}}
+                            <div class="d-grid pt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <img src="/img/icon/add-user.png" alt="" height="27">
+                                    <strong>Crear Usuario</strong>
+                                    <img src="/img/icon/add-user.png" alt="" height="27">
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br>
