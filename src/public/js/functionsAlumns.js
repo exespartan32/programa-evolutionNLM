@@ -1,11 +1,12 @@
 var alumnos = []
+var alumnoDNI
 
 $('#nombreAlumno').on('change', function () {
     var valorNombreAlumno = $(this).val()
     var valorApellidoAlumno = $('#apellidoAlumno').val()
     var valorDNI_Alumno = $('#dniAlumno').val()
 
-    if (valorNombreAlumno != "" && valorApellidoAlumno != "" && valorDNI_Alumno != "") {
+    if (valorNombreAlumno && valorApellidoAlumno && valorDNI_Alumno) {
         buscarCoincidenciaAlumnoDB(valorNombreAlumno.toLowerCase(), valorApellidoAlumno.toLowerCase(), valorDNI_Alumno)
     }
 })
@@ -15,7 +16,7 @@ $('#apellidoAlumno').on('change', function () {
     var valorApellidoAlumno = $(this).val()
     var valorDNI_Alumno = $('#dniAlumno').val()
 
-    if (valorNombreAlumno != "" && valorApellidoAlumno != "" && valorDNI_Alumno != "") {
+    if (valorNombreAlumno && valorApellidoAlumno && valorDNI_Alumno) {
         buscarCoincidenciaAlumnoDB(valorNombreAlumno.toLowerCase(), valorApellidoAlumno.toLowerCase(), valorDNI_Alumno)
     }
 })
@@ -25,7 +26,11 @@ $('#dniAlumno').on('change', function () {
     var valorApellidoAlumno = $('#apellidoAlumno').val()
     var valorDNI_Alumno = $(this).val()
 
-    if (valorNombreAlumno != "" && valorApellidoAlumno != "" && valorDNI_Alumno != "") {
+    if (valorDNI_Alumno) {
+        buscarCoincidenciaAlumnoDNI(valorDNI_Alumno)
+    }
+
+    if (valorNombreAlumno && valorApellidoAlumno && valorDNI_Alumno) {
         buscarCoincidenciaAlumnoDB(valorNombreAlumno.toLowerCase(), valorApellidoAlumno.toLowerCase(), valorDNI_Alumno)
     }
 })
@@ -47,15 +52,27 @@ $('#cursos').on('change', function () {
 
 function buscarCoincidenciaAlumnoDB(nombreAlumno, apellidoAlumno, DNI_Alumno) {
     $.ajax({
-        url: '/alumn/searchAlumn/' + nombreAlumno + "/" + apellidoAlumno + "/" + DNI_Alumno,
+        url: `/alumn/searchDNI/${nombreAlumno}/${apellidoAlumno}/${DNI_Alumno}`,
         success: function (data) {
-            console.log('concidencias con los datos ingresados')
-            console.log(data)
-            console.log('---------------------------------------------------')
+            //console.log('concidencias con los datos ingresados')
+            //console.log(data)
+            //console.log('---------------------------------------------------')
             if (data) {
                 alumnos.push(data)
             } else {
                 alumnos = []
+            }
+        }
+    })
+}
+
+function buscarCoincidenciaAlumnoDNI(DNI_Alumno) {
+    $.ajax({
+        url: `/alumn/searchDNI/${DNI_Alumno}`,
+        success: function (data) {
+            if(data){
+                alert('ya existe un alumno con el DNI ingresado, no puede repetirse')
+                $('#dniAlumno').val('')
             }
         }
     })

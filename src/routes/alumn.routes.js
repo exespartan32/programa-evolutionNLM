@@ -10,6 +10,8 @@ const {
     renderEditAlumn,
     searchAlumn,
     saveEditAlumn,
+    searchDNI,
+    
 
 } = require('../controllers/alumn.controllers')
 
@@ -40,6 +42,8 @@ router.post('/alumn/saleEditAlumn/:id', isAuthenticated, saveEditAlumn)
 // # ····················· URLs para mostrar datos ·························· //
 // # ------------------------------------------------------------------------ //
 router.get('/alumn/searchAlumn/:nombre/:apellido/:DNI', isAuthenticated, searchAlumn)
+router.get('/alumn/searchDNI/:DNI', isAuthenticated, searchDNI)
+
 
 
 module.exports = router;

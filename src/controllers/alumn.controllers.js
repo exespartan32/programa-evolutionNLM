@@ -248,5 +248,15 @@ alumnControllers.searchAlumn = async (req, res) => {
 }
 
 
+alumnControllers.searchDNI = async (req, res) => {
+    var { DNI } = req.params
+    const datAlumn = await alumn.findOne({
+        DNI: DNI,
+    })
+    console.log(datAlumn)
+    res.json(datAlumn)
+}
+
+
 
 module.exports = alumnControllers
